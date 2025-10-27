@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FORM SOUNDING CREW</title>
+    <!-- Muat Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Muat SignaturePad -->
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
+    <!-- Muat jsPDF dan html2canvas untuk Ekspor PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f7f9;
+        }
+        .container-card {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: white;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border-radius: 12px;
+        }
+        .header-box {
+            background-color: #0d47a1; 
+            color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+        .form-label {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        .input-field {
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            width: 100%;
+            transition: border-color 0.2s;
+        }
+        .input-field:focus {
+            border-color: #2563eb;
+            outline: none;
+        }
+
+        /* --- STAGGERED GRID STYLES --- */
+        .drill-grid-area {
+            display: grid;
+            /* 60px untuk header kolom A-G, sisanya 23 kolom */
+            grid-template-columns: 60px repeat(23, minmax(35px, 1fr)); 
+            border-top: 1px solid #e5e7eb;
+            overflow-x: auto;
+            min-width: 100%;
+            /* Penting: Pastikan background putih untuk capture PDF */
+            background-color: white;
+        }
+        
+        .grid-header-cell {
+            padding: 0.5rem 0.25rem;
+            text-align: center;
+            background-color: #f1f5f9;
+            font-weight: 600;
+            border-right: 1px solid #e5e7eb;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.65rem; /* Lebih kecil agar muat */
+        }
+        .grid-header-cell:first-child {
+            position: sticky;
+            left: 0;
+            z-index: 20; 
+        }
+
+        .grid-row-header {
+            padding: 0.5rem 0.25rem;
+            text-align: center;
+            font-weight: 700;
+            background-color: #e2e8f0;
+            border-right: 1px solid #e5e7eb;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: sticky;
+            left: 0;
+            z-index: 20; 
+            font-size: 0.75rem;
+        }
+
+        .hole-cell {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4px 0;
+            height: 60px; 
+            border-bottom: 1px solid #f3f4f6;
+            position: relative; 
+        }
+
+        .staggered-row-content {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            align-items: center;
+            justify-content: center;
+        }
+
+        [data-row-index="1"] .staggered-row-content,
+        [data-row-index="3"] .staggered-row-content,
+        [data-row-index="5"] .staggered-row-content,
+        [data-row-index="7"] .staggered-row-content {
+            /* Pergeseran Staggered */
+            transform: translateX(17px); 
+        }
+        
+        /* Styling untuk titik lubang (hole dot) */
+        .hole-dot {
+            transition: transform 0.2s, background-color 0.2s, border-color 0.2s;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            position: relative;
+            /* FIX: Memastikan teks kedalaman berada di tengah */
+            display: flex; 
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem; /* Sedikit lebih kecil agar 6.0 pas */
+            line-height: 1; /* Penting untuk menghilangkan spasi tambahan */
+        }
+        .hole-dot:hover {
+            transform: scale(1.2);
+            border-color: #2563eb;
+        }
+        
+        /* Status Display MAPPING: Kering(D), Basah(W), Collapse(C) */
+        .hole-dot.status-D { 
+            background-color: #34d399; /* Hijau - KERING (OK) */
+            border-color: #059669;
+        }
+        .hole-dot.status-W { 
+            background-color: #60a5fa; /* Biru Muda - BASAH */
+            border-color: #2563eb;
+        }
+        .hole-dot.status-C { 
+            background-color: #fca5a5; /* Merah Muda - COLLAPSE */
+            border-color: #ef4444;
+        }
+        
+        /* Style untuk Modal Pop-up */
+        .hole-modal {
+            position: absolute;
+            z-index: 50;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            padding: 1rem;
+            width: 250px;
+        }
+        .signature-canvas {
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background-color: #ffffff;
+            touch-action: none; 
+        }
+
+        /* Kelas untuk menampung konten yang akan diambil gambarnya untuk PDF */
+        #pdfCaptureArea {
+             background-color: white;
+             padding: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container-card">
+
+        <!-- Konten yang BUKAN merupakan bagian dari laporan akhir (Kontrol, Notifikasi) -->
+        <div id="controlsAndHeader" class="screen-only">
+            <!-- Header -->
+            <div class="header-box text-center mb-6">
+                <h1 class="text-3xl font-bold mb-1">PT. KALIMANTAN PRIMA PERSADA - DISTRIK INDE</h1>
+                <h2 class="text-xl font-semibold">FORM SOUNDING CREW</h2>
+            </div>
+
+            <!-- Section Informasi Umum (Semua Kolom Baru) -->
+            <!-- **SHIFT COLUMN DELETED** -->
+            <div id="generalInfoInputs" class="grid grid-cols-1 md:grid-cols-5 gap-4 p-4 mb-6 border border-gray-200 rounded-lg bg-gray-50">
+                <div><label for="tanggal" class="form-label">Tanggal</label><input type="date" id="tanggal" class="input-field"></div>
+                <div>
+                    <label for="pit" class="form-label">PIT</label>
+                    <select id="pit" class="input-field">
+                        <option value="Tempudo 2">Tempudo 2</option>
+                        <option value="Tempudo 3">Tempudo 3</option>
+                        <option value="Tempudo 4">Tempudo 4</option>
+                    </select>
+                </div>
+                <div><label for="lokasi" class="form-label">Lokasi</label><input type="text" id="lokasi" class="input-field" placeholder="Lokasi Blok"></div>
+                <div><label for="planHole" class="form-label">Plan Hole</label><input type="number" id="planHole" class="input-field" placeholder="Jumlah Plan"></div>
+                <div><label for="namaCrew" class="form-label">Nama Crew</label><input type="text" id="namaCrew" class="input-field" placeholder="Nama Crew"></div>
+                <div><label for="namaGL" class="form-label">Nama GL</label><input type="text" id="namaGL" class="input-field" placeholder="Nama Group Leader"></div>
+                <div><label for="burden" class="form-label">Burden (m)</label><input type="number" step="0.1" id="burden" class="input-field" placeholder="B"></div>
+                <div><label for="spasi" class="form-label">Spasi (m)</label><input type="number" step="0.1" id="spasi" class="input-field" placeholder="S"></div>
+                <div><label for="unitDrilling" class="form-label">Unit Drilling</label><input type="text" id="unitDrilling" class="input-field" placeholder="Unit"></div>
+            </div>
+
+            <!-- Notifikasi & User ID -->
+            <div id="notification" class="hidden p-3 mb-4 rounded-lg text-sm" role="alert"></div>
+            <div class="mb-4 text-sm text-gray-600">
+                User ID (untuk sinkronisasi): <span id="userIdDisplay" class="font-mono bg-gray-100 p-1 rounded">...</span>
+            </div>
+        </div>
+
+
+        <!-- Container Khusus untuk Konten yang akan Di-Capture ke PDF -->
+        <div id="pdfCaptureArea" class="bg-white">
+
+            <!-- Title yang muncul di PDF -->
+             <div class="text-center mb-6">
+                <h1 class="text-xl font-bold mb-1 text-gray-800">PT. KALIMANTAN PRIMA PERSADA - DISTRIK INDE</h1>
+                <h2 class="text-lg font-semibold text-gray-700">PEMERIKSAAN KONDISI & KEDALAMAN LUBANG TEMBAK</h2>
+            </div>
+
+            <!-- Ringkasan Data Umum (Untuk PDF) -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4 text-sm p-3 border border-gray-300 rounded-lg">
+                <div><span class="font-semibold">Tanggal:</span> <span id="report_tanggal" class="font-medium"></span></div>
+                <div><span class="font-semibold">PIT:</span> <span id="report_pit" class="font-medium"></span></div>
+                <div><span class="font-semibold">Lokasi:</span> <span id="report_lokasi" class="font-medium"></span></div>
+                <!-- Shift Removed -->
+                <div><span class="font-semibold">Plan Hole:</span> <span id="report_planHole" class="font-medium"></span></div>
+                <div><span class="font-semibold">B x S:</span> <span id="report_geometri" class="font-medium"></span></div>
+                <div><span class="font-semibold">Unit:</span> <span id="report_unit" class="font-medium"></span></div>
+            </div>
+
+
+            <!-- Section Grid Pemeriksaan Lubang -->
+            <div class="overflow-x-auto mb-8">
+                <h3 class="text-lg font-bold mb-2 text-gray-700">Visualisasi Kondisi Lubang (Staggered Pattern)</h3>
+                <div id="drillGrid" class="drill-grid-area bg-white rounded-lg border border-gray-300">
+                    <!-- Grid akan di-generate di sini oleh JavaScript -->
+                </div>
+            </div>
+
+            <!-- Section Keterangan Ringkas & TTD -->
+            <div class="mt-8 flex justify-between gap-6 border-t pt-4">
+                
+                <!-- Keterangan Status -->
+                <div class="w-1/3">
+                    <h4 class="font-semibold mb-2 text-gray-700">Keterangan Status:</h4>
+                    <ul class="text-sm space-y-1">
+                        <li class="flex items-center"><span class="hole-dot w-3 h-3 rounded-full status-D mr-2"></span> D: KERING (Ideal)</li>
+                        <li class="flex items-center"><span class="hole-dot w-3 h-3 rounded-full status-W mr-2"></span> W: BASAH (Ada Air)</li>
+                        <!-- Perubahan 3: Hapus /SUMP -->
+                        <li class="flex items-center"><span class="hole-dot w-3 h-3 rounded-full status-C mr-2"></span> C: COLLAPSE</li> 
+                    </ul>
+                </div>
+
+                <!-- Tanda Tangan Area -->
+                <div class="w-1/3 text-center">
+                    <h3 class="font-semibold mb-2 text-gray-700">Tanda Tangan Pemeriksa:</h3>
+                    <img id="report_signature_img" class="w-full max-w-[150px] h-20 mx-auto border border-gray-400 bg-gray-100" alt="Tanda Tangan Pemeriksa">
+                    <p class="mt-1 text-sm font-medium" id="report_crew_name">(Nama Crew)</p>
+                </div>
+            </div>
+
+            <!-- Ringkasan Data Copas (Diposisikan di akhir untuk PDF) -->
+            <h3 class="text-md font-bold my-3 text-gray-800 border-t pt-4">Ringkasan Data untuk Mining Dispatch:</h3>
+            <pre id="report_summary_text" class="whitespace-pre-wrap p-3 bg-gray-100 border rounded text-sm font-mono"></pre>
+
+        </div> 
+        <!-- END pdfCaptureArea -->
+
+
+        <!-- Modal Pop-up untuk Input Lubang (Disembunyikan secara default) -->
+        <div id="holeModal" class="hole-modal hidden screen-only">
+            <h4 class="font-bold mb-3 text-lg text-gray-800" id="modalHoleId">Hole: A-1</h4>
+            
+            <div class="mb-4">
+                <label for="holeDepth" class="form-label text-sm">Kedalaman (m):</label>
+                <input type="number" step="0.1" id="holeDepth" class="input-field" placeholder="0.0">
+            </div>
+
+            <div class="mb-4">
+                <label for="holeCondition" class="form-label text-sm">Kondisi Lubang:</label>
+                <select id="holeCondition" class="input-field">
+                    <option value="">Pilih Kondisi</option>
+                    <option value="Kering">Kering</option>
+                    <option value="Basah">Basah</option>
+                    <option value="Collapse">Collapse</option>
+                </select>
+            </div>
+
+            <div class="flex space-x-2">
+                <button onclick="saveHoleDataFromModal()" class="flex-1 px-3 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition duration-200">
+                    Simpan
+                </button>
+                <button onclick="closeHoleModal()" class="flex-1 px-3 py-2 bg-gray-300 text-gray-800 text-sm font-semibold rounded-lg hover:bg-gray-400 transition duration-200">
+                    Batal
+                </button>
+            </div>
+        </div>
+
+        <!-- Section Tanda Tangan (Screen Only) -->
+        <div class="mt-8 border-t pt-6 screen-only">
+            <h3 class="text-lg font-bold mb-4 text-gray-700">Tanda Tangan (TTD) - Pemeriksa</h3>
+            <div class="border border-gray-300 rounded-lg p-4 bg-gray-50">
+                <canvas id="signatureCanvas" class="signature-canvas w-full" height="150"></canvas>
+            </div>
+            <div class="flex space-x-4 mt-4">
+                <button onclick="clearSignature()" class="flex-1 px-4 py-2 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition duration-200">
+                    Hapus TTD
+                </button>
+                <button onclick="saveData()" class="flex-1 px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-200">
+                    Simpan Data
+                </button>
+            </div>
+        </div>
+
+        <!-- Section for Report Generation and Copying (Screen Only) -->
+        <div class="mt-8 pt-6 border-t screen-only">
+            <button onclick="generateReportAndDownloadPDF()" class="w-full px-4 py-3 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 transition duration-200 shadow-md">
+                DOWNLOAD PDF (Desain, Ringkasan & TTD)
+            </button>
+
+            <!-- Copy Paste Output -->
+            <div id="copyOutputContainer" class="hidden mt-6 p-4 bg-yellow-50 border border-yellow-300 rounded-lg">
+                <h4 class="font-bold text-lg mb-2 text-gray-800">Format Data untuk Salin (Copas)</h4>
+                <textarea id="copyOutputText" class="w-full h-40 font-mono text-sm p-2 border rounded resize-none bg-white" readonly></textarea>
+                <button onclick="copyToClipboard('copyOutputText')" class="mt-2 px-3 py-1 bg-indigo-500 text-white text-sm rounded hover:bg-indigo-600 transition">
+                    Salin ke Clipboard
+                </button>
+                <p class="text-xs text-blue-600 mt-2">Gunakan teks ini untuk Mining Dispatch atau grup WA.</p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Firebase SDK Imports -->
+    <script type="module">
+        // Global variables for Firebase
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        let app, db, auth, userId = null;
+        let signaturePad; 
+        let currentHoleId = null; 
+
+        // --- Utility Functions ---
+        function showNotification(message, isError = false) {
+            const el = document.getElementById('notification');
+            el.textContent = message;
+            el.className = `p-3 mb-4 rounded-lg text-sm transition-opacity duration-300 ${isError ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`;
+            el.classList.remove('hidden');
+            setTimeout(() => {
+                el.classList.add('hidden');
+            }, 5000);
+        }
+
+        window.copyToClipboard = function(elementId) {
+            const copyText = document.getElementById(elementId);
+            try {
+                const range = document.createRange();
+                range.selectNode(copyText);
+                window.getSelection().removeAllRanges();
+                window.getSelection().addRange(range);
+                document.execCommand('copy');
+                window.getSelection().removeAllRanges();
+                showNotification("Teks berhasil disalin ke clipboard!");
+            } catch (err) {
+                console.error('Failed to copy text: ', err);
+                showNotification("Gagal menyalin. Silakan salin manual.", true);
+            }
+        }
+
+        // --- Firebase Initialization and Auth ---
+        async function initializeFirebase() {
+            try {
+                if (Object.keys(firebaseConfig).length === 0) {
+                    console.error("Firebase config is missing.");
+                    // Fallback to local execution if config is empty
+                    userId = crypto.randomUUID();
+                    document.getElementById('userIdDisplay').textContent = userId;
+                    initApp();
+                    return;
+                }
+
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        userId = user.uid;
+                    } else {
+                        userId = crypto.randomUUID();
+                    }
+                    document.getElementById('userIdDisplay').textContent = userId;
+                    
+                    initApp(); 
+                    if(db) startDataListener();
+                });
+
+            } catch (error) {
+                console.error("Error initializing Firebase:", error);
+                showNotification(`Kesalahan Firebase: ${error.message}`, true);
+            }
+        }
+
+        // --- Signature Pad Functions ---
+        window.clearSignature = function() {
+            if (signaturePad) {
+                signaturePad.clear();
+                showNotification("Tanda tangan dihapus.");
+            }
+        }
+
+        // --- Hole Grid and Data Functions ---
+        const HOLE_ROWS = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
+        const MAX_COLUMNS = 23;
+        let holeData = {}; 
+
+        function generateDrillGrid() {
+            const gridContainer = document.getElementById('drillGrid');
+            let html = '';
+
+            // Header Row (Col numbers 1 to 23)
+            html += `<div class="grid-header-cell border-t-0">HOLE ID</div>`;
+            for (let i = 1; i <= MAX_COLUMNS; i++) {
+                html += `<div class="grid-header-cell border-t-0">${i}</div>`;
+            }
+
+            // Data Rows (A to G)
+            HOLE_ROWS.forEach((holeName, index) => {
+                const rowIndex = index + 1;
+                
+                // Row Header (A, B, C...)
+                html += `<div class="grid-row-header" data-row-index="${rowIndex}">${holeName}</div>`;
+                
+                // Hole Cells
+                for (let col = 1; col <= MAX_COLUMNS; col++) {
+                    const holeId = `${holeName}-${col}`;
+                    html += `
+                        <div class="hole-cell" data-row-index="${rowIndex}">
+                            <div class="staggered-row-content">
+                                <span id="dot-${holeId}" 
+                                      class="hole-dot w-6 h-6 rounded-full border-2 border-gray-400 bg-white cursor-pointer text-white" 
+                                      data-hole-id="${holeId}"
+                                      onclick="openHoleModal('${holeId}', event)">
+                                    <span id="depth-label-${holeId}"></span>
+                                </span>
+                            </div>
+                        </div>`;
+                }
+            });
+
+            gridContainer.innerHTML = html;
+        }
+
+        window.openHoleModal = function(holeId, event) {
+            currentHoleId = holeId;
+            const data = holeData[holeId] || { depth: '', status: '' };
+            const target = event.target.closest('.hole-dot');
+            if (!target) return;
+
+            // Set modal content
+            document.getElementById('modalHoleId').textContent = `Hole: ${holeId}`;
+            document.getElementById('holeDepth').value = data.depth || '';
+            document.getElementById('holeCondition').value = data.status || '';
+
+            // Get target position
+            const rect = target.getBoundingClientRect();
+            const modal = document.getElementById('holeModal');
+            const containerCardRect = document.querySelector('.container-card').getBoundingClientRect();
+            
+            // Calculate position relative to the container card
+            const posX = rect.left - containerCardRect.left + (rect.width / 2);
+            const posY = rect.top - containerCardRect.top - 10; 
+
+            // Set modal position
+            modal.style.top = `${posY}px`;
+            modal.style.left = `${posX}px`;
+            modal.style.transform = `translateX(-50%) translateY(-100%)`; 
+
+            // Display modal
+            modal.classList.remove('hidden');
+        }
+
+        window.saveHoleDataFromModal = function() {
+            if (!currentHoleId) return;
+
+            const depth = document.getElementById('holeDepth').value;
+            const status = document.getElementById('holeCondition').value;
+
+            if (!depth || !status) {
+                showNotification("Mohon isi Kedalaman dan Kondisi Lubang.", true);
+                return;
+            }
+
+            holeData[currentHoleId] = {
+                depth: parseFloat(depth).toFixed(1), // Simpan 1 desimal
+                status: status
+            };
+
+            updateHoleDotUI(currentHoleId);
+            closeHoleModal();
+        }
+
+        window.closeHoleModal = function() {
+            document.getElementById('holeModal').classList.add('hidden');
+            currentHoleId = null;
+        }
+
+        function updateHoleDotUI(holeId) {
+            const data = holeData[holeId] || { depth: '0.0', status: '' };
+            const dot = document.getElementById(`dot-${holeId}`);
+            const depthLabel = document.getElementById(`depth-label-${holeId}`);
+            
+            if (!dot || !depthLabel) return;
+            
+            const status = data.status;
+            const depth = data.depth;
+
+            // Map Indonesian status to internal color codes (D, W, C)
+            let colorStatus = '';
+            if (status === 'Kering') colorStatus = 'D';
+            else if (status === 'Basah') colorStatus = 'W';
+            else if (status === 'Collapse') colorStatus = 'C';
+
+            // Update Color based on status
+            dot.classList.remove('status-D', 'status-W', 'status-C', 'border-gray-500'); 
+            dot.classList.add('bg-white', 'border-gray-400'); // Default
+
+            if (colorStatus === 'D') dot.classList.add('status-D', 'border-gray-500');
+            else if (colorStatus === 'W') dot.classList.add('status-W', 'border-gray-500');
+            else if (colorStatus === 'C') dot.classList.add('status-C', 'border-gray-500');
+
+            // Update Depth Label
+            if (depth && status) {
+                depthLabel.textContent = depth;
+                dot.classList.remove('text-gray-700');
+                dot.classList.add('text-white');
+            } else {
+                depthLabel.textContent = '';
+                dot.classList.add('text-gray-700');
+            }
+            
+            // Update Tooltip
+            dot.title = `Kedalaman: ${depth || 'Belum Diisi'}, Kondisi: ${status || 'Belum Diisi'}`;
+        }
+
+        // Function to load hole data from Firestore and apply to UI
+        function loadHoleData(data) {
+            holeData = data.holeData || {};
+            
+            // Update UI for general info inputs
+            document.getElementById('pit').value = data.pit || 'Tempudo 2';
+            document.getElementById('lokasi').value = data.lokasi || ''; 
+            document.getElementById('tanggal').value = data.tanggal || '';
+            document.getElementById('planHole').value = data.planHole || '';
+            document.getElementById('namaCrew').value = data.namaCrew || '';
+            document.getElementById('namaGL').value = data.namaGL || '';
+            document.getElementById('burden').value = data.burden || '';
+            document.getElementById('spasi').value = data.spasi || '';
+            document.getElementById('unitDrilling').value = data.unitDrilling || '';
+
+            // Update UI for TTD
+            if (data.signatureBase64 && signaturePad && signaturePad.isEmpty()) {
+                signaturePad.fromDataURL(data.signatureBase64);
+            } else if (signaturePad) {
+                 // Clear signature if loaded data is empty but pad is not, or just ensure it is clear initially
+            }
+
+            // Update Hole Grid UI
+            HOLE_ROWS.forEach(row => {
+                for (let col = 1; col <= MAX_COLUMNS; col++) {
+                    updateHoleDotUI(`${row}-${col}`);
+                }
+            });
+            showNotification("Data formulir berhasil dimuat.");
+        }
+
+        // --- Firestore Data Management ---
+
+        function getDataPath(docId) {
+             // Pastikan db ada sebelum memanggil fungsi ini
+             return `artifacts/${appId}/users/${userId}/drill_blast_reports/${docId}`;
+        }
+
+        function startDataListener() {
+            if (!db || !userId) return;
+
+            const docRef = doc(db, getDataPath('current_report'));
+            
+            onSnapshot(docRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    loadHoleData(docSnap.data());
+                } else {
+                    // Reset fields if no data exists
+                    if(signaturePad) signaturePad.clear();
+                    // Keep the current input values if no data from Firestore
+                }
+            }, (error) => {
+                console.error("Error listening to data:", error);
+                // Note: No notification here to prevent spamming on console logs
+            });
+        }
+
+        window.saveData = async function() {
+            if (!db || !userId) {
+                showNotification("Aplikasi belum siap. Tunggu otentikasi selesai.", true);
+                return;
+            }
+
+            let signatureBase64 = '';
+            if (signaturePad && !signaturePad.isEmpty()) {
+                signatureBase64 = signaturePad.toDataURL();
+            } else {
+                showNotification("Tanda tangan pemeriksa belum diisi.", true);
+                return;
+            }
+            
+            try {
+                const docRef = doc(db, getDataPath('current_report'));
+                await setDoc(docRef, {
+                    pit: document.getElementById('pit').value,
+                    lokasi: document.getElementById('lokasi').value,
+                    tanggal: document.getElementById('tanggal').value,
+                    planHole: document.getElementById('planHole').value,
+                    namaCrew: document.getElementById('namaCrew').value,
+                    namaGL: document.getElementById('namaGL').value,
+                    burden: document.getElementById('burden').value,
+                    spasi: document.getElementById('spasi').value,
+                    unitDrilling: document.getElementById('unitDrilling').value,
+                    holeData: holeData,
+                    signatureBase64: signatureBase64,
+                    timestamp: serverTimestamp(),
+                    userId: userId
+                });
+                showNotification("Data Laporan berhasil disimpan!");
+            } catch (error) {
+                console.error("Error saving document:", error);
+                showNotification(`Kesalahan saat menyimpan data: ${error.message}`, true);
+            }
+        }
+        
+        // --- Report Generation Logic ---
+
+        function getJadwal(pit) {
+            if (pit === 'Tempudo 4') {
+                return '12:00-13:00 WITA';
+            } else if (pit === 'Tempudo 2' || pit === 'Tempudo 3') {
+                return '13:00-14:00 WITA';
+            }
+            return 'Jadwal Tidak Diketahui';
+        }
+
+        // Menghitung ringkasan data dan memperbarui tampilan ringkasan HTML
+        function generateReportSummary() {
+            const pit = document.getElementById('pit').value;
+            const lokasi = document.getElementById('lokasi').value;
+            const planHole = parseFloat(document.getElementById('planHole').value) || 0;
+            const burden = document.getElementById('burden').value;
+            const spasi = document.getElementById('spasi').value;
+            const unitDrilling = document.getElementById('unitDrilling').value;
+            const tanggal = document.getElementById('tanggal').value;
+            const namaCrew = document.getElementById('namaCrew').value;
+            const namaGL = document.getElementById('namaGL').value;
+
+            // Validasi Data Input Umum
+            if (!pit || !lokasi || planHole === 0 || !burden || !spasi || !unitDrilling || !tanggal || !namaCrew || !namaGL) {
+                 return false; 
+            }
+
+            // 1. Calculations
+            const filledHoles = Object.values(holeData).filter(d => d.status);
+            const actualHoles = filledHoles.length;
+            
+            const validDepths = filledHoles
+                .map(d => parseFloat(d.depth))
+                .filter(d => !isNaN(d) && d > 0);
+
+            const totalDepth = validDepths.reduce((sum, d) => sum + d, 0);
+            const avgDepth = validDepths.length > 0 ? (totalDepth / validDepths.length).toFixed(2) : '0.0';
+
+            const dryCount = filledHoles.filter(d => d.status === 'Kering').length;
+            const dryPercentage = actualHoles > 0 ? ((dryCount / actualHoles) * 100).toFixed(0) : '0';
+
+            // 2. Format Text Output (for Copy-Paste)
+            const jadwal = getJadwal(pit);
+            const copyText = `
+${pit}
+⏰ JADWAL PELAKSANAAN PELEDAKAN : ${jadwal}
+
+${lokasi}
+Plan : ${planHole} hole
+Actual : ${actualHoles} hole
+Depth : ${avgDepth} m
+Dry : ${dryPercentage} %
+Geometri : ${burden} x ${spasi}
+Diameter : 171 mm
+Unit : ${unitDrilling}
+            `.trim();
+
+            // 3. Update Print/PDF Content
+            document.getElementById('report_tanggal').textContent = tanggal;
+            document.getElementById('report_pit').textContent = pit;
+            document.getElementById('report_lokasi').textContent = lokasi;
+            // document.getElementById('report_shift').textContent = 'Siang'; // SHIFT REMOVED
+            document.getElementById('report_planHole').textContent = planHole;
+            document.getElementById('report_geometri').textContent = `${burden} x ${spasi} m`;
+            document.getElementById('report_unit').textContent = unitDrilling;
+            document.getElementById('report_crew_name').textContent = `(${namaCrew} - ${namaGL})`;
+            
+            document.getElementById('report_summary_text').textContent = copyText;
+
+            // Signature Image
+            const signatureBase64 = signaturePad && !signaturePad.isEmpty() ? signaturePad.toDataURL() : '';
+            document.getElementById('report_signature_img').src = signatureBase64 || '';
+            
+            // 4. Display Copy-Paste Output (Screen Only)
+            document.getElementById('copyOutputText').value = copyText;
+            document.getElementById('copyOutputContainer').classList.remove('hidden');
+
+            return { pit, lokasi, tanggal, copyText };
+        }
+
+
+        // Fungsi Baru untuk Download PDF Asli
+        window.generateReportAndDownloadPDF = async function() {
+            const data = generateReportSummary();
+
+            if (!data) {
+                showNotification("Mohon lengkapi semua data di kolom atas sebelum download PDF.", true);
+                return;
+            }
+            
+            showNotification("Sedang memproses PDF, mohon tunggu...");
+
+            // 1. Dapatkan Elemen Konten yang akan di-PDF-kan
+            const input = document.getElementById('pdfCaptureArea');
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4'
+            });
+
+            try {
+                // 2. Gunakan html2canvas untuk mengubah Konten menjadi Gambar
+                const canvas = await html2canvas(input, {
+                    scale: 3, // Tingkatkan skala untuk resolusi yang lebih baik
+                    useCORS: true,
+                    backgroundColor: '#ffffff'
+                });
+
+                const imgData = canvas.toDataURL('image/jpeg', 1.0); // Gunakan JPEG untuk ukuran file lebih kecil
+                const pdfWidth = doc.internal.pageSize.getWidth();
+                // Hitung tinggi gambar secara proporsional
+                const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+                // 3. Tambahkan Gambar ke PDF
+                doc.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+
+                // 4. Unduh File
+                doc.save(`Sounding_Report_${data.lokasi}_${data.tanggal}.pdf`);
+                
+                showNotification("PDF berhasil dibuat dan diunduh!", false);
+
+            } catch (error) {
+                console.error("Kesalahan saat membuat PDF:", error);
+                showNotification(`Gagal membuat PDF: ${error.message}`, true);
+            }
+        }
+
+
+        // --- App Initialization ---
+        function initApp() {
+            // 1. Generate the static grid structure
+            generateDrillGrid();
+
+            // 2. Initialize Signature Pad
+            const canvas = document.getElementById('signatureCanvas');
+            if (canvas) {
+                const ratio = Math.max(window.devicePixelRatio || 1, 1);
+                canvas.width = canvas.offsetWidth * ratio;
+                canvas.height = canvas.offsetHeight * ratio;
+                canvas.getContext('2d').scale(ratio, ratio);
+                
+                signaturePad = new SignaturePad(canvas, {
+                    backgroundColor: 'rgb(255, 255, 255)' 
+                });
+            }
+        }
+
+        // Start the whole process
+        document.addEventListener('DOMContentLoaded', initializeFirebase);
+    </script>
+
+</body>
+</html>

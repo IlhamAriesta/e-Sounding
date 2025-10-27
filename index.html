@@ -181,6 +181,11 @@
             margin: 1rem 0;
         }
 
+        /* Hide mining dispatch summary from PDF */
+        .pdf-hide {
+            display: block;
+        }
+
         @media (max-width: 768px) {
             .container-card {
                 margin: 1rem;
@@ -314,9 +319,11 @@
                 </div>
             </div>
 
-            <!-- Ringkasan Data Copas (Diposisikan di akhir untuk PDF) -->
-            <h3 class="text-md font-bold my-3 text-gray-800 border-t pt-4">Ringkasan Data untuk Mining Dispatch:</h3>
-            <pre id="report_summary_text" class="whitespace-pre-wrap p-3 bg-gray-100 border rounded text-sm font-mono"></pre>
+            <!-- Ringkasan Data Copas (Hanya untuk screen, tidak untuk PDF) -->
+            <div class="screen-only">
+                <h3 class="text-md font-bold my-3 text-gray-800 border-t pt-4">Ringkasan Data untuk Mining Dispatch:</h3>
+                <pre id="report_summary_text" class="whitespace-pre-wrap p-3 bg-gray-100 border rounded text-sm font-mono"></pre>
+            </div>
 
         </div> 
         <!-- END pdfCaptureArea -->
@@ -371,7 +378,7 @@
         <div class="mt-8 pt-6 border-t screen-only">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <button onclick="generateReportAndDownloadPDF()" class="w-full px-4 py-3 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 transition duration-200 shadow-md">
-                    📄 DOWNLOAD PDF
+                    📄 DOWNLOAD PDF (LANDSCAPE)
                 </button>
                 <button onclick="exportToExcel()" class="w-full px-4 py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition duration-200 shadow-md">
                     📊 EXPORT EXCEL
@@ -438,7 +445,6 @@
                 return;
             }
 
-            // Generate session ID jika belum ada
             if (!currentSessionId) {
                 currentSessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
             }
@@ -449,7 +455,6 @@
             document.getElementById('shareableLink').value = shareUrl;
             document.getElementById('shareLinkContainer').classList.remove('hidden');
             
-            // Simpan session ID ke Firestore
             saveSessionData();
             
             showNotification("Link berhasil dibuat! Salin dan simpan untuk melanjutkan nanti.");
@@ -572,26 +577,21 @@
             const target = event.target.closest('.hole-dot');
             if (!target) return;
 
-            // Set modal content
             document.getElementById('modalHoleId').textContent = `Hole: ${holeId}`;
             document.getElementById('holeDepth').value = data.depth || '';
             document.getElementById('holeCondition').value = data.status || '';
 
-            // Get target position
             const rect = target.getBoundingClientRect();
             const modal = document.getElementById('holeModal');
             const containerCardRect = document.querySelector('.container-card').getBoundingClientRect();
             
-            // Calculate position relative to the container card
             const posX = rect.left - containerCardRect.left + (rect.width / 2);
             const posY = rect.top - containerCardRect.top - 10; 
 
-            // Set modal position
             modal.style.top = `${posY}px`;
             modal.style.left = `${posX}px`;
             modal.style.transform = `translateX(-50%) translateY(-100%)`; 
 
-            // Display modal
             modal.classList.remove('hidden');
         }
 
@@ -613,7 +613,7 @@
 
             updateHoleDotUI(currentHoleId);
             closeHoleModal();
-            saveSessionData(); // Auto-save setelah mengisi data
+            saveSessionData();
         }
 
         window.closeHoleModal = function() {
@@ -659,7 +659,6 @@
         function loadHoleData(data) {
             holeData = data.holeData || {};
             
-            // Update UI for general info inputs
             document.getElementById('pit').value = data.pit || 'Tempudo 2';
             document.getElementById('shift').value = data.shift || '';
             document.getElementById('lokasi').value = data.lokasi || ''; 
@@ -671,12 +670,10 @@
             document.getElementById('spasi').value = data.spasi || '';
             document.getElementById('unitDrilling').value = data.unitDrilling || '';
 
-            // Update UI for TTD
             if (data.signatureBase64 && signaturePad && signaturePad.isEmpty()) {
                 signaturePad.fromDataURL(data.signatureBase64);
             }
 
-            // Update Hole Grid UI
             HOLE_ROWS.forEach(row => {
                 for (let col = 1; col <= MAX_COLUMNS; col++) {
                     updateHoleDotUI(`${row}-${col}`);
@@ -797,7 +794,6 @@ Diameter : 171 mm
 Unit : ${unitDrilling}
             `.trim();
 
-            // Update Print/PDF Content
             document.getElementById('report_tanggal').textContent = tanggal;
             document.getElementById('report_shift').textContent = shift;
             document.getElementById('report_pit').textContent = pit;
@@ -853,7 +849,7 @@ Unit : ${unitDrilling}
             }
         }
 
-        // --- Fixed PDF Generation ---
+        // --- Improved PDF Generation with Landscape ---
         window.generateReportAndDownloadPDF = async function() {
             const data = generateReportSummary();
 
@@ -862,46 +858,72 @@ Unit : ${unitDrilling}
                 return;
             }
             
-            showNotification("Sedang memproses PDF, mohon tunggu...");
+            showNotification("Sedang memproses PDF Landscape, mohon tunggu...");
 
             try {
+                // Sembunyikan bagian mining dispatch untuk PDF
+                const miningDispatchSection = document.querySelector('#pdfCaptureArea .screen-only');
+                if (miningDispatchSection) {
+                    miningDispatchSection.style.display = 'none';
+                }
+
                 const input = document.getElementById('pdfCaptureArea');
                 const { jsPDF } = window.jspdf;
 
-                // Use a fixed scale that works for both mobile and desktop
-                const scale = 2;
+                // Gunakan landscape orientation
+                const doc = new jsPDF({
+                    orientation: 'landscape',
+                    unit: 'mm',
+                    format: 'a4'
+                });
+
+                const scale = 1.5;
                 
                 const canvas = await html2canvas(input, {
                     scale: scale,
                     useCORS: true,
                     backgroundColor: '#ffffff',
                     scrollX: 0,
-                    scrollY: -window.scrollY
+                    scrollY: -window.scrollY,
+                    width: input.scrollWidth,
+                    height: input.scrollHeight
                 });
 
-                const imgData = canvas.toDataURL('image/jpeg', 0.8);
+                const imgData = canvas.toDataURL('image/jpeg', 0.9);
                 
-                // Create PDF
-                const doc = new jsPDF({
-                    orientation: 'portrait',
-                    unit: 'mm',
-                    format: 'a4'
-                });
-
                 const pdfWidth = doc.internal.pageSize.getWidth();
-                const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+                const pdfHeight = doc.internal.pageSize.getHeight();
+                const imgWidth = canvas.width;
+                const imgHeight = canvas.height;
+                
+                // Calculate dimensions to fit the image in the PDF
+                const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight) * 0.95;
+                const imgWidthPdf = imgWidth * ratio;
+                const imgHeightPdf = imgHeight * ratio;
+                
+                // Center the image on the page
+                const x = (pdfWidth - imgWidthPdf) / 2;
+                const y = (pdfHeight - imgHeightPdf) / 2;
 
-                // Add image to PDF
-                doc.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
-
-                // Download the PDF
+                doc.addImage(imgData, 'JPEG', x, y, imgWidthPdf, imgHeightPdf);
                 doc.save(`Sounding_Report_${data.lokasi}_${data.tanggal}.pdf`);
                 
-                showNotification("PDF berhasil dibuat dan diunduh!", false);
+                // Tampilkan kembali mining dispatch section
+                if (miningDispatchSection) {
+                    miningDispatchSection.style.display = 'block';
+                }
+                
+                showNotification("PDF Landscape berhasil dibuat dan diunduh!", false);
 
             } catch (error) {
                 console.error("Kesalahan saat membuat PDF:", error);
                 showNotification(`Gagal membuat PDF: ${error.message}`, true);
+                
+                // Pastikan mining dispatch section ditampilkan kembali jika error
+                const miningDispatchSection = document.querySelector('#pdfCaptureArea .screen-only');
+                if (miningDispatchSection) {
+                    miningDispatchSection.style.display = 'block';
+                }
             }
         }
 
@@ -921,7 +943,6 @@ Unit : ${unitDrilling}
                 });
             }
 
-            // Auto-save ketika ada perubahan di form
             const formInputs = document.querySelectorAll('#generalInfoInputs input, #generalInfoInputs select');
             formInputs.forEach(input => {
                 input.addEventListener('change', saveSessionData);

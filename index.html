@@ -56,12 +56,10 @@
         /* --- STAGGERED GRID STYLES --- */
         .drill-grid-area {
             display: grid;
-            /* 60px untuk header kolom A-G, sisanya 23 kolom */
             grid-template-columns: 60px repeat(23, minmax(35px, 1fr)); 
             border-top: 1px solid #e5e7eb;
             overflow-x: auto;
             min-width: 100%;
-            /* Penting: Pastikan background putih untuk capture PDF */
             background-color: white;
         }
         
@@ -75,7 +73,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.65rem; /* Lebih kecil agar muat */
+            font-size: 0.65rem;
         }
         .grid-header-cell:first-child {
             position: sticky;
@@ -122,42 +120,37 @@
         [data-row-index="3"] .staggered-row-content,
         [data-row-index="5"] .staggered-row-content,
         [data-row-index="7"] .staggered-row-content {
-            /* Pergeseran Staggered */
             transform: translateX(17px); 
         }
         
-        /* Styling untuk titik lubang (hole dot) */
         .hole-dot {
             transition: transform 0.2s, background-color 0.2s, border-color 0.2s;
             box-shadow: 0 1px 2px rgba(0,0,0,0.1);
             position: relative;
-            /* FIX: Memastikan teks kedalaman berada di tengah */
             display: flex; 
             align-items: center;
             justify-content: center;
-            font-size: 0.7rem; /* Sedikit lebih kecil agar 6.0 pas */
-            line-height: 1; /* Penting untuk menghilangkan spasi tambahan */
+            font-size: 0.7rem;
+            line-height: 1;
         }
         .hole-dot:hover {
             transform: scale(1.2);
             border-color: #2563eb;
         }
         
-        /* Status Display MAPPING: Kering(D), Basah(W), Collapse(C) */
         .hole-dot.status-D { 
-            background-color: #34d399; /* Hijau - KERING (OK) */
+            background-color: #34d399;
             border-color: #059669;
         }
         .hole-dot.status-W { 
-            background-color: #60a5fa; /* Biru Muda - BASAH */
+            background-color: #60a5fa;
             border-color: #2563eb;
         }
         .hole-dot.status-C { 
-            background-color: #fca5a5; /* Merah Muda - COLLAPSE */
+            background-color: #fca5a5;
             border-color: #ef4444;
         }
         
-        /* Style untuk Modal Pop-up */
         .hole-modal {
             position: absolute;
             z-index: 50;
@@ -175,13 +168,19 @@
             touch-action: none; 
         }
 
-        /* Kelas untuk menampung konten yang akan diambil gambarnya untuk PDF */
         #pdfCaptureArea {
              background-color: white;
              padding: 10px;
         }
 
-        /* Responsive untuk mobile */
+        .share-link-container {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
         @media (max-width: 768px) {
             .container-card {
                 margin: 1rem;
@@ -213,9 +212,17 @@
                 <h2 class="text-xl font-semibold">FORM SOUNDING CREW</h2>
             </div>
 
-            <!-- Section Informasi Umum (Semua Kolom Baru) -->
+            <!-- Section Informasi Umum dengan SHIFT -->
             <div id="generalInfoInputs" class="grid grid-cols-1 md:grid-cols-5 gap-4 p-4 mb-6 border border-gray-200 rounded-lg bg-gray-50">
                 <div><label for="tanggal" class="form-label">Tanggal</label><input type="date" id="tanggal" class="input-field"></div>
+                <div>
+                    <label for="shift" class="form-label">SHIFT</label>
+                    <select id="shift" class="input-field">
+                        <option value="">Pilih Shift</option>
+                        <option value="SHIFT 1">SHIFT 1</option>
+                        <option value="SHIFT 2">SHIFT 2</option>
+                    </select>
+                </div>
                 <div>
                     <label for="pit" class="form-label">PIT</label>
                     <select id="pit" class="input-field">
@@ -233,10 +240,26 @@
                 <div><label for="unitDrilling" class="form-label">Unit Drilling</label><input type="text" id="unitDrilling" class="input-field" placeholder="Unit"></div>
             </div>
 
+            <!-- Share Link Section -->
+            <div id="shareLinkContainer" class="share-link-container hidden">
+                <h3 class="font-bold text-lg mb-2 text-blue-800">🔗 Link untuk Melanjutkan Pekerjaan</h3>
+                <p class="text-sm text-gray-600 mb-2">Simpan link ini untuk melanjutkan pekerjaan di shift berikutnya:</p>
+                <div class="flex gap-2">
+                    <input type="text" id="shareableLink" class="input-field flex-1" readonly>
+                    <button onclick="copyShareLink()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                        Salin Link
+                    </button>
+                </div>
+                <p class="text-xs text-gray-500 mt-2">Link ini akan menyimpan semua data yang sudah diinput</p>
+            </div>
+
             <!-- Notifikasi & User ID -->
             <div id="notification" class="hidden p-3 mb-4 rounded-lg text-sm" role="alert"></div>
             <div class="mb-4 text-sm text-gray-600">
                 User ID (untuk sinkronisasi): <span id="userIdDisplay" class="font-mono bg-gray-100 p-1 rounded">...</span>
+                <button onclick="generateShareLink()" class="ml-4 px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition">
+                    🔗 Buat Link Share
+                </button>
             </div>
         </div>
 
@@ -253,6 +276,7 @@
             <!-- Ringkasan Data Umum (Untuk PDF) -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4 text-sm p-3 border border-gray-300 rounded-lg">
                 <div><span class="font-semibold">Tanggal:</span> <span id="report_tanggal" class="font-medium"></span></div>
+                <div><span class="font-semibold">Shift:</span> <span id="report_shift" class="font-medium"></span></div>
                 <div><span class="font-semibold">PIT:</span> <span id="report_pit" class="font-medium"></span></div>
                 <div><span class="font-semibold">Lokasi:</span> <span id="report_lokasi" class="font-medium"></span></div>
                 <div><span class="font-semibold">Plan Hole:</span> <span id="report_planHole" class="font-medium"></span></div>
@@ -298,7 +322,7 @@
         <!-- END pdfCaptureArea -->
 
 
-        <!-- Modal Pop-up untuk Input Lubang (Disembunyikan secara default) -->
+        <!-- Modal Pop-up untuk Input Lubang -->
         <div id="holeModal" class="hole-modal hidden screen-only">
             <h4 class="font-bold mb-3 text-lg text-gray-800" id="modalHoleId">Hole: A-1</h4>
             
@@ -381,6 +405,7 @@
         let app, db, auth, userId = null;
         let signaturePad; 
         let currentHoleId = null; 
+        let currentSessionId = null;
 
         // --- Utility Functions ---
         function showNotification(message, isError = false) {
@@ -396,16 +421,57 @@
         window.copyToClipboard = function(elementId) {
             const copyText = document.getElementById(elementId);
             try {
-                const range = document.createRange();
-                range.selectNode(copyText);
-                window.getSelection().removeAllRanges();
-                window.getSelection().addRange(range);
-                document.execCommand('copy');
-                window.getSelection().removeAllRanges();
+                copyText.select();
+                copyText.setSelectionRange(0, 99999);
+                navigator.clipboard.writeText(copyText.value);
                 showNotification("Teks berhasil disalin ke clipboard!");
             } catch (err) {
                 console.error('Failed to copy text: ', err);
                 showNotification("Gagal menyalin. Silakan salin manual.", true);
+            }
+        }
+
+        // --- Share Link Functions ---
+        window.generateShareLink = function() {
+            if (!userId) {
+                showNotification("User ID belum tersedia. Tunggu sebentar.", true);
+                return;
+            }
+
+            // Generate session ID jika belum ada
+            if (!currentSessionId) {
+                currentSessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            }
+
+            const baseUrl = window.location.href.split('?')[0];
+            const shareUrl = `${baseUrl}?session=${currentSessionId}&user=${userId}`;
+            
+            document.getElementById('shareableLink').value = shareUrl;
+            document.getElementById('shareLinkContainer').classList.remove('hidden');
+            
+            // Simpan session ID ke Firestore
+            saveSessionData();
+            
+            showNotification("Link berhasil dibuat! Salin dan simpan untuk melanjutkan nanti.");
+        }
+
+        window.copyShareLink = function() {
+            const shareLink = document.getElementById('shareableLink');
+            copyToClipboard('shareableLink');
+        }
+
+        // Load data from URL parameters
+        function loadFromUrlParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const sessionId = urlParams.get('session');
+            const userIdParam = urlParams.get('user');
+
+            if (sessionId && userIdParam) {
+                currentSessionId = sessionId;
+                userId = userIdParam;
+                document.getElementById('userIdDisplay').textContent = userId;
+                startDataListener();
+                showNotification("Session loaded! Anda dapat melanjutkan pekerjaan sebelumnya.");
             }
         }
 
@@ -414,10 +480,10 @@
             try {
                 if (Object.keys(firebaseConfig).length === 0) {
                     console.error("Firebase config is missing.");
-                    // Fallback to local execution if config is empty
                     userId = crypto.randomUUID();
                     document.getElementById('userIdDisplay').textContent = userId;
                     initApp();
+                    loadFromUrlParams();
                     return;
                 }
 
@@ -440,6 +506,7 @@
                     document.getElementById('userIdDisplay').textContent = userId;
                     
                     initApp(); 
+                    loadFromUrlParams();
                     if(db) startDataListener();
                 });
 
@@ -540,12 +607,13 @@
             }
 
             holeData[currentHoleId] = {
-                depth: parseFloat(depth).toFixed(1), // Simpan 1 desimal
+                depth: parseFloat(depth).toFixed(1),
                 status: status
             };
 
             updateHoleDotUI(currentHoleId);
             closeHoleModal();
+            saveSessionData(); // Auto-save setelah mengisi data
         }
 
         window.closeHoleModal = function() {
@@ -563,21 +631,18 @@
             const status = data.status;
             const depth = data.depth;
 
-            // Map Indonesian status to internal color codes (D, W, C)
             let colorStatus = '';
             if (status === 'Kering') colorStatus = 'D';
             else if (status === 'Basah') colorStatus = 'W';
             else if (status === 'Collapse') colorStatus = 'C';
 
-            // Update Color based on status
             dot.classList.remove('status-D', 'status-W', 'status-C', 'border-gray-500'); 
-            dot.classList.add('bg-white', 'border-gray-400'); // Default
+            dot.classList.add('bg-white', 'border-gray-400');
 
             if (colorStatus === 'D') dot.classList.add('status-D', 'border-gray-500');
             else if (colorStatus === 'W') dot.classList.add('status-W', 'border-gray-500');
             else if (colorStatus === 'C') dot.classList.add('status-C', 'border-gray-500');
 
-            // Update Depth Label
             if (depth && status) {
                 depthLabel.textContent = depth;
                 dot.classList.remove('text-gray-700');
@@ -587,7 +652,6 @@
                 dot.classList.add('text-gray-700');
             }
             
-            // Update Tooltip
             dot.title = `Kedalaman: ${depth || 'Belum Diisi'}, Kondisi: ${status || 'Belum Diisi'}`;
         }
 
@@ -597,6 +661,7 @@
             
             // Update UI for general info inputs
             document.getElementById('pit').value = data.pit || 'Tempudo 2';
+            document.getElementById('shift').value = data.shift || '';
             document.getElementById('lokasi').value = data.lokasi || ''; 
             document.getElementById('tanggal').value = data.tanggal || '';
             document.getElementById('planHole').value = data.planHole || '';
@@ -609,8 +674,6 @@
             // Update UI for TTD
             if (data.signatureBase64 && signaturePad && signaturePad.isEmpty()) {
                 signaturePad.fromDataURL(data.signatureBase64);
-            } else if (signaturePad) {
-                 // Clear signature if loaded data is empty but pad is not, or just ensure it is clear initially
             }
 
             // Update Hole Grid UI
@@ -619,53 +682,27 @@
                     updateHoleDotUI(`${row}-${col}`);
                 }
             });
-            showNotification("Data formulir berhasil dimuat.");
         }
 
         // --- Firestore Data Management ---
-
         function getDataPath(docId) {
-             // Pastikan db ada sebelum memanggil fungsi ini
-             return `artifacts/${appId}/users/${userId}/drill_blast_reports/${docId}`;
+            const sessionDocId = currentSessionId || 'current_report';
+            return `artifacts/${appId}/users/${userId}/drill_blast_reports/${sessionDocId}`;
         }
 
-        function startDataListener() {
+        async function saveSessionData() {
             if (!db || !userId) return;
-
-            const docRef = doc(db, getDataPath('current_report'));
-            
-            onSnapshot(docRef, (docSnap) => {
-                if (docSnap.exists()) {
-                    loadHoleData(docSnap.data());
-                } else {
-                    // Reset fields if no data exists
-                    if(signaturePad) signaturePad.clear();
-                    // Keep the current input values if no data from Firestore
-                }
-            }, (error) => {
-                console.error("Error listening to data:", error);
-                // Note: No notification here to prevent spamming on console logs
-            });
-        }
-
-        window.saveData = async function() {
-            if (!db || !userId) {
-                showNotification("Aplikasi belum siap. Tunggu otentikasi selesai.", true);
-                return;
-            }
 
             let signatureBase64 = '';
             if (signaturePad && !signaturePad.isEmpty()) {
                 signatureBase64 = signaturePad.toDataURL();
-            } else {
-                showNotification("Tanda tangan pemeriksa belum diisi.", true);
-                return;
             }
             
             try {
                 const docRef = doc(db, getDataPath('current_report'));
                 await setDoc(docRef, {
                     pit: document.getElementById('pit').value,
+                    shift: document.getElementById('shift').value,
                     lokasi: document.getElementById('lokasi').value,
                     tanggal: document.getElementById('tanggal').value,
                     planHole: document.getElementById('planHole').value,
@@ -677,17 +714,36 @@
                     holeData: holeData,
                     signatureBase64: signatureBase64,
                     timestamp: serverTimestamp(),
-                    userId: userId
+                    userId: userId,
+                    sessionId: currentSessionId
                 });
-                showNotification("Data Laporan berhasil disimpan!");
+                console.log("Data session tersimpan");
             } catch (error) {
-                console.error("Error saving document:", error);
-                showNotification(`Kesalahan saat menyimpan data: ${error.message}`, true);
+                console.error("Error saving session:", error);
             }
+        }
+
+        function startDataListener() {
+            if (!db || !userId) return;
+
+            const docRef = doc(db, getDataPath('current_report'));
+            
+            onSnapshot(docRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    loadHoleData(docSnap.data());
+                    showNotification("Data formulir berhasil dimuat.");
+                }
+            }, (error) => {
+                console.error("Error listening to data:", error);
+            });
+        }
+
+        window.saveData = async function() {
+            await saveSessionData();
+            showNotification("Data Laporan berhasil disimpan!");
         }
         
         // --- Report Generation Logic ---
-
         function getJadwal(pit) {
             if (pit === 'Tempudo 4') {
                 return '12:00-13:00 WITA';
@@ -697,9 +753,9 @@
             return 'Jadwal Tidak Diketahui';
         }
 
-        // Menghitung ringkasan data dan memperbarui tampilan ringkasan HTML
         function generateReportSummary() {
             const pit = document.getElementById('pit').value;
+            const shift = document.getElementById('shift').value;
             const lokasi = document.getElementById('lokasi').value;
             const planHole = parseFloat(document.getElementById('planHole').value) || 0;
             const burden = document.getElementById('burden').value;
@@ -709,12 +765,10 @@
             const namaCrew = document.getElementById('namaCrew').value;
             const namaGL = document.getElementById('namaGL').value;
 
-            // Validasi Data Input Umum
-            if (!pit || !lokasi || planHole === 0 || !burden || !spasi || !unitDrilling || !tanggal || !namaCrew || !namaGL) {
+            if (!pit || !shift || !lokasi || planHole === 0 || !burden || !spasi || !unitDrilling || !tanggal || !namaCrew || !namaGL) {
                  return false; 
             }
 
-            // 1. Calculations
             const filledHoles = Object.values(holeData).filter(d => d.status);
             const actualHoles = filledHoles.length;
             
@@ -728,10 +782,9 @@
             const dryCount = filledHoles.filter(d => d.status === 'Kering').length;
             const dryPercentage = actualHoles > 0 ? ((dryCount / actualHoles) * 100).toFixed(0) : '0';
 
-            // 2. Format Text Output (for Copy-Paste)
             const jadwal = getJadwal(pit);
             const copyText = `
-${pit}
+${pit} - ${shift}
 ⏰ JADWAL PELAKSANAAN PELEDAKAN : ${jadwal}
 
 ${lokasi}
@@ -744,8 +797,9 @@ Diameter : 171 mm
 Unit : ${unitDrilling}
             `.trim();
 
-            // 3. Update Print/PDF Content
+            // Update Print/PDF Content
             document.getElementById('report_tanggal').textContent = tanggal;
+            document.getElementById('report_shift').textContent = shift;
             document.getElementById('report_pit').textContent = pit;
             document.getElementById('report_lokasi').textContent = lokasi;
             document.getElementById('report_planHole').textContent = planHole;
@@ -755,15 +809,13 @@ Unit : ${unitDrilling}
             
             document.getElementById('report_summary_text').textContent = copyText;
 
-            // Signature Image
             const signatureBase64 = signaturePad && !signaturePad.isEmpty() ? signaturePad.toDataURL() : '';
             document.getElementById('report_signature_img').src = signatureBase64 || '';
             
-            // 4. Display Copy-Paste Output (Screen Only)
             document.getElementById('copyOutputText').value = copyText;
             document.getElementById('copyOutputContainer').classList.remove('hidden');
 
-            return { pit, lokasi, tanggal, copyText };
+            return { pit, shift, lokasi, tanggal, copyText };
         }
 
         // --- Export to Excel Function ---
@@ -774,35 +826,22 @@ Unit : ${unitDrilling}
             }
 
             try {
-                // Prepare data for Excel
-                const excelData = [];
+                const excelData = [['ID HOLE', 'DEPTH HOLE (m)', 'HOLE CONDITION']];
                 
-                // Add headers
-                excelData.push(['ID HOLE', 'DEPTH HOLE (m)', 'HOLE CONDITION']);
-                
-                // Add data rows
                 HOLE_ROWS.forEach(row => {
                     for (let col = 1; col <= MAX_COLUMNS; col++) {
                         const holeId = `${row}-${col}`;
                         const data = holeData[holeId];
                         if (data && data.status) {
-                            excelData.push([
-                                holeId,
-                                data.depth || '',
-                                data.status || ''
-                            ]);
+                            excelData.push([holeId, data.depth || '', data.status || '']);
                         }
                     }
                 });
 
-                // Create worksheet
                 const ws = XLSX.utils.aoa_to_sheet(excelData);
-                
-                // Create workbook
                 const wb = XLSX.utils.book_new();
                 XLSX.utils.book_append_sheet(wb, ws, "Hole Data");
                 
-                // Generate Excel file
                 const fileName = `Sounding_Data_${document.getElementById('lokasi').value || 'Report'}_${document.getElementById('tanggal').value || new Date().toISOString().split('T')[0]}.xlsx`;
                 XLSX.writeFile(wb, fileName);
                 
@@ -814,7 +853,7 @@ Unit : ${unitDrilling}
             }
         }
 
-        // --- Improved PDF Generation for Mobile ---
+        // --- Fixed PDF Generation ---
         window.generateReportAndDownloadPDF = async function() {
             const data = generateReportSummary();
 
@@ -825,52 +864,37 @@ Unit : ${unitDrilling}
             
             showNotification("Sedang memproses PDF, mohon tunggu...");
 
-            // 1. Dapatkan Elemen Konten yang akan di-PDF-kan
-            const input = document.getElementById('pdfCaptureArea');
-            const { jsPDF } = window.jspdf;
-            
             try {
-                // Optimasi untuk mobile - gunakan scale yang lebih kecil
-                const scale = window.innerWidth < 768 ? 1.5 : 3;
+                const input = document.getElementById('pdfCaptureArea');
+                const { jsPDF } = window.jspdf;
+
+                // Use a fixed scale that works for both mobile and desktop
+                const scale = 2;
                 
                 const canvas = await html2canvas(input, {
                     scale: scale,
                     useCORS: true,
                     backgroundColor: '#ffffff',
                     scrollX: 0,
-                    scrollY: 0,
-                    windowWidth: document.documentElement.scrollWidth,
-                    windowHeight: document.documentElement.scrollHeight
+                    scrollY: -window.scrollY
                 });
 
                 const imgData = canvas.toDataURL('image/jpeg', 0.8);
+                
+                // Create PDF
+                const doc = new jsPDF({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: 'a4'
+                });
+
                 const pdfWidth = doc.internal.pageSize.getWidth();
                 const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
 
-                // Create PDF dengan orientasi landscape jika konten terlalu lebar
-                const doc = pdfHeight > pdfWidth * 2 ? 
-                    new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' }) :
-                    new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+                // Add image to PDF
+                doc.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
 
-                // Hitung ulang dimensions untuk PDF yang baru
-                const finalPdfWidth = doc.internal.pageSize.getWidth();
-                const finalPdfHeight = (canvas.height * finalPdfWidth) / canvas.width;
-
-                // Jika masih terlalu tinggi, scale down
-                const pageHeight = doc.internal.pageSize.getHeight();
-                let adjustedPdfHeight = finalPdfHeight;
-                let adjustedPdfWidth = finalPdfWidth;
-
-                if (finalPdfHeight > pageHeight) {
-                    const scaleFactor = pageHeight / finalPdfHeight;
-                    adjustedPdfHeight = pageHeight - 10; // Beri margin
-                    adjustedPdfWidth = finalPdfWidth * scaleFactor;
-                }
-
-                // Tambahkan gambar ke PDF
-                doc.addImage(imgData, 'JPEG', 0, 0, adjustedPdfWidth, adjustedPdfHeight);
-
-                // 4. Unduh File
+                // Download the PDF
                 doc.save(`Sounding_Report_${data.lokasi}_${data.tanggal}.pdf`);
                 
                 showNotification("PDF berhasil dibuat dan diunduh!", false);
@@ -883,10 +907,8 @@ Unit : ${unitDrilling}
 
         // --- App Initialization ---
         function initApp() {
-            // 1. Generate the static grid structure
             generateDrillGrid();
 
-            // 2. Initialize Signature Pad
             const canvas = document.getElementById('signatureCanvas');
             if (canvas) {
                 const ratio = Math.max(window.devicePixelRatio || 1, 1);
@@ -898,6 +920,12 @@ Unit : ${unitDrilling}
                     backgroundColor: 'rgb(255, 255, 255)' 
                 });
             }
+
+            // Auto-save ketika ada perubahan di form
+            const formInputs = document.querySelectorAll('#generalInfoInputs input, #generalInfoInputs select');
+            formInputs.forEach(input => {
+                input.addEventListener('change', saveSessionData);
+            });
         }
 
         // Start the whole process

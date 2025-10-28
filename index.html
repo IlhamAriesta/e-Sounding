@@ -132,6 +132,9 @@
             justify-content: center;
             font-size: 0.7rem;
             line-height: 1;
+            width: 28px;
+            height: 28px;
+            font-weight: 600;
         }
         .hole-dot:hover {
             transform: scale(1.2);
@@ -265,8 +268,8 @@
             position: absolute;
             width: 40px;
             height: 40px;
-            background-color: #3b82f6;
-            color: white;
+            background-color: #e2e8f0;
+            color: #64748b;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -274,18 +277,25 @@
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             z-index: 5;
+            font-size: 0;
         }
         
         .compass-direction:hover {
             transform: scale(1.1);
-            background-color: #2563eb;
+            background-color: #cbd5e1;
         }
         
         .compass-direction.active {
-            background-color: #1d4ed8;
+            background-color: #3b82f6;
+            color: white;
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+            font-size: 1rem;
+        }
+        
+        .compass-direction.active::after {
+            content: "U";
         }
         
         .compass-direction.north {
@@ -323,6 +333,110 @@
             border: 1px solid #dbeafe;
         }
 
+        /* Kompas untuk PDF */
+        .pdf-compass-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 1rem 0;
+        }
+        
+        .pdf-compass-wrapper {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto;
+        }
+        
+        .pdf-compass-base {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px;
+            height: 80px;
+            background-color: #f1f5f9;
+            border: 2px solid #cbd5e1;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .pdf-compass-center {
+            width: 12px;
+            height: 12px;
+            background-color: #3b82f6;
+            border-radius: 50%;
+            z-index: 10;
+        }
+        
+        .pdf-compass-axis {
+            position: absolute;
+            background-color: #64748b;
+            border-radius: 1px;
+        }
+        
+        .pdf-compass-axis-horizontal {
+            width: 100px;
+            height: 2px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .pdf-compass-axis-vertical {
+            width: 2px;
+            height: 100px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .pdf-compass-direction {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            background-color: #e2e8f0;
+            color: #64748b;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.7rem;
+            z-index: 5;
+        }
+        
+        .pdf-compass-direction.active {
+            background-color: #3b82f6;
+            color: white;
+        }
+        
+        .pdf-compass-direction.north {
+            top: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .pdf-compass-direction.east {
+            top: 50%;
+            right: 5px;
+            transform: translateY(-50%);
+        }
+        
+        .pdf-compass-direction.south {
+            bottom: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .pdf-compass-direction.west {
+            top: 50%;
+            left: 5px;
+            transform: translateY(-50%);
+        }
+
         @media (max-width: 768px) {
             .container-card {
                 margin: 1rem;
@@ -356,7 +470,6 @@
             .compass-direction {
                 width: 36px;
                 height: 36px;
-                font-size: 0.9rem;
             }
         }
     </style>
@@ -416,11 +529,11 @@
                         <div class="compass-center"></div>
                     </div>
                     
-                    <!-- Arah-arah mata angin -->
-                    <div class="compass-direction north" data-direction="utara">U</div>
-                    <div class="compass-direction east" data-direction="timur">T</div>
-                    <div class="compass-direction south" data-direction="selatan">S</div>
-                    <div class="compass-direction west" data-direction="barat">B</div>
+                    <!-- Arah-arah mata angin (kosong, akan muncul U saat dipilih) -->
+                    <div class="compass-direction north" data-direction="utara"></div>
+                    <div class="compass-direction east" data-direction="timur"></div>
+                    <div class="compass-direction south" data-direction="selatan"></div>
+                    <div class="compass-direction west" data-direction="barat"></div>
                 </div>
                 
                 <div class="compass-display">
@@ -473,6 +586,21 @@
                 <div><span class="font-semibold">Arah Utara:</span> <span id="report_north_direction" class="font-medium"></span></div>
             </div>
 
+            <!-- Kompas untuk PDF -->
+            <div id="pdfCompassContainer" class="pdf-compass-container">
+                <div class="text-sm font-semibold mb-2">Diagram Arah Utara:</div>
+                <div class="pdf-compass-wrapper">
+                    <div class="pdf-compass-axis pdf-compass-axis-horizontal"></div>
+                    <div class="pdf-compass-axis pdf-compass-axis-vertical"></div>
+                    <div class="pdf-compass-base">
+                        <div class="pdf-compass-center"></div>
+                    </div>
+                    <div class="pdf-compass-direction north" id="pdfNorth">U</div>
+                    <div class="pdf-compass-direction east" id="pdfEast"></div>
+                    <div class="pdf-compass-direction south" id="pdfSouth"></div>
+                    <div class="pdf-compass-direction west" id="pdfWest"></div>
+                </div>
+            </div>
 
             <!-- Section Grid Pemeriksaan Lubang -->
             <div class="overflow-x-auto mb-8">
@@ -641,12 +769,42 @@
                     // Update tampilan
                     document.getElementById('currentNorthDirection').textContent = currentNorthDirection.toUpperCase();
                     
+                    // Update kompas di PDF
+                    updatePdfCompass();
+                    
                     // Simpan ke session data
                     saveSessionData();
                     
                     showNotification(`Arah Utara diatur ke: ${currentNorthDirection.toUpperCase()}`);
                 });
             });
+        }
+
+        function updatePdfCompass() {
+            // Reset semua arah di PDF kompas
+            document.getElementById('pdfNorth').textContent = '';
+            document.getElementById('pdfNorth').classList.remove('active');
+            document.getElementById('pdfEast').textContent = '';
+            document.getElementById('pdfEast').classList.remove('active');
+            document.getElementById('pdfSouth').textContent = '';
+            document.getElementById('pdfSouth').classList.remove('active');
+            document.getElementById('pdfWest').textContent = '';
+            document.getElementById('pdfWest').classList.remove('active');
+            
+            // Set arah yang dipilih menjadi U
+            if (currentNorthDirection === 'utara') {
+                document.getElementById('pdfNorth').textContent = 'U';
+                document.getElementById('pdfNorth').classList.add('active');
+            } else if (currentNorthDirection === 'timur') {
+                document.getElementById('pdfEast').textContent = 'U';
+                document.getElementById('pdfEast').classList.add('active');
+            } else if (currentNorthDirection === 'selatan') {
+                document.getElementById('pdfSouth').textContent = 'U';
+                document.getElementById('pdfSouth').classList.add('active');
+            } else if (currentNorthDirection === 'barat') {
+                document.getElementById('pdfWest').textContent = 'U';
+                document.getElementById('pdfWest').classList.add('active');
+            }
         }
 
         // --- Share Link Functions ---
@@ -772,7 +930,7 @@
                                       class="hole-dot w-6 h-6 rounded-full border-2 border-gray-400 bg-white cursor-pointer text-white" 
                                       data-hole-id="${holeId}"
                                       onclick="openHoleModal('${holeId}', event)">
-                                    <span id="depth-label-${holeId}"></span>
+                                    <span id="depth-label-${holeId}" class="font-semibold"></span>
                                 </span>
                             </div>
                         </div>`;
@@ -882,6 +1040,9 @@
                         direction.classList.add('active');
                     }
                 });
+                
+                // Update kompas di PDF
+                updatePdfCompass();
             }
 
             document.getElementById('pit').value = data.pit || 'Tempudo 2';
@@ -1125,6 +1286,16 @@ Arah Utara : ${currentNorthDirection ? currentNorthDirection.toUpperCase() : 'BE
                             pdfArea.style.maxWidth = '100%';
                             pdfArea.style.overflow = 'hidden';
                         }
+                        
+                        // Perbaiki font di dalam lubang untuk PDF
+                        const holeDots = clonedDoc.querySelectorAll('.hole-dot');
+                        holeDots.forEach(dot => {
+                            dot.style.fontWeight = '600';
+                            dot.style.fontSize = '0.6rem';
+                            dot.style.display = 'flex';
+                            dot.style.alignItems = 'center';
+                            dot.style.justifyContent = 'center';
+                        });
                     }
                 });
 

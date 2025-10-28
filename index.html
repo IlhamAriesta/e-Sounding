@@ -21,7 +21,7 @@
             background-color: #f4f7f9;
         }
         .container-card {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 2rem auto;
             padding: 2rem;
             background-color: white;
@@ -56,15 +56,16 @@
         /* --- STAGGERED GRID STYLES --- */
         .drill-grid-area {
             display: grid;
-            grid-template-columns: 60px repeat(23, minmax(35px, 1fr)); 
+            grid-template-columns: 50px repeat(30, minmax(25px, 1fr)); 
             border-top: 1px solid #e5e7eb;
             overflow-x: auto;
             min-width: 100%;
             background-color: white;
+            font-size: 0.55rem;
         }
         
         .grid-header-cell {
-            padding: 0.5rem 0.25rem;
+            padding: 0.4rem 0.2rem;
             text-align: center;
             background-color: #f1f5f9;
             font-weight: 600;
@@ -73,7 +74,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.65rem;
+            font-size: 0.6rem;
         }
         .grid-header-cell:first-child {
             position: sticky;
@@ -82,7 +83,7 @@
         }
 
         .grid-row-header {
-            padding: 0.5rem 0.25rem;
+            padding: 0.4rem 0.2rem;
             text-align: center;
             font-weight: 700;
             background-color: #e2e8f0;
@@ -94,7 +95,7 @@
             position: sticky;
             left: 0;
             z-index: 20; 
-            font-size: 0.75rem;
+            font-size: 0.65rem;
         }
 
         .hole-cell {
@@ -102,8 +103,8 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 4px 0;
-            height: 60px; 
+            padding: 2px 0;
+            height: 45px; 
             border-bottom: 1px solid #f3f4f6;
             position: relative; 
         }
@@ -119,8 +120,12 @@
         [data-row-index="1"] .staggered-row-content,
         [data-row-index="3"] .staggered-row-content,
         [data-row-index="5"] .staggered-row-content,
-        [data-row-index="7"] .staggered-row-content {
-            transform: translateX(17px); 
+        [data-row-index="7"] .staggered-row-content,
+        [data-row-index="9"] .staggered-row-content,
+        [data-row-index="11"] .staggered-row-content,
+        [data-row-index="13"] .staggered-row-content,
+        [data-row-index="15"] .staggered-row-content {
+            transform: translateX(12px); 
         }
         
         .hole-dot {
@@ -130,11 +135,11 @@
             display: flex; 
             align-items: center;
             justify-content: center;
-            font-size: 0.7rem;
+            font-size: 0.55rem;
             line-height: 1;
-            width: 28px;
-            height: 28px;
-            font-weight: 600;
+            width: 22px;
+            height: 22px;
+            font-weight: 700;
         }
         .hole-dot:hover {
             transform: scale(1.2);
@@ -173,10 +178,39 @@
 
         #pdfCaptureArea {
              background-color: white;
-             padding: 10px;
+             padding: 8px;
              width: 100%;
              max-width: 100%;
              overflow: hidden;
+        }
+
+        /* PDF-specific styles */
+        .pdf-optimized {
+            width: 100% !important;
+            max-width: 100% !important;
+            overflow: hidden !important;
+        }
+        
+        .pdf-drill-grid {
+            grid-template-columns: 40px repeat(30, minmax(20px, 1fr)) !important;
+            font-size: 0.5rem !important;
+        }
+        
+        .pdf-hole-dot {
+            width: 18px !important;
+            height: 18px !important;
+            font-size: 0.45rem !important;
+            font-weight: 700 !important;
+        }
+
+        .pdf-grid-header-cell {
+            padding: 0.3rem 0.1rem !important;
+            font-size: 0.55rem !important;
+        }
+        
+        .pdf-grid-row-header {
+            padding: 0.3rem 0.1rem !important;
+            font-size: 0.6rem !important;
         }
 
         .share-link-container {
@@ -439,19 +473,20 @@
 
         @media (max-width: 768px) {
             .container-card {
-                margin: 1rem;
+                margin: 0.5rem;
                 padding: 1rem;
             }
             .drill-grid-area {
-                grid-template-columns: 50px repeat(23, minmax(30px, 1fr));
+                grid-template-columns: 45px repeat(30, minmax(22px, 1fr));
+                font-size: 0.5rem;
             }
             .grid-header-cell, .grid-row-header {
-                font-size: 0.6rem;
+                font-size: 0.55rem;
             }
             .hole-dot {
-                width: 24px;
-                height: 24px;
-                font-size: 0.6rem;
+                width: 20px;
+                height: 20px;
+                font-size: 0.5rem;
             }
             .compass-wrapper {
                 width: 180px;
@@ -566,16 +601,16 @@
 
 
         <!-- Container Khusus untuk Konten yang akan Di-Capture ke PDF -->
-        <div id="pdfCaptureArea" class="bg-white">
+        <div id="pdfCaptureArea" class="bg-white pdf-optimized">
 
             <!-- Title yang muncul di PDF -->
-             <div class="text-center mb-6">
-                <h1 class="text-xl font-bold mb-1 text-gray-800">PT. KALIMANTAN PRIMA PERSADA - DISTRIK INDE</h1>
-                <h2 class="text-lg font-semibold text-gray-700">PEMERIKSAAN KONDISI & KEDALAMAN LUBANG TEMBAK</h2>
+             <div class="text-center mb-4">
+                <h1 class="text-lg font-bold mb-1 text-gray-800">PT. KALIMANTAN PRIMA PERSADA - DISTRIK INDE</h1>
+                <h2 class="text-md font-semibold text-gray-700">PEMERIKSAAN KONDISI & KEDALAMAN LUBANG TEMBAK</h2>
             </div>
 
             <!-- Ringkasan Data Umum (Untuk PDF) -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4 text-sm p-3 border border-gray-300 rounded-lg">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-1 mb-3 text-xs p-2 border border-gray-300 rounded-lg">
                 <div><span class="font-semibold">Tanggal:</span> <span id="report_tanggal" class="font-medium"></span></div>
                 <div><span class="font-semibold">Shift:</span> <span id="report_shift" class="font-medium"></span></div>
                 <div><span class="font-semibold">PIT:</span> <span id="report_pit" class="font-medium"></span></div>
@@ -588,7 +623,7 @@
 
             <!-- Kompas untuk PDF -->
             <div id="pdfCompassContainer" class="pdf-compass-container">
-                <div class="text-sm font-semibold mb-2">Diagram Arah Utara:</div>
+                <div class="text-xs font-semibold mb-1">Diagram Arah Utara:</div>
                 <div class="pdf-compass-wrapper">
                     <div class="pdf-compass-axis pdf-compass-axis-horizontal"></div>
                     <div class="pdf-compass-axis pdf-compass-axis-vertical"></div>
@@ -603,20 +638,20 @@
             </div>
 
             <!-- Section Grid Pemeriksaan Lubang -->
-            <div class="overflow-x-auto mb-8">
-                <h3 class="text-lg font-bold mb-2 text-gray-700">Visualisasi Kondisi Lubang (Staggered Pattern)</h3>
-                <div id="drillGrid" class="drill-grid-area bg-white rounded-lg border border-gray-300">
+            <div class="overflow-x-auto mb-6">
+                <h3 class="text-md font-bold mb-1 text-gray-700">Visualisasi Kondisi Lubang (Staggered Pattern)</h3>
+                <div id="drillGrid" class="drill-grid-area bg-white rounded-lg border border-gray-300 pdf-drill-grid">
                     <!-- Grid akan di-generate di sini oleh JavaScript -->
                 </div>
             </div>
 
             <!-- Section Keterangan Ringkas & TTD -->
-            <div class="mt-8 flex justify-between gap-6 border-t pt-4">
+            <div class="mt-6 flex justify-between gap-4 border-t pt-3">
                 
                 <!-- Keterangan Status -->
                 <div class="w-1/3">
-                    <h4 class="font-semibold mb-2 text-gray-700">Keterangan Status:</h4>
-                    <ul class="text-sm space-y-1">
+                    <h4 class="font-semibold mb-1 text-gray-700 text-sm">Keterangan Status:</h4>
+                    <ul class="text-xs space-y-1">
                         <li class="flex items-center"><span class="hole-dot w-3 h-3 rounded-full status-D mr-2"></span> D: KERING (Ideal)</li>
                         <li class="flex items-center"><span class="hole-dot w-3 h-3 rounded-full status-W mr-2"></span> W: BASAH (Ada Air)</li>
                         <li class="flex items-center"><span class="hole-dot w-3 h-3 rounded-full status-C mr-2"></span> C: COLLAPSE</li> 
@@ -625,16 +660,16 @@
 
                 <!-- Tanda Tangan Area -->
                 <div class="w-1/3 text-center">
-                    <h3 class="font-semibold mb-2 text-gray-700">Tanda Tangan Pemeriksa:</h3>
-                    <img id="report_signature_img" class="w-full max-w-[150px] h-20 mx-auto border border-gray-400 bg-gray-100" alt="Tanda Tangan Pemeriksa">
-                    <p class="mt-1 text-sm font-medium" id="report_crew_name">(Nama Crew)</p>
+                    <h3 class="font-semibold mb-1 text-gray-700 text-sm">Tanda Tangan Pemeriksa:</h3>
+                    <img id="report_signature_img" class="w-full max-w-[120px] h-16 mx-auto border border-gray-400 bg-gray-100" alt="Tanda Tangan Pemeriksa">
+                    <p class="mt-1 text-xs font-medium" id="report_crew_name">(Nama Crew)</p>
                 </div>
             </div>
 
             <!-- Ringkasan Data Copas (Hanya untuk screen, tidak untuk PDF) -->
             <div class="screen-only">
-                <h3 class="text-md font-bold my-3 text-gray-800 border-t pt-4">Ringkasan Data untuk Mining Dispatch:</h3>
-                <pre id="report_summary_text" class="whitespace-pre-wrap p-3 bg-gray-100 border rounded text-sm font-mono"></pre>
+                <h3 class="text-sm font-bold my-2 text-gray-800 border-t pt-3">Ringkasan Data untuk Mining Dispatch:</h3>
+                <pre id="report_summary_text" class="whitespace-pre-wrap p-2 bg-gray-100 border rounded text-xs font-mono"></pre>
             </div>
 
         </div> 
@@ -725,7 +760,12 @@
         let signaturePad; 
         let currentHoleId = null; 
         let currentSessionId = null;
-        let currentNorthDirection = null; // Menyimpan arah utara yang dipilih
+        let currentNorthDirection = null;
+
+        // --- Hole Grid Configuration ---
+        const HOLE_ROWS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O'];
+        const MAX_COLUMNS = 30;
+        let holeData = {};
 
         // --- Utility Functions ---
         function showNotification(message, isError = false) {
@@ -757,31 +797,18 @@
             
             compassDirections.forEach(direction => {
                 direction.addEventListener('click', function() {
-                    // Hapus kelas active dari semua arah
                     compassDirections.forEach(dir => dir.classList.remove('active'));
-                    
-                    // Tambahkan kelas active ke arah yang dipilih
                     this.classList.add('active');
-                    
-                    // Set arah utara yang dipilih
                     currentNorthDirection = this.getAttribute('data-direction');
-                    
-                    // Update tampilan
                     document.getElementById('currentNorthDirection').textContent = currentNorthDirection.toUpperCase();
-                    
-                    // Update kompas di PDF
                     updatePdfCompass();
-                    
-                    // Simpan ke session data
                     saveSessionData();
-                    
                     showNotification(`Arah Utara diatur ke: ${currentNorthDirection.toUpperCase()}`);
                 });
             });
         }
 
         function updatePdfCompass() {
-            // Reset semua arah di PDF kompas
             document.getElementById('pdfNorth').textContent = '';
             document.getElementById('pdfNorth').classList.remove('active');
             document.getElementById('pdfEast').textContent = '';
@@ -791,7 +818,6 @@
             document.getElementById('pdfWest').textContent = '';
             document.getElementById('pdfWest').classList.remove('active');
             
-            // Set arah yang dipilih menjadi U
             if (currentNorthDirection === 'utara') {
                 document.getElementById('pdfNorth').textContent = 'U';
                 document.getElementById('pdfNorth').classList.add('active');
@@ -899,26 +925,22 @@
         }
 
         // --- Hole Grid and Data Functions ---
-        const HOLE_ROWS = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
-        const MAX_COLUMNS = 23;
-        let holeData = {}; 
-
         function generateDrillGrid() {
             const gridContainer = document.getElementById('drillGrid');
             let html = '';
 
-            // Header Row (Col numbers 1 to 23)
-            html += `<div class="grid-header-cell border-t-0">HOLE ID</div>`;
+            // Header Row (Col numbers 1 to 30)
+            html += `<div class="grid-header-cell border-t-0 pdf-grid-header-cell">HOLE ID</div>`;
             for (let i = 1; i <= MAX_COLUMNS; i++) {
-                html += `<div class="grid-header-cell border-t-0">${i}</div>`;
+                html += `<div class="grid-header-cell border-t-0 pdf-grid-header-cell">${i}</div>`;
             }
 
-            // Data Rows (A to G)
+            // Data Rows (A to O)
             HOLE_ROWS.forEach((holeName, index) => {
                 const rowIndex = index + 1;
                 
                 // Row Header (A, B, C...)
-                html += `<div class="grid-row-header" data-row-index="${rowIndex}">${holeName}</div>`;
+                html += `<div class="grid-row-header pdf-grid-row-header" data-row-index="${rowIndex}">${holeName}</div>`;
                 
                 // Hole Cells
                 for (let col = 1; col <= MAX_COLUMNS; col++) {
@@ -927,7 +949,7 @@
                         <div class="hole-cell" data-row-index="${rowIndex}">
                             <div class="staggered-row-content">
                                 <span id="dot-${holeId}" 
-                                      class="hole-dot w-6 h-6 rounded-full border-2 border-gray-400 bg-white cursor-pointer text-white" 
+                                      class="hole-dot pdf-hole-dot rounded-full border-2 border-gray-400 bg-white cursor-pointer text-white" 
                                       data-hole-id="${holeId}"
                                       onclick="openHoleModal('${holeId}', event)">
                                     <span id="depth-label-${holeId}" class="font-semibold"></span>
@@ -1029,19 +1051,14 @@
             holeData = data.holeData || {};
             currentNorthDirection = data.northDirection || null;
             
-            // Update arah utara jika ada
             if (currentNorthDirection) {
                 document.getElementById('currentNorthDirection').textContent = currentNorthDirection.toUpperCase();
-                
-                // Set active class pada arah yang sesuai
                 const compassDirections = document.querySelectorAll('.compass-direction');
                 compassDirections.forEach(direction => {
                     if (direction.getAttribute('data-direction') === currentNorthDirection) {
                         direction.classList.add('active');
                     }
                 });
-                
-                // Update kompas di PDF
                 updatePdfCompass();
             }
 
@@ -1268,7 +1285,7 @@ Arah Utara : ${currentNorthDirection ? currentNorthDirection.toUpperCase() : 'BE
                 });
 
                 // Optimasi untuk mobile: kurangi skala
-                const scale = window.innerWidth < 768 ? 1.2 : 1.5;
+                const scale = window.innerWidth < 768 ? 0.8 : 1.0;
                 
                 const canvas = await html2canvas(input, {
                     scale: scale,
@@ -1290,8 +1307,8 @@ Arah Utara : ${currentNorthDirection ? currentNorthDirection.toUpperCase() : 'BE
                         // Perbaiki font di dalam lubang untuk PDF
                         const holeDots = clonedDoc.querySelectorAll('.hole-dot');
                         holeDots.forEach(dot => {
-                            dot.style.fontWeight = '600';
-                            dot.style.fontSize = '0.6rem';
+                            dot.style.fontWeight = '700';
+                            dot.style.fontSize = '0.45rem';
                             dot.style.display = 'flex';
                             dot.style.alignItems = 'center';
                             dot.style.justifyContent = 'center';

@@ -189,7 +189,7 @@
             display: block;
         }
 
-        /* Arah Mata Angin Styles */
+        /* Kompas Arah Mata Angin Styles */
         .compass-container {
             display: flex;
             flex-direction: column;
@@ -203,41 +203,124 @@
         
         .compass-title {
             font-weight: 600;
-            margin-bottom: 0.5rem;
+            margin-bottom: 1rem;
             color: #1e293b;
+            text-align: center;
         }
         
-        .compass-options {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-            justify-content: center;
+        .compass-wrapper {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 0 auto;
         }
         
-        .compass-option {
-            padding: 0.5rem 1rem;
-            background-color: #e2e8f0;
+        .compass-base {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120px;
+            height: 120px;
+            background-color: #f1f5f9;
             border: 2px solid #cbd5e1;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-weight: 500;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
         
-        .compass-option:hover {
-            background-color: #cbd5e1;
+        .compass-center {
+            width: 20px;
+            height: 20px;
+            background-color: #3b82f6;
+            border-radius: 50%;
+            z-index: 10;
         }
         
-        .compass-option.active {
+        .compass-axis {
+            position: absolute;
+            background-color: #64748b;
+            border-radius: 2px;
+        }
+        
+        .compass-axis-horizontal {
+            width: 160px;
+            height: 4px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .compass-axis-vertical {
+            width: 4px;
+            height: 160px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .compass-direction {
+            position: absolute;
+            width: 40px;
+            height: 40px;
             background-color: #3b82f6;
             color: white;
-            border-color: #2563eb;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            z-index: 5;
+        }
+        
+        .compass-direction:hover {
+            transform: scale(1.1);
+            background-color: #2563eb;
+        }
+        
+        .compass-direction.active {
+            background-color: #1d4ed8;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+        }
+        
+        .compass-direction.north {
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .compass-direction.east {
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+        }
+        
+        .compass-direction.south {
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .compass-direction.west {
+            top: 50%;
+            left: 10px;
+            transform: translateY(-50%);
         }
         
         .compass-display {
             margin-top: 1rem;
             font-weight: 600;
             color: #1e40af;
+            text-align: center;
+            padding: 0.5rem 1rem;
+            background-color: #eff6ff;
+            border-radius: 6px;
+            border: 1px solid #dbeafe;
         }
 
         @media (max-width: 768px) {
@@ -256,11 +339,23 @@
                 height: 24px;
                 font-size: 0.6rem;
             }
-            .compass-options {
-                gap: 0.5rem;
+            .compass-wrapper {
+                width: 180px;
+                height: 180px;
             }
-            .compass-option {
-                padding: 0.4rem 0.8rem;
+            .compass-base {
+                width: 100px;
+                height: 100px;
+            }
+            .compass-axis-horizontal {
+                width: 140px;
+            }
+            .compass-axis-vertical {
+                height: 140px;
+            }
+            .compass-direction {
+                width: 36px;
+                height: 36px;
                 font-size: 0.9rem;
             }
         }
@@ -306,15 +401,28 @@
                 <div><label for="unitDrilling" class="form-label">Unit Drilling</label><input type="text" id="unitDrilling" class="input-field" placeholder="Unit"></div>
             </div>
 
-            <!-- Arah Mata Angin -->
+            <!-- Arah Mata Angin dengan Kompas -->
             <div class="compass-container screen-only">
-                <div class="compass-title">Pilih Arah Utara untuk Pengisian Lubang:</div>
-                <div class="compass-options">
-                    <div class="compass-option" data-direction="atas">ATAS</div>
-                    <div class="compass-option" data-direction="kanan">KANAN</div>
-                    <div class="compass-option" data-direction="bawah">BAWAH</div>
-                    <div class="compass-option" data-direction="kiri">KIRI</div>
+                <div class="compass-title">Pilih Arah Utara dengan mengklik salah satu arah pada kompas:</div>
+                
+                <div class="compass-wrapper">
+                    <!-- Garis horizontal -->
+                    <div class="compass-axis compass-axis-horizontal"></div>
+                    <!-- Garis vertikal -->
+                    <div class="compass-axis compass-axis-vertical"></div>
+                    
+                    <!-- Lingkaran tengah -->
+                    <div class="compass-base">
+                        <div class="compass-center"></div>
+                    </div>
+                    
+                    <!-- Arah-arah mata angin -->
+                    <div class="compass-direction north" data-direction="utara">U</div>
+                    <div class="compass-direction east" data-direction="timur">T</div>
+                    <div class="compass-direction south" data-direction="selatan">S</div>
+                    <div class="compass-direction west" data-direction="barat">B</div>
                 </div>
+                
                 <div class="compass-display">
                     Arah Utara Saat Ini: <span id="currentNorthDirection">BELUM DIPILIH</span>
                 </div>
@@ -517,14 +625,14 @@
 
         // --- Arah Mata Angin Functions ---
         function initCompassDirection() {
-            const compassOptions = document.querySelectorAll('.compass-option');
+            const compassDirections = document.querySelectorAll('.compass-direction');
             
-            compassOptions.forEach(option => {
-                option.addEventListener('click', function() {
-                    // Hapus kelas active dari semua opsi
-                    compassOptions.forEach(opt => opt.classList.remove('active'));
+            compassDirections.forEach(direction => {
+                direction.addEventListener('click', function() {
+                    // Hapus kelas active dari semua arah
+                    compassDirections.forEach(dir => dir.classList.remove('active'));
                     
-                    // Tambahkan kelas active ke opsi yang dipilih
+                    // Tambahkan kelas active ke arah yang dipilih
                     this.classList.add('active');
                     
                     // Set arah utara yang dipilih
@@ -767,11 +875,11 @@
             if (currentNorthDirection) {
                 document.getElementById('currentNorthDirection').textContent = currentNorthDirection.toUpperCase();
                 
-                // Set active class pada opsi yang sesuai
-                const compassOptions = document.querySelectorAll('.compass-option');
-                compassOptions.forEach(option => {
-                    if (option.getAttribute('data-direction') === currentNorthDirection) {
-                        option.classList.add('active');
+                // Set active class pada arah yang sesuai
+                const compassDirections = document.querySelectorAll('.compass-direction');
+                compassDirections.forEach(direction => {
+                    if (direction.getAttribute('data-direction') === currentNorthDirection) {
+                        direction.classList.add('active');
                     }
                 });
             }

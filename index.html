@@ -65,7 +65,7 @@
         /* --- STAGGERED GRID STYLES --- */
         .drill-grid-area {
             display: grid;
-            grid-template-columns: 50px repeat(30, minmax(25px, 1fr)); 
+            grid-template-columns: 60px repeat(30, minmax(25px, 1fr)); 
             border-top: 1px solid #e5e7eb;
             overflow-x: auto;
             min-width: 100%;
@@ -108,6 +108,23 @@
             left: 0;
             z-index: 20;
             font-size: 0.65rem;
+        }
+
+        .row-count-cell {
+            padding: 0.4rem 0.2rem;
+            text-align: center;
+            font-weight: 600;
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-right: 1px solid #e5e7eb;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: sticky;
+            left: 50px;
+            z-index: 15;
+            font-size: 0.6rem;
+            color: #92400e;
         }
 
         .hole-cell {
@@ -194,7 +211,7 @@
             to { opacity: 1; transform: scale(1) translateY(0); }
         }
 
-        /* Signature Pad Styles - IMPROVED */
+        /* Perbaikan Signature Pad Styles */
         .signature-container {
             position: relative;
             width: 100%;
@@ -204,16 +221,17 @@
             overflow: hidden;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
-        
+
         #signatureCanvas {
-            width: 100%;
-            height: 150px;
+            width: 100% !important;
+            height: 150px !important;
             display: block;
             cursor: crosshair;
             background: white;
             touch-action: none;
+            border: 1px solid #e5e7eb;
         }
-        
+
         .signature-clear-btn {
             position: absolute;
             top: 8px;
@@ -227,11 +245,11 @@
             cursor: pointer;
             z-index: 10;
         }
-        
+
         .signature-clear-btn:hover {
             background: rgba(220, 38, 38, 0.9);
         }
-        
+
         .signature-placeholder {
             position: absolute;
             top: 50%;
@@ -261,24 +279,50 @@
         }
         
         .pdf-drill-grid {
-            grid-template-columns: 40px repeat(30, minmax(20px, 1fr)) !important;
-            font-size: 0.5rem !important;
+            grid-template-columns: 45px 35px repeat(30, minmax(12px, 1fr)) !important;
+            font-size: 0.35rem !important;
         }
         
         .pdf-hole-dot {
-            width: 18px !important;
-            height: 18px !important;
-            font-size: 0.45rem !important;
+            width: 14px !important;
+            height: 14px !important;
+            font-size: 0.3rem !important;
             font-weight: 700 !important;
         }
 
         .pdf-grid-header-cell {
-            padding: 0.3rem 0.1rem !important;
-            font-size: 0.55rem !important;
+            padding: 0.2rem 0.1rem !important;
+            font-size: 0.4rem !important;
         }
         
         .pdf-grid-row-header {
-            padding: 0.3rem 0.1rem !important;
+            padding: 0.2rem 0.1rem !important;
+            font-size: 0.45rem !important;
+        }
+
+        .pdf-row-count-cell {
+            padding: 0.2rem 0.1rem !important;
+            font-size: 0.4rem !important;
+        }
+
+        /* Optimasi tambahan untuk PDF */
+        .pdf-optimized #pdfCaptureArea {
+            padding: 8px !important;
+        }
+
+        .pdf-optimized .text-lg {
+            font-size: 0.9rem !important;
+        }
+
+        .pdf-optimized .text-md {
+            font-size: 0.8rem !important;
+        }
+
+        .pdf-optimized .text-sm {
+            font-size: 0.7rem !important;
+        }
+
+        .pdf-optimized .text-xs {
             font-size: 0.6rem !important;
         }
 
@@ -611,6 +655,29 @@
             .pdf-only {
                 display: block !important;
             }
+        }
+
+        /* Tombol Generate */
+        .generate-btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            font-weight: bold;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3);
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.4);
+        }
+
+        .generate-btn:disabled {
+            background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
     </style>
 </head>
@@ -947,12 +1014,15 @@
 
             <!-- Section for Report Generation and Copying (Screen Only) -->
             <div class="mt-8 pt-6 border-t">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                     <button id="generatePdfBtn" class="w-full px-4 py-3 gold-gradient text-white font-bold rounded-lg hover:shadow-lg transition duration-200 shadow-md">
                         📄 DOWNLOAD PDF (LANDSCAPE)
                     </button>
                     <button id="exportExcelBtn2" class="w-full px-4 py-3 bg-gray-600 text-white font-bold rounded-lg hover:bg-gray-700 transition duration-200 shadow-md">
                         📊 EXPORT EXCEL
+                    </button>
+                    <button id="generateFinalReportBtn" class="w-full px-4 py-3 generate-btn transition duration-200 shadow-md">
+                        🚀 GENERATE & SIMPAN KE DATABASE
                     </button>
                 </div>
 
@@ -1167,6 +1237,9 @@
         // PDF Export
         document.getElementById('generatePdfBtn').addEventListener('click', generateReportAndDownloadPDF);
 
+        // Generate Final Report
+        document.getElementById('generateFinalReportBtn').addEventListener('click', generateFinalReport);
+
         // Copy to clipboard
         document.getElementById('copyToClipboardBtn').addEventListener('click', function() {
             copyToClipboard('copyOutputText');
@@ -1252,39 +1325,29 @@
         // Clear any existing signature pad
         if (signaturePad) {
             signaturePad.off();
+            signaturePad.clear();
             signaturePad = null;
         }
 
-        // Fix canvas scaling issues
+        // Set canvas size
         const container = canvas.parentElement;
         const rect = container.getBoundingClientRect();
         
-        // Set canvas size to match container
+        // Set canvas dimensions
         canvas.width = rect.width;
         canvas.height = 150;
         
-        // Get device pixel ratio
-        const ratio = Math.max(window.devicePixelRatio || 1, 1);
-        
-        // Set actual canvas buffer size
-        canvas.width = rect.width * ratio;
-        canvas.height = 150 * ratio;
-        
-        // Scale the context
-        const ctx = canvas.getContext('2d');
-        ctx.scale(ratio, ratio);
-        
-        // Set CSS size to match container
-        canvas.style.width = rect.width + 'px';
+        // Set CSS size
+        canvas.style.width = '100%';
         canvas.style.height = '150px';
 
-        // Initialize SignaturePad dengan konfigurasi yang lebih baik untuk freeform drawing
+        // Initialize SignaturePad dengan konfigurasi yang lebih baik
         signaturePad = new SignaturePad(canvas, {
             backgroundColor: 'rgb(255, 255, 255)',
-            minWidth: 0.5,   // Lebih tipis untuk detail yang lebih baik
-            maxWidth: 4,     // Lebih tebal untuk tekanan
+            minWidth: 1,
+            maxWidth: 3,
             penColor: 'rgb(0, 0, 0)',
-            throttle: 8,     // Lebih smooth
+            throttle: 5,
             velocityFilterWeight: 0.7,
             onBegin: function() {
                 placeholder.style.display = 'none';
@@ -1294,10 +1357,31 @@
             }
         });
 
-        // Enable signature pad
+        // Enable drawing
         signaturePad.on();
         
-        console.log("Signature pad initialized with freeform drawing");
+        console.log("Signature pad initialized successfully");
+        
+        // Load saved signature jika ada
+        setTimeout(() => {
+            const savedData = localStorage.getItem('soundingData');
+            if (savedData) {
+                try {
+                    const data = JSON.parse(savedData);
+                    if (data.signatureBase64) {
+                        const img = new Image();
+                        img.onload = function() {
+                            const ctx = canvas.getContext('2d');
+                            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                            placeholder.style.display = 'none';
+                        };
+                        img.src = data.signatureBase64;
+                    }
+                } catch (error) {
+                    console.error("Error loading signature:", error);
+                }
+            }
+        }, 500);
     }
 
     function clearSignature() {
@@ -1309,13 +1393,14 @@
         }
     }
 
-    // Hole Grid Functions
+    // Hole Grid Functions - DIPERBAIKI dengan counter per row
     function generateDrillGrid() {
         const gridContainer = document.getElementById('drillGrid');
         let html = '';
 
         // Header Row
         html += `<div class="grid-header-cell border-t-0 pdf-grid-header-cell">HOLE ID</div>`;
+        html += `<div class="grid-header-cell border-t-0 pdf-grid-header-cell">COUNT</div>`;
         for (let i = 1; i <= MAX_COLUMNS; i++) {
             html += `<div class="grid-header-cell border-t-0 pdf-grid-header-cell">${i}</div>`;
         }
@@ -1325,6 +1410,7 @@
             const rowIndex = index + 1;
             
             html += `<div class="grid-row-header pdf-grid-row-header" data-row-index="${rowIndex}">${holeName}</div>`;
+            html += `<div class="row-count-cell pdf-row-count-cell" id="count-${holeName}">0</div>`;
             
             for (let col = 1; col <= MAX_COLUMNS; col++) {
                 const holeId = `${holeName}-${col}`;
@@ -1351,6 +1437,20 @@
                     openHoleModal(holeId, e);
                 });
             }
+        });
+    }
+
+    // Fungsi untuk update counter per row
+    function updateRowCounters() {
+        HOLE_ROWS.forEach(row => {
+            let count = 0;
+            for (let col = 1; col <= MAX_COLUMNS; col++) {
+                const holeId = `${row}-${col}`;
+                if (holeData[holeId] && holeData[holeId].status) {
+                    count++;
+                }
+            }
+            document.getElementById(`count-${row}`).textContent = count;
         });
     }
 
@@ -1395,6 +1495,7 @@
         };
 
         updateHoleDotUI(currentHoleId);
+        updateRowCounters(); // Update counter setelah menyimpan data
         closeHoleModal();
         saveSessionData();
         updatePreviewData();
@@ -1570,6 +1671,9 @@
             };
             updateHoleDotUI(holeId);
         });
+        
+        // Update row counters
+        updateRowCounters();
         
         // Update plan hole count
         const currentPlanHole = document.getElementById('planHole').value;
@@ -1751,6 +1855,9 @@
         Object.keys(holeData).forEach(holeId => {
             updateHoleDotUI(holeId);
         });
+        
+        // Update row counters
+        updateRowCounters();
         
         // Load signature
         if (report.signatureBase64 && signaturePad) {
@@ -2137,6 +2244,9 @@
                     });
                 }
                 
+                // Update row counters
+                updateRowCounters();
+                
                 // Load signature - FIXED
                 if (data.signatureBase64 && signaturePad) {
                     // Clear first
@@ -2208,7 +2318,7 @@
         }
     }
 
-    // PDF Generation Functions - IMPROVED untuk capture full content
+    // PDF Generation Functions - DIPERBAIKI untuk landscape 1 halaman
     function generateReportAndDownloadPDF() {
         // Update report data first
         updateReportData();
@@ -2221,48 +2331,51 @@
         
         const element = document.getElementById('pdfCaptureArea');
         
-        // Ensure element is visible for capture
-        const originalDisplay = element.style.display;
-        element.style.display = 'block';
+        // Store original styles
+        const originalWidth = element.style.width;
+        const originalMaxWidth = element.style.maxWidth;
         
-        // Add PDF-specific styles
+        // Optimize for PDF - set fixed width untuk landscape
+        element.style.width = '1100px'; // Lebar lebih besar untuk landscape
+        element.style.maxWidth = '1100px';
+        
+        // Apply PDF-specific styles
         element.classList.add('pdf-optimized');
         
-        // Use html2canvas dengan konfigurasi yang lebih baik untuk capture full content
+        // Use html2canvas dengan scale yang optimal
         html2canvas(element, {
-            scale: 2, // Higher scale for better quality
+            scale: 1.5, // Scale optimal untuk kualitas
             useCORS: true,
-            allowTaint: true,
+            allowTaint: false,
             logging: false,
             backgroundColor: "#ffffff",
-            scrollX: 0,
-            scrollY: 0,
-            width: element.scrollWidth,
+            width: 1100,
             height: element.scrollHeight,
+            windowWidth: 1100,
             onclone: function(clonedDoc) {
-                // Apply PDF-specific styles to cloned document
+                // Apply PDF-specific optimizations
                 const clonedElement = clonedDoc.getElementById('pdfCaptureArea');
                 if (clonedElement) {
-                    clonedElement.style.width = '100%';
-                    clonedElement.style.maxWidth = '100%';
-                    clonedElement.style.overflow = 'hidden';
+                    clonedElement.style.width = '1100px';
+                    clonedElement.style.maxWidth = '1100px';
                     
                     // Show PDF-only elements
-                    const pdfOnlyElements = clonedDoc.querySelectorAll('.pdf-only');
+                    const pdfOnlyElements = clonedElement.querySelectorAll('.pdf-only');
                     pdfOnlyElements.forEach(el => {
                         el.style.display = 'block';
                     });
                     
                     // Hide screen-only elements
-                    const screenOnlyElements = clonedDoc.querySelectorAll('.screen-only');
+                    const screenOnlyElements = clonedElement.querySelectorAll('.screen-only');
                     screenOnlyElements.forEach(el => {
                         el.style.display = 'none';
                     });
                 }
             }
         }).then(canvas => {
-            // Restore original display
-            element.style.display = originalDisplay;
+            // Restore original styles
+            element.style.width = originalWidth;
+            element.style.maxWidth = originalMaxWidth;
             element.classList.remove('pdf-optimized');
             
             const imgData = canvas.toDataURL('image/jpeg', 0.9);
@@ -2280,20 +2393,17 @@
             const imgWidth = pageWidth - (2 * margin);
             const imgHeight = (canvas.height * imgWidth) / canvas.width;
             
-            // Check if content needs multiple pages
-            let heightLeft = imgHeight;
-            let position = margin;
-            
-            // Add first page
-            pdf.addImage(imgData, 'JPEG', margin, position, imgWidth, imgHeight);
-            heightLeft -= pageHeight;
-            
-            // Add additional pages if needed
-            while (heightLeft >= 0) {
-                position = heightLeft - imgHeight + margin;
-                pdf.addPage();
-                pdf.addImage(imgData, 'JPEG', margin, position, imgWidth, imgHeight);
-                heightLeft -= pageHeight;
+            // Check if content fits in one page
+            if (imgHeight <= pageHeight - (2 * margin)) {
+                // Fit dalam 1 halaman
+                pdf.addImage(imgData, 'JPEG', margin, margin, imgWidth, imgHeight);
+            } else {
+                // Jika terlalu tinggi, scale down
+                const scaleFactor = (pageHeight - (2 * margin)) / imgHeight;
+                const scaledWidth = imgWidth * scaleFactor;
+                const scaledHeight = imgHeight * scaleFactor;
+                
+                pdf.addImage(imgData, 'JPEG', margin, margin, scaledWidth, scaledHeight);
             }
             
             // Generate filename
@@ -2305,14 +2415,60 @@
             // Save PDF
             pdf.save(filename);
             
-            showNotification("PDF berhasil di-download!");
+            showNotification("PDF berhasil di-download dalam 1 halaman landscape!");
             
         }).catch(error => {
             console.error("Error generating PDF:", error);
-            element.style.display = originalDisplay;
+            // Restore original styles on error
+            element.style.width = originalWidth;
+            element.style.maxWidth = originalMaxWidth;
             element.classList.remove('pdf-optimized');
             showNotification("Gagal membuat PDF: " + error.message, true);
         });
+    }
+
+    // Fungsi Generate Final Report - BARU
+    function generateFinalReport() {
+        // Validasi data
+        const requiredFields = ['tanggal', 'shift', 'pit', 'lokasi', 'planHole', 'namaCrew', 'namaGL'];
+        const missingFields = [];
+        
+        requiredFields.forEach(field => {
+            if (!document.getElementById(field).value) {
+                missingFields.push(field);
+            }
+        });
+        
+        if (missingFields.length > 0) {
+            showNotification(`Mohon lengkapi field: ${missingFields.join(', ')}`, true);
+            return;
+        }
+        
+        if (Object.keys(holeData).length === 0) {
+            showNotification("Belum ada data lubang yang diisi!", true);
+            return;
+        }
+        
+        if (!signaturePad || signaturePad.isEmpty()) {
+            showNotification("Tanda tangan belum diisi!", true);
+            return;
+        }
+        
+        if (!currentNorthDirection) {
+            showNotification("Arah utara belum dipilih!", true);
+            return;
+        }
+        
+        // Simpan ke database
+        saveReportToDatabase();
+        
+        // Tampilkan notifikasi sukses
+        showNotification("✅ Laporan berhasil disimpan ke database!");
+        
+        // Redirect ke database section
+        setTimeout(() => {
+            showSection('database');
+        }, 2000);
     }
 
     function getJadwal(pit) {

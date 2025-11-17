@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FORM SOUNDING CREW</title>
+    <title>E-SOUNDING SYSTEM - PT. KALIMANTAN PRIMA PERSADA</title>
     <!-- Muat Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Muat SignaturePad -->
@@ -18,39 +18,48 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f4f7f9;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: 100vh;
         }
         .container-card {
             max-width: 1400px;
-            margin: 2rem auto;
-            padding: 2rem;
-            background-color: white;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            border-radius: 12px;
+            margin: 1rem auto;
+            padding: 1.5rem;
+            background: white;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
         }
         .header-box {
-            background-color: #0d47a1; 
+            background: linear-gradient(135deg, #374151 0%, #6b7280 100%);
             color: white;
-            padding: 1.5rem;
-            border-radius: 8px;
-            margin-bottom: 1.5rem;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 15px -3px rgba(55, 65, 81, 0.3);
+        }
+        .gold-gradient {
+            background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
         }
         .form-label {
             font-weight: 600;
             color: #1f2937;
             margin-bottom: 0.5rem;
             display: block;
+            font-size: 0.9rem;
         }
         .input-field {
             padding: 0.75rem;
             border: 1px solid #d1d5db;
-            border-radius: 6px;
+            border-radius: 8px;
             width: 100%;
-            transition: border-color 0.2s;
+            transition: all 0.3s ease;
+            background: white;
         }
         .input-field:focus {
-            border-color: #2563eb;
+            border-color: #f59e0b;
             outline: none;
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
         }
 
         /* --- STAGGERED GRID STYLES --- */
@@ -62,12 +71,14 @@
             min-width: 100%;
             background-color: white;
             font-size: 0.55rem;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
         
         .grid-header-cell {
             padding: 0.4rem 0.2rem;
             text-align: center;
-            background-color: #f1f5f9;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
             font-weight: 600;
             border-right: 1px solid #e5e7eb;
             border-bottom: 1px solid #e5e7eb;
@@ -79,14 +90,15 @@
         .grid-header-cell:first-child {
             position: sticky;
             left: 0;
-            z-index: 20; 
+            z-index: 20;
+            background: linear-gradient(135deg, #e2e8f0 0%, #f1f5f9 100%);
         }
 
         .grid-row-header {
             padding: 0.4rem 0.2rem;
             text-align: center;
             font-weight: 700;
-            background-color: #e2e8f0;
+            background: linear-gradient(135deg, #e2e8f0 0%, #f1f5f9 100%);
             border-right: 1px solid #e5e7eb;
             border-bottom: 1px solid #e5e7eb;
             display: flex;
@@ -94,7 +106,7 @@
             justify-content: center;
             position: sticky;
             left: 0;
-            z-index: 20; 
+            z-index: 20;
             font-size: 0.65rem;
         }
 
@@ -104,9 +116,14 @@
             align-items: center;
             justify-content: center;
             padding: 2px 0;
-            height: 45px; 
+            height: 45px;
             border-bottom: 1px solid #f3f4f6;
-            position: relative; 
+            position: relative;
+            transition: background-color 0.2s ease;
+        }
+
+        .hole-cell:hover {
+            background-color: #f8fafc;
         }
 
         .staggered-row-content {
@@ -125,14 +142,14 @@
         [data-row-index="11"] .staggered-row-content,
         [data-row-index="13"] .staggered-row-content,
         [data-row-index="15"] .staggered-row-content {
-            transform: translateX(12px); 
+            transform: translateX(12px);
         }
         
         .hole-dot {
-            transition: transform 0.2s, background-color 0.2s, border-color 0.2s;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
             position: relative;
-            display: flex; 
+            display: flex;
             align-items: center;
             justify-content: center;
             font-size: 0.55rem;
@@ -140,23 +157,24 @@
             width: 22px;
             height: 22px;
             font-weight: 700;
+            cursor: pointer;
         }
         .hole-dot:hover {
-            transform: scale(1.2);
-            border-color: #2563eb;
+            transform: scale(1.3);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.25);
         }
         
         .hole-dot.status-D { 
-            background-color: #34d399;
-            border-color: #059669;
+            background: linear-gradient(135deg, #34d399 0%, #059669 100%);
+            border: 2px solid #059669;
         }
         .hole-dot.status-W { 
-            background-color: #60a5fa;
-            border-color: #2563eb;
+            background: linear-gradient(135deg, #60a5fa 0%, #2563eb 100%);
+            border: 2px solid #2563eb;
         }
         .hole-dot.status-C { 
-            background-color: #fca5a5;
-            border-color: #ef4444;
+            background: linear-gradient(135deg, #fca5a5 0%, #ef4444 100%);
+            border: 2px solid #ef4444;
         }
         
         .hole-modal {
@@ -164,24 +182,75 @@
             z-index: 50;
             background: white;
             border: 1px solid #ccc;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            padding: 1rem;
-            width: 250px;
+            border-radius: 12px;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);
+            padding: 1.5rem;
+            width: 280px;
+            animation: modalAppear 0.3s ease-out;
         }
-        .signature-canvas {
+
+        @keyframes modalAppear {
+            from { opacity: 0; transform: scale(0.9) translateY(-10px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        /* Signature Pad Styles - IMPROVED */
+        .signature-container {
+            position: relative;
+            width: 100%;
+            background: white;
             border: 1px solid #d1d5db;
-            border-radius: 6px;
-            background-color: #ffffff;
-            touch-action: none; 
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        #signatureCanvas {
+            width: 100%;
+            height: 150px;
+            display: block;
+            cursor: crosshair;
+            background: white;
+            touch-action: none;
+        }
+        
+        .signature-clear-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(239, 68, 68, 0.9);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 12px;
+            cursor: pointer;
+            z-index: 10;
+        }
+        
+        .signature-clear-btn:hover {
+            background: rgba(220, 38, 38, 0.9);
+        }
+        
+        .signature-placeholder {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #9ca3af;
+            font-style: italic;
+            pointer-events: none;
+            z-index: 1;
         }
 
         #pdfCaptureArea {
-             background-color: white;
-             padding: 8px;
-             width: 100%;
-             max-width: 100%;
-             overflow: hidden;
+            background-color: white;
+            padding: 12px;
+            width: 100%;
+            max-width: 100%;
+            overflow: hidden;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
         }
 
         /* PDF-specific styles */
@@ -214,16 +283,11 @@
         }
 
         .share-link-container {
-            background: #f0f9ff;
-            border: 1px solid #bae6fd;
-            border-radius: 8px;
-            padding: 1rem;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 1.5rem;
             margin: 1rem 0;
-        }
-
-        /* Hide mining dispatch summary from PDF */
-        .pdf-hide {
-            display: block;
         }
 
         /* Kompas Arah Mata Angin Styles */
@@ -231,18 +295,20 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            margin-bottom: 1.5rem;
-            padding: 1rem;
-            background-color: #f8fafc;
-            border-radius: 8px;
-            border: 1px solid #e2e8f0;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-radius: 12px;
+            border: 1px solid #cbd5e1;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
         
         .compass-title {
             font-weight: 600;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
             color: #1e293b;
             text-align: center;
+            font-size: 1.1rem;
         }
         
         .compass-wrapper {
@@ -259,8 +325,8 @@
             transform: translate(-50%, -50%);
             width: 120px;
             height: 120px;
-            background-color: #f1f5f9;
-            border: 2px solid #cbd5e1;
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            border: 2px solid #9ca3af;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -271,14 +337,14 @@
         .compass-center {
             width: 20px;
             height: 20px;
-            background-color: #3b82f6;
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
             border-radius: 50%;
             z-index: 10;
         }
         
         .compass-axis {
             position: absolute;
-            background-color: #64748b;
+            background-color: #6b7280;
             border-radius: 2px;
         }
         
@@ -302,8 +368,8 @@
             position: absolute;
             width: 40px;
             height: 40px;
-            background-color: #e2e8f0;
-            color: #64748b;
+            background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
+            color: #6b7280;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -318,13 +384,13 @@
         
         .compass-direction:hover {
             transform: scale(1.1);
-            background-color: #cbd5e1;
+            background: linear-gradient(135deg, #d1d5db 0%, #9ca3af 100%);
         }
         
         .compass-direction.active {
-            background-color: #3b82f6;
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
             color: white;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.5);
             font-size: 1rem;
         }
         
@@ -357,14 +423,15 @@
         }
         
         .compass-display {
-            margin-top: 1rem;
+            margin-top: 1.5rem;
             font-weight: 600;
-            color: #1e40af;
+            color: #92400e;
             text-align: center;
-            padding: 0.5rem 1rem;
-            background-color: #eff6ff;
-            border-radius: 6px;
-            border: 1px solid #dbeafe;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-radius: 8px;
+            border: 1px solid #fcd34d;
+            font-size: 1.1rem;
         }
 
         /* Kompas untuk PDF */
@@ -390,7 +457,7 @@
             width: 80px;
             height: 80px;
             background-color: #f1f5f9;
-            border: 2px solid #cbd5e1;
+            border: 2px solid #9ca3af;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -400,14 +467,14 @@
         .pdf-compass-center {
             width: 12px;
             height: 12px;
-            background-color: #3b82f6;
+            background-color: #f59e0b;
             border-radius: 50%;
             z-index: 10;
         }
         
         .pdf-compass-axis {
             position: absolute;
-            background-color: #64748b;
+            background-color: #6b7280;
             border-radius: 1px;
         }
         
@@ -431,8 +498,8 @@
             position: absolute;
             width: 24px;
             height: 24px;
-            background-color: #e2e8f0;
-            color: #64748b;
+            background-color: #e5e7eb;
+            color: #6b7280;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -443,7 +510,7 @@
         }
         
         .pdf-compass-direction.active {
-            background-color: #3b82f6;
+            background-color: #f59e0b;
             color: white;
         }
         
@@ -471,58 +538,154 @@
             transform: translateY(-50%);
         }
 
-        @media (max-width: 768px) {
-            .container-card {
-                margin: 0.5rem;
-                padding: 1rem;
+        /* Navigation Styles */
+        .nav-btn {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid transparent;
+            font-weight: 600;
+        }
+
+        .nav-btn.active {
+            border-color: #d97706;
+            box-shadow: 0 10px 15px -3px rgba(217, 119, 6, 0.3);
+            background: white !important;
+            color: #92400e !important;
+        }
+
+        .content-section {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Premium card effects */
+        .premium-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border-radius: 12px;
+        }
+
+        .premium-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Import/Export Section */
+        .import-export-section {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+        }
+
+        /* Database Styles */
+        .database-grid {
+            display: grid;
+            grid-template-columns: 50px repeat(30, minmax(20px, 1fr)); 
+            border-top: 1px solid #e5e7eb;
+            overflow-x: auto;
+            min-width: 100%;
+            background-color: white;
+            font-size: 0.5rem;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        /* Hide elements for PDF */
+        .screen-only {
+            display: block;
+        }
+        
+        .pdf-only {
+            display: none;
+        }
+        
+        @media print {
+            .screen-only {
+                display: none !important;
             }
-            .drill-grid-area {
-                grid-template-columns: 45px repeat(30, minmax(22px, 1fr));
-                font-size: 0.5rem;
-            }
-            .grid-header-cell, .grid-row-header {
-                font-size: 0.55rem;
-            }
-            .hole-dot {
-                width: 20px;
-                height: 20px;
-                font-size: 0.5rem;
-            }
-            .compass-wrapper {
-                width: 180px;
-                height: 180px;
-            }
-            .compass-base {
-                width: 100px;
-                height: 100px;
-            }
-            .compass-axis-horizontal {
-                width: 140px;
-            }
-            .compass-axis-vertical {
-                height: 140px;
-            }
-            .compass-direction {
-                width: 36px;
-                height: 36px;
+            .pdf-only {
+                display: block !important;
             }
         }
     </style>
 </head>
 <body>
 
-    <div class="container-card">
-
-        <!-- Konten yang BUKAN merupakan bagian dari laporan akhir (Kontrol, Notifikasi) -->
-        <div id="controlsAndHeader" class="screen-only">
-            <!-- Header -->
-            <div class="header-box text-center mb-6">
-                <h1 class="text-3xl font-bold mb-1">PT. KALIMANTAN PRIMA PERSADA - DISTRIK INDE</h1>
-                <h2 class="text-xl font-semibold">FORM SOUNDING CREW</h2>
+    <!-- PREMIUM HEADER WITH NAVIGATION -->
+    <header class="bg-gradient-to-r from-gray-800 to-gray-600 text-white shadow-2xl mb-6 rounded-2xl overflow-hidden mx-4 mt-4">
+        <div class="container mx-auto px-6 py-4">
+            <!-- Main Header -->
+            <div class="text-center mb-6">
+                <h1 class="text-3xl md:text-4xl font-bold mb-2 tracking-tight">
+                    <span class="bg-clip-text text-transparent bg-gradient-to-r from-gray-200 to-gray-100">
+                        PT. KALIMANTAN PRIMA PERSADA
+                    </span>
+                </h1>
+                <h2 class="text-xl md:text-2xl font-semibold text-gray-100">DISTRIK INDE - E-SOUNDING SYSTEM</h2>
+                <p class="text-gray-200 mt-2 text-sm">Digital Blast Hole Monitoring & Reporting</p>
             </div>
 
+            <!-- Navigation Menu -->
+            <nav class="flex flex-wrap justify-center gap-3 mb-2" id="mainNavigation">
+                <button data-section="home" class="nav-btn active px-5 py-3 bg-white text-gray-800 font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                    🏠 HOME
+                </button>
+                <button data-section="e-sounding" class="nav-btn px-5 py-3 bg-gray-700 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 hover:bg-gray-600">
+                    📊 E-SOUNDING
+                </button>
+                <button data-section="preview" class="nav-btn px-5 py-3 bg-gray-700 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 hover:bg-gray-600">
+                    👁️ PREVIEW
+                </button>
+                <button data-section="database" class="nav-btn px-5 py-3 bg-gray-700 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 hover:bg-gray-600">
+                    💾 DATABASE
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container-card">
+
+        <!-- HOME SECTION -->
+        <div id="homeSection" class="content-section">
+            <div class="text-center py-8">
+                <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-3xl p-8 shadow-2xl border border-gray-200">
+                    <h1 class="text-4xl font-bold text-gray-900 mb-6">🚀 WELCOME TO E-SOUNDING SYSTEM</h1>
+                    <p class="text-xl text-gray-700 mb-8">Digital Solution for Blast Hole Monitoring & Reporting</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                        <div class="premium-card p-6">
+                            <div class="text-4xl mb-4">📊</div>
+                            <h3 class="font-bold text-gray-800 mb-3 text-lg">E-SOUNDING</h3>
+                            <p class="text-sm text-gray-600">Input data sounding dengan visualisasi grid interaktif dan import dari Excel</p>
+                        </div>
+                        <div class="premium-card p-6">
+                            <div class="text-4xl mb-4">👁️</div>
+                            <h3 class="font-bold text-gray-800 mb-3 text-lg">PREVIEW</h3>
+                            <p class="text-sm text-gray-600">Lihat hasil visualisasi dan data historis dengan statistik lengkap</p>
+                        </div>
+                        <div class="premium-card p-6 gold-gradient text-white">
+                            <div class="text-4xl mb-4">💾</div>
+                            <h3 class="font-bold mb-3 text-lg">DATABASE</h3>
+                            <p class="text-sm text-amber-100">Lihat dan kelola semua data sounding yang pernah diinput</p>
+                        </div>
+                    </div>
+                    
+                    <button data-section="e-sounding" class="nav-section-btn px-8 py-4 gold-gradient text-white font-bold rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-105 text-lg">
+                        🚀 START E-SOUNDING
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- E-SOUNDING SECTION -->
+        <div id="e-soundingSection" class="content-section hidden">
             <!-- Section Informasi Umum dengan SHIFT -->
-            <div id="generalInfoInputs" class="grid grid-cols-1 md:grid-cols-5 gap-4 p-4 mb-6 border border-gray-200 rounded-lg bg-gray-50">
+            <div id="generalInfoInputs" class="grid grid-cols-1 md:grid-cols-5 gap-4 p-6 mb-6 border border-gray-200 rounded-xl bg-gray-50">
                 <div><label for="tanggal" class="form-label">Tanggal</label><input type="date" id="tanggal" class="input-field"></div>
                 <div>
                     <label for="shift" class="form-label">SHIFT</label>
@@ -550,7 +713,7 @@
             </div>
 
             <!-- Arah Mata Angin dengan Kompas -->
-            <div class="compass-container screen-only">
+            <div class="compass-container">
                 <div class="compass-title">Pilih Arah Utara dengan mengklik salah satu arah pada kompas:</div>
                 
                 <div class="compass-wrapper">
@@ -576,13 +739,56 @@
                 </div>
             </div>
 
+            <!-- IMPORT/EXPORT SECTION -->
+            <div class="import-export-section p-6 mb-6">
+                <h3 class="text-xl font-bold mb-4 text-gray-800 text-center">📊 IMPORT/EXPORT DATA</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- IMPORT EXCEL -->
+                    <div class="border border-amber-300 rounded-xl p-5 bg-amber-50">
+                        <h4 class="font-bold mb-3 text-amber-800 text-lg">📥 IMPORT FROM EXCEL</h4>
+                        <p class="text-sm text-gray-600 mb-4">Format: ID HOLE, DEPTH HOLE (m), HOLE CONDITION</p>
+                        
+                        <input type="file" id="excelImport" accept=".xlsx,.xls" 
+                               class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100 mb-4" />
+                        
+                        <button id="importExcelBtn" class="w-full px-4 py-3 gold-gradient text-white rounded-lg hover:shadow-lg transition flex items-center justify-center font-semibold">
+                            <span>🚀 IMPORT & AUTO-FILL GRID</span>
+                        </button>
+                        
+                        <div id="importPreview" class="mt-4 hidden">
+                            <div class="text-sm font-semibold text-amber-700 mb-2">Preview Import:</div>
+                            <div id="importPreviewContent" class="text-xs bg-white p-3 border rounded-lg mt-1 max-h-24 overflow-y-auto"></div>
+                            <button id="confirmImportBtn" class="mt-3 w-full px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition font-semibold">
+                                ✅ Konfirmasi Import Data
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- EXPORT EXCEL -->
+                    <div class="border border-gray-300 rounded-xl p-5 bg-gray-50">
+                        <h4 class="font-bold mb-3 text-gray-800 text-lg">📤 EXPORT TO EXCEL</h4>
+                        <p class="text-sm text-gray-600 mb-4">Download template atau export data existing</p>
+                        
+                        <div class="grid grid-cols-1 gap-3">
+                            <button id="downloadTemplateBtn" class="w-full px-4 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition font-semibold">
+                                📋 Download Template Excel
+                            </button>
+                            <button id="exportExcelBtn" class="w-full px-4 py-3 gold-gradient text-white rounded-lg hover:shadow-lg transition font-semibold">
+                                💾 Export Data ke Excel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Share Link Section -->
             <div id="shareLinkContainer" class="share-link-container hidden">
-                <h3 class="font-bold text-lg mb-2 text-blue-800">🔗 Link untuk Melanjutkan Pekerjaan</h3>
+                <h3 class="font-bold text-lg mb-2 text-gray-800">🔗 Link untuk Melanjutkan Pekerjaan</h3>
                 <p class="text-sm text-gray-600 mb-2">Simpan link ini untuk melanjutkan pekerjaan di shift berikutnya:</p>
                 <div class="flex gap-2">
                     <input type="text" id="shareableLink" class="input-field flex-1" readonly>
-                    <button onclick="copyShareLink()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                    <button id="copyShareLinkBtn" class="px-4 py-2 gold-gradient text-white rounded-lg hover:shadow-lg transition">
                         Salin Link
                     </button>
                 </div>
@@ -593,792 +799,1612 @@
             <div id="notification" class="hidden p-3 mb-4 rounded-lg text-sm" role="alert"></div>
             <div class="mb-4 text-sm text-gray-600">
                 User ID (untuk sinkronisasi): <span id="userIdDisplay" class="font-mono bg-gray-100 p-1 rounded">...</span>
-                <button onclick="generateShareLink()" class="ml-4 px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition">
+                <button id="generateShareLinkBtn" class="ml-4 px-3 py-1 gold-gradient text-white text-sm rounded hover:shadow-lg transition">
                     🔗 Buat Link Share
                 </button>
             </div>
-        </div>
 
+            <!-- Container Khusus untuk Konten yang akan Di-Capture ke PDF -->
+            <div id="pdfCaptureArea" class="bg-white pdf-optimized">
 
-        <!-- Container Khusus untuk Konten yang akan Di-Capture ke PDF -->
-        <div id="pdfCaptureArea" class="bg-white pdf-optimized">
+                <!-- Title yang muncul di PDF -->
+                 <div class="text-center mb-4">
+                    <h1 class="text-lg font-bold mb-1 text-gray-800">PT. KALIMANTAN PRIMA PERSADA - DISTRIK INDE</h1>
+                    <h2 class="text-md font-semibold text-gray-700">PEMERIKSAAN KONDISI & KEDALAMAN LUBANG TEMBAK</h2>
+                </div>
 
-            <!-- Title yang muncul di PDF -->
-             <div class="text-center mb-4">
-                <h1 class="text-lg font-bold mb-1 text-gray-800">PT. KALIMANTAN PRIMA PERSADA - DISTRIK INDE</h1>
-                <h2 class="text-md font-semibold text-gray-700">PEMERIKSAAN KONDISI & KEDALAMAN LUBANG TEMBAK</h2>
-            </div>
+                <!-- Ringkasan Data Umum (Untuk PDF) -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-1 mb-3 text-xs p-2 border border-gray-300 rounded-lg">
+                    <div><span class="font-semibold">Tanggal:</span> <span id="report_tanggal" class="font-medium"></span></div>
+                    <div><span class="font-semibold">Shift:</span> <span id="report_shift" class="font-medium"></span></div>
+                    <div><span class="font-semibold">PIT:</span> <span id="report_pit" class="font-medium"></span></div>
+                    <div><span class="font-semibold">Lokasi:</span> <span id="report_lokasi" class="font-medium"></span></div>
+                    <div><span class="font-semibold">Plan Hole:</span> <span id="report_planHole" class="font-medium"></span></div>
+                    <div><span class="font-semibold">B x S:</span> <span id="report_geometri" class="font-medium"></span></div>
+                    <div><span class="font-semibold">Unit:</span> <span id="report_unit" class="font-medium"></span></div>
+                    <div><span class="font-semibold">Arah Utara:</span> <span id="report_north_direction" class="font-medium"></span></div>
+                </div>
 
-            <!-- Ringkasan Data Umum (Untuk PDF) -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-1 mb-3 text-xs p-2 border border-gray-300 rounded-lg">
-                <div><span class="font-semibold">Tanggal:</span> <span id="report_tanggal" class="font-medium"></span></div>
-                <div><span class="font-semibold">Shift:</span> <span id="report_shift" class="font-medium"></span></div>
-                <div><span class="font-semibold">PIT:</span> <span id="report_pit" class="font-medium"></span></div>
-                <div><span class="font-semibold">Lokasi:</span> <span id="report_lokasi" class="font-medium"></span></div>
-                <div><span class="font-semibold">Plan Hole:</span> <span id="report_planHole" class="font-medium"></span></div>
-                <div><span class="font-semibold">B x S:</span> <span id="report_geometri" class="font-medium"></span></div>
-                <div><span class="font-semibold">Unit:</span> <span id="report_unit" class="font-medium"></span></div>
-                <div><span class="font-semibold">Arah Utara:</span> <span id="report_north_direction" class="font-medium"></span></div>
-            </div>
-
-            <!-- Kompas untuk PDF -->
-            <div id="pdfCompassContainer" class="pdf-compass-container">
-                <div class="text-xs font-semibold mb-1">Diagram Arah Utara:</div>
-                <div class="pdf-compass-wrapper">
-                    <div class="pdf-compass-axis pdf-compass-axis-horizontal"></div>
-                    <div class="pdf-compass-axis pdf-compass-axis-vertical"></div>
-                    <div class="pdf-compass-base">
-                        <div class="pdf-compass-center"></div>
+                <!-- Kompas untuk PDF - FIXED -->
+                <div id="pdfCompassContainer" class="pdf-compass-container">
+                    <div class="text-xs font-semibold mb-1">Diagram Arah Utara:</div>
+                    <div class="pdf-compass-wrapper">
+                        <div class="pdf-compass-axis pdf-compass-axis-horizontal"></div>
+                        <div class="pdf-compass-axis pdf-compass-axis-vertical"></div>
+                        <div class="pdf-compass-base">
+                            <div class="pdf-compass-center"></div>
+                        </div>
+                        <div class="pdf-compass-direction north" id="pdfNorth"></div>
+                        <div class="pdf-compass-direction east" id="pdfEast"></div>
+                        <div class="pdf-compass-direction south" id="pdfSouth"></div>
+                        <div class="pdf-compass-direction west" id="pdfWest"></div>
                     </div>
-                    <div class="pdf-compass-direction north" id="pdfNorth">U</div>
-                    <div class="pdf-compass-direction east" id="pdfEast"></div>
-                    <div class="pdf-compass-direction south" id="pdfSouth"></div>
-                    <div class="pdf-compass-direction west" id="pdfWest"></div>
                 </div>
-            </div>
 
-            <!-- Section Grid Pemeriksaan Lubang -->
-            <div class="overflow-x-auto mb-6">
-                <h3 class="text-md font-bold mb-1 text-gray-700">Visualisasi Kondisi Lubang (Staggered Pattern)</h3>
-                <div id="drillGrid" class="drill-grid-area bg-white rounded-lg border border-gray-300 pdf-drill-grid">
-                    <!-- Grid akan di-generate di sini oleh JavaScript -->
+                <!-- Section Grid Pemeriksaan Lubang -->
+                <div class="overflow-x-auto mb-6">
+                    <h3 class="text-md font-bold mb-1 text-gray-700">Visualisasi Kondisi Lubang (Staggered Pattern)</h3>
+                    <div id="drillGrid" class="drill-grid-area bg-white rounded-lg border border-gray-300 pdf-drill-grid">
+                        <!-- Grid akan di-generate di sini oleh JavaScript -->
+                    </div>
                 </div>
-            </div>
 
-            <!-- Section Keterangan Ringkas & TTD -->
-            <div class="mt-6 flex justify-between gap-4 border-t pt-3">
+                <!-- Section Keterangan Ringkas & TTD - FIXED untuk PDF -->
+                <div class="mt-6 flex justify-between gap-4 border-t pt-3">
+                    
+                    <!-- Keterangan Status -->
+                    <div class="w-1/3">
+                        <h4 class="font-semibold mb-1 text-gray-700 text-sm">Keterangan Status:</h4>
+                        <ul class="text-xs space-y-1">
+                            <li class="flex items-center"><span class="hole-dot w-3 h-3 rounded-full status-D mr-2"></span> D: KERING (Ideal)</li>
+                            <li class="flex items-center"><span class="hole-dot w-3 h-3 rounded-full status-W mr-2"></span> W: BASAH (Ada Air)</li>
+                            <li class="flex items-center"><span class="hole-dot w-3 h-3 rounded-full status-C mr-2"></span> C: COLLAPSE</li> 
+                        </ul>
+                    </div>
+
+                    <!-- Tanda Tangan Area - FIXED untuk PDF -->
+                    <div class="w-1/3 text-center">
+                        <h3 class="font-semibold mb-1 text-gray-700 text-sm">Tanda Tangan Pemeriksa:</h3>
+                        <div class="w-full max-w-[120px] h-16 mx-auto border border-gray-400 bg-gray-100 flex items-center justify-center">
+                            <img id="report_signature_img" class="max-w-full max-h-full" alt="Tanda Tangan Pemeriksa">
+                        </div>
+                        <p class="mt-1 text-xs font-medium" id="report_crew_name">(Nama Crew)</p>
+                    </div>
+
+                    <!-- Additional Info untuk PDF -->
+                    <div class="w-1/3 text-center pdf-only">
+                        <h3 class="font-semibold mb-1 text-gray-700 text-sm">Informasi Tambahan:</h3>
+                        <div class="text-xs text-gray-600 space-y-1">
+                            <p>Dokumen ini dibuat secara digital</p>
+                            <p>PT. Kalimantan Prima Persada</p>
+                            <p>Distrik Inde</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ringkasan Data Copas (Hanya untuk screen, tidak untuk PDF) -->
+                <div class="screen-only">
+                    <h3 class="text-sm font-bold my-2 text-gray-800 border-t pt-3">Ringkasan Data untuk Mining Dispatch:</h3>
+                    <pre id="report_summary_text" class="whitespace-pre-wrap p-2 bg-gray-100 border rounded text-xs font-mono"></pre>
+                </div>
+
+            </div> 
+            <!-- END pdfCaptureArea -->
+
+
+            <!-- Modal Pop-up untuk Input Lubang -->
+            <div id="holeModal" class="hole-modal hidden">
+                <h4 class="font-bold mb-3 text-lg text-gray-800" id="modalHoleId">Hole: A-1</h4>
                 
-                <!-- Keterangan Status -->
-                <div class="w-1/3">
-                    <h4 class="font-semibold mb-1 text-gray-700 text-sm">Keterangan Status:</h4>
-                    <ul class="text-xs space-y-1">
-                        <li class="flex items-center"><span class="hole-dot w-3 h-3 rounded-full status-D mr-2"></span> D: KERING (Ideal)</li>
-                        <li class="flex items-center"><span class="hole-dot w-3 h-3 rounded-full status-W mr-2"></span> W: BASAH (Ada Air)</li>
-                        <li class="flex items-center"><span class="hole-dot w-3 h-3 rounded-full status-C mr-2"></span> C: COLLAPSE</li> 
-                    </ul>
+                <div class="mb-4">
+                    <label for="holeDepth" class="form-label text-sm">Kedalaman (m):</label>
+                    <input type="number" step="0.1" id="holeDepth" class="input-field" placeholder="0.0">
                 </div>
 
-                <!-- Tanda Tangan Area -->
-                <div class="w-1/3 text-center">
-                    <h3 class="font-semibold mb-1 text-gray-700 text-sm">Tanda Tangan Pemeriksa:</h3>
-                    <img id="report_signature_img" class="w-full max-w-[120px] h-16 mx-auto border border-gray-400 bg-gray-100" alt="Tanda Tangan Pemeriksa">
-                    <p class="mt-1 text-xs font-medium" id="report_crew_name">(Nama Crew)</p>
+                <div class="mb-4">
+                    <label for="holeCondition" class="form-label text-sm">Kondisi Lubang:</label>
+                    <select id="holeCondition" class="input-field">
+                        <option value="">Pilih Kondisi</option>
+                        <option value="Kering">Kering</option>
+                        <option value="Basah">Basah</option>
+                        <option value="Collapse">Collapse</option>
+                    </select>
+                </div>
+
+                <div class="flex space-x-2">
+                    <button id="saveHoleDataBtn" class="flex-1 px-3 py-2 gold-gradient text-white text-sm font-semibold rounded-lg hover:shadow-lg transition duration-200">
+                        Simpan
+                    </button>
+                    <button id="closeHoleModalBtn" class="flex-1 px-3 py-2 bg-gray-300 text-gray-800 text-sm font-semibold rounded-lg hover:bg-gray-400 transition duration-200">
+                        Batal
+                    </button>
                 </div>
             </div>
 
-            <!-- Ringkasan Data Copas (Hanya untuk screen, tidak untuk PDF) -->
-            <div class="screen-only">
-                <h3 class="text-sm font-bold my-2 text-gray-800 border-t pt-3">Ringkasan Data untuk Mining Dispatch:</h3>
-                <pre id="report_summary_text" class="whitespace-pre-wrap p-2 bg-gray-100 border rounded text-xs font-mono"></pre>
+            <!-- Section Tanda Tangan (Screen Only) - IMPROVED -->
+            <div class="mt-8 border-t pt-6">
+                <h3 class="text-lg font-bold mb-4 text-gray-700">Tanda Tangan (TTD) - Pemeriksa</h3>
+                
+                <div class="signature-container">
+                    <canvas id="signatureCanvas"></canvas>
+                    <div class="signature-placeholder" id="signaturePlaceholder">
+                        Gambar tanda tangan di area ini menggunakan mouse/touch...
+                    </div>
+                    <button class="signature-clear-btn" id="clearSignatureBtnSmall">
+                        Hapus
+                    </button>
+                </div>
+                
+                <div class="flex space-x-4 mt-4">
+                    <button id="clearSignatureBtn" class="flex-1 px-4 py-2 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition duration-200">
+                        Hapus TTD
+                    </button>
+                    <button id="saveDataBtn" class="flex-1 px-4 py-2 gold-gradient text-white font-semibold rounded-lg hover:shadow-lg transition duration-200">
+                        Simpan Data
+                    </button>
+                </div>
             </div>
 
-        </div> 
-        <!-- END pdfCaptureArea -->
+            <!-- Section for Report Generation and Copying (Screen Only) -->
+            <div class="mt-8 pt-6 border-t">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <button id="generatePdfBtn" class="w-full px-4 py-3 gold-gradient text-white font-bold rounded-lg hover:shadow-lg transition duration-200 shadow-md">
+                        📄 DOWNLOAD PDF (LANDSCAPE)
+                    </button>
+                    <button id="exportExcelBtn2" class="w-full px-4 py-3 bg-gray-600 text-white font-bold rounded-lg hover:bg-gray-700 transition duration-200 shadow-md">
+                        📊 EXPORT EXCEL
+                    </button>
+                </div>
 
-
-        <!-- Modal Pop-up untuk Input Lubang -->
-        <div id="holeModal" class="hole-modal hidden screen-only">
-            <h4 class="font-bold mb-3 text-lg text-gray-800" id="modalHoleId">Hole: A-1</h4>
-            
-            <div class="mb-4">
-                <label for="holeDepth" class="form-label text-sm">Kedalaman (m):</label>
-                <input type="number" step="0.1" id="holeDepth" class="input-field" placeholder="0.0">
-            </div>
-
-            <div class="mb-4">
-                <label for="holeCondition" class="form-label text-sm">Kondisi Lubang:</label>
-                <select id="holeCondition" class="input-field">
-                    <option value="">Pilih Kondisi</option>
-                    <option value="Kering">Kering</option>
-                    <option value="Basah">Basah</option>
-                    <option value="Collapse">Collapse</option>
-                </select>
-            </div>
-
-            <div class="flex space-x-2">
-                <button onclick="saveHoleDataFromModal()" class="flex-1 px-3 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition duration-200">
-                    Simpan
-                </button>
-                <button onclick="closeHoleModal()" class="flex-1 px-3 py-2 bg-gray-300 text-gray-800 text-sm font-semibold rounded-lg hover:bg-gray-400 transition duration-200">
-                    Batal
-                </button>
+                <!-- Copy Paste Output -->
+                <div id="copyOutputContainer" class="hidden mt-6 p-4 bg-amber-50 border border-amber-300 rounded-lg">
+                    <h4 class="font-bold text-lg mb-2 text-gray-800">Format Data untuk Salin (Copas)</h4>
+                    <textarea id="copyOutputText" class="w-full h-40 font-mono text-sm p-2 border rounded resize-none bg-white" readonly></textarea>
+                    <button id="copyToClipboardBtn" class="mt-2 px-3 py-1 gold-gradient text-white text-sm rounded hover:shadow-lg transition">
+                        Salin ke Clipboard
+                    </button>
+                    <p class="text-xs text-amber-600 mt-2">Gunakan teks ini untuk Mining Dispatch atau grup WA.</p>
+                </div>
             </div>
         </div>
 
-        <!-- Section Tanda Tangan (Screen Only) -->
-        <div class="mt-8 border-t pt-6 screen-only">
-            <h3 class="text-lg font-bold mb-4 text-gray-700">Tanda Tangan (TTD) - Pemeriksa</h3>
-            <div class="border border-gray-300 rounded-lg p-4 bg-gray-50">
-                <canvas id="signatureCanvas" class="signature-canvas w-full" height="150"></canvas>
-            </div>
-            <div class="flex space-x-4 mt-4">
-                <button onclick="clearSignature()" class="flex-1 px-4 py-2 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition duration-200">
-                    Hapus TTD
-                </button>
-                <button onclick="saveData()" class="flex-1 px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-200">
-                    Simpan Data
-                </button>
+        <!-- PREVIEW SECTION -->
+        <div id="previewSection" class="content-section hidden">
+            <div class="bg-white rounded-2xl p-8 shadow-2xl border border-gray-200">
+                <h2 class="text-3xl font-bold text-gray-900 mb-6 text-center">👁️ DATA PREVIEW</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Recent Reports -->
+                    <div class="bg-gray-50 rounded-2xl p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">📋 Data Saat Ini</h3>
+                        <div id="currentData" class="space-y-3">
+                            <div class="bg-white rounded-xl p-4 shadow border border-gray-200">
+                                <div class="text-sm text-gray-600">Isi data di section E-SOUNDING untuk melihat preview</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Statistics -->
+                    <div class="bg-amber-50 rounded-2xl p-6">
+                        <h3 class="text-xl font-bold text-amber-800 mb-4">📈 Statistik</h3>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Total Lubang:</span>
+                                <span class="font-bold text-gray-700" id="statTotalHoles">0</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Rata-rata Kedalaman:</span>
+                                <span class="font-bold text-amber-700" id="statAvgDepth">0.0 m</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Kondisi Kering:</span>
+                                <span class="font-bold text-green-700" id="statDryPercentage">0%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- Section for Report Generation and Copying (Screen Only) -->
-        <div class="mt-8 pt-6 border-t screen-only">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <button onclick="generateReportAndDownloadPDF()" class="w-full px-4 py-3 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 transition duration-200 shadow-md">
-                    📄 DOWNLOAD PDF (LANDSCAPE)
-                </button>
-                <button onclick="exportToExcel()" class="w-full px-4 py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition duration-200 shadow-md">
-                    📊 EXPORT EXCEL
-                </button>
-            </div>
+        <!-- DATABASE SECTION -->
+        <div id="databaseSection" class="content-section hidden">
+            <div class="bg-white rounded-2xl p-8 shadow-2xl border border-gray-200">
+                <h2 class="text-3xl font-bold text-gray-900 mb-6 text-center">💾 DATABASE</h2>
+                
+                <!-- Database Import Section -->
+                <div class="import-export-section p-6 mb-6">
+                    <h3 class="text-xl font-bold mb-4 text-gray-800 text-center">📥 IMPORT DATABASE EXCEL</h3>
+                    <div class="border border-amber-300 rounded-xl p-5 bg-amber-50">
+                        <p class="text-sm text-gray-600 mb-4">Import file Excel berisi multiple data sounding sekaligus</p>
+                        <input type="file" id="databaseExcelImport" accept=".xlsx,.xls" 
+                               class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100 mb-4" />
+                        <button id="importDatabaseBtn" class="w-full px-4 py-3 gold-gradient text-white rounded-lg hover:shadow-lg transition font-semibold">
+                            🚀 IMPORT DATABASE
+                        </button>
+                    </div>
+                </div>
 
-            <!-- Copy Paste Output -->
-            <div id="copyOutputContainer" class="hidden mt-6 p-4 bg-yellow-50 border border-yellow-300 rounded-lg">
-                <h4 class="font-bold text-lg mb-2 text-gray-800">Format Data untuk Salin (Copas)</h4>
-                <textarea id="copyOutputText" class="w-full h-40 font-mono text-sm p-2 border rounded resize-none bg-white" readonly></textarea>
-                <button onclick="copyToClipboard('copyOutputText')" class="mt-2 px-3 py-1 bg-indigo-500 text-white text-sm rounded hover:bg-indigo-600 transition">
-                    Salin ke Clipboard
-                </button>
-                <p class="text-xs text-blue-600 mt-2">Gunakan teks ini untuk Mining Dispatch atau grup WA.</p>
+                <!-- Database Results -->
+                <div id="dbResults" class="space-y-6">
+                    <div class="text-center p-8 bg-gray-50 rounded-xl">
+                        <p class="text-gray-600">Belum ada data database. Import data Excel atau buat data baru di section E-SOUNDING.</p>
+                    </div>
+                </div>
             </div>
         </div>
 
     </div>
 
-    <!-- Firebase SDK Imports -->
-    <script type="module">
-        // Global variables for Firebase
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        let app, db, auth, userId = null;
-        let signaturePad; 
-        let currentHoleId = null; 
-        let currentSessionId = null;
-        let currentNorthDirection = null;
-
-        // --- Hole Grid Configuration ---
-        const HOLE_ROWS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O'];
-        const MAX_COLUMNS = 30;
-        let holeData = {};
-
-        // --- Utility Functions ---
-        function showNotification(message, isError = false) {
-            const el = document.getElementById('notification');
-            el.textContent = message;
-            el.className = `p-3 mb-4 rounded-lg text-sm transition-opacity duration-300 ${isError ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`;
-            el.classList.remove('hidden');
-            setTimeout(() => {
-                el.classList.add('hidden');
-            }, 5000);
-        }
-
-        window.copyToClipboard = function(elementId) {
-            const copyText = document.getElementById(elementId);
-            try {
-                copyText.select();
-                copyText.setSelectionRange(0, 99999);
-                navigator.clipboard.writeText(copyText.value);
-                showNotification("Teks berhasil disalin ke clipboard!");
-            } catch (err) {
-                console.error('Failed to copy text: ', err);
-                showNotification("Gagal menyalin. Silakan salin manual.", true);
-            }
-        }
-
-        // --- Arah Mata Angin Functions ---
-        function initCompassDirection() {
-            const compassDirections = document.querySelectorAll('.compass-direction');
-            
-            compassDirections.forEach(direction => {
-                direction.addEventListener('click', function() {
-                    compassDirections.forEach(dir => dir.classList.remove('active'));
-                    this.classList.add('active');
-                    currentNorthDirection = this.getAttribute('data-direction');
-                    document.getElementById('currentNorthDirection').textContent = currentNorthDirection.toUpperCase();
-                    updatePdfCompass();
-                    saveSessionData();
-                    showNotification(`Arah Utara diatur ke: ${currentNorthDirection.toUpperCase()}`);
-                });
-            });
-        }
-
-        function updatePdfCompass() {
-            document.getElementById('pdfNorth').textContent = '';
-            document.getElementById('pdfNorth').classList.remove('active');
-            document.getElementById('pdfEast').textContent = '';
-            document.getElementById('pdfEast').classList.remove('active');
-            document.getElementById('pdfSouth').textContent = '';
-            document.getElementById('pdfSouth').classList.remove('active');
-            document.getElementById('pdfWest').textContent = '';
-            document.getElementById('pdfWest').classList.remove('active');
-            
-            if (currentNorthDirection === 'utara') {
-                document.getElementById('pdfNorth').textContent = 'U';
-                document.getElementById('pdfNorth').classList.add('active');
-            } else if (currentNorthDirection === 'timur') {
-                document.getElementById('pdfEast').textContent = 'U';
-                document.getElementById('pdfEast').classList.add('active');
-            } else if (currentNorthDirection === 'selatan') {
-                document.getElementById('pdfSouth').textContent = 'U';
-                document.getElementById('pdfSouth').classList.add('active');
-            } else if (currentNorthDirection === 'barat') {
-                document.getElementById('pdfWest').textContent = 'U';
-                document.getElementById('pdfWest').classList.add('active');
-            }
-        }
-
-        // --- Share Link Functions ---
-        window.generateShareLink = function() {
-            if (!userId) {
-                showNotification("User ID belum tersedia. Tunggu sebentar.", true);
-                return;
-            }
-
-            if (!currentSessionId) {
-                currentSessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-            }
-
-            const baseUrl = window.location.href.split('?')[0];
-            const shareUrl = `${baseUrl}?session=${currentSessionId}&user=${userId}`;
-            
-            document.getElementById('shareableLink').value = shareUrl;
-            document.getElementById('shareLinkContainer').classList.remove('hidden');
-            
-            saveSessionData();
-            
-            showNotification("Link berhasil dibuat! Salin dan simpan untuk melanjutkan nanti.");
-        }
-
-        window.copyShareLink = function() {
-            const shareLink = document.getElementById('shareableLink');
-            copyToClipboard('shareableLink');
-        }
-
-        // Load data from URL parameters
-        function loadFromUrlParams() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const sessionId = urlParams.get('session');
-            const userIdParam = urlParams.get('user');
-
-            if (sessionId && userIdParam) {
-                currentSessionId = sessionId;
-                userId = userIdParam;
-                document.getElementById('userIdDisplay').textContent = userId;
-                startDataListener();
-                showNotification("Session loaded! Anda dapat melanjutkan pekerjaan sebelumnya.");
-            }
-        }
-
-        // --- Firebase Initialization and Auth ---
-        async function initializeFirebase() {
-            try {
-                if (Object.keys(firebaseConfig).length === 0) {
-                    console.error("Firebase config is missing.");
-                    userId = crypto.randomUUID();
-                    document.getElementById('userIdDisplay').textContent = userId;
-                    initApp();
-                    loadFromUrlParams();
-                    return;
-                }
-
-                app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-                auth = getAuth(app);
-                
-                if (initialAuthToken) {
-                    await signInWithCustomToken(auth, initialAuthToken);
-                } else {
-                    await signInAnonymously(auth);
-                }
-
-                onAuthStateChanged(auth, (user) => {
-                    if (user) {
-                        userId = user.uid;
-                    } else {
-                        userId = crypto.randomUUID();
-                    }
-                    document.getElementById('userIdDisplay').textContent = userId;
-                    
-                    initApp(); 
-                    loadFromUrlParams();
-                    if(db) startDataListener();
-                });
-
-            } catch (error) {
-                console.error("Error initializing Firebase:", error);
-                showNotification(`Kesalahan Firebase: ${error.message}`, true);
-            }
-        }
-
-        // --- Signature Pad Functions ---
-        window.clearSignature = function() {
-            if (signaturePad) {
-                signaturePad.clear();
-                showNotification("Tanda tangan dihapus.");
-            }
-        }
-
-        // --- Hole Grid and Data Functions ---
-        function generateDrillGrid() {
-            const gridContainer = document.getElementById('drillGrid');
-            let html = '';
-
-            // Header Row (Col numbers 1 to 30)
-            html += `<div class="grid-header-cell border-t-0 pdf-grid-header-cell">HOLE ID</div>`;
-            for (let i = 1; i <= MAX_COLUMNS; i++) {
-                html += `<div class="grid-header-cell border-t-0 pdf-grid-header-cell">${i}</div>`;
-            }
-
-            // Data Rows (A to O)
-            HOLE_ROWS.forEach((holeName, index) => {
-                const rowIndex = index + 1;
-                
-                // Row Header (A, B, C...)
-                html += `<div class="grid-row-header pdf-grid-row-header" data-row-index="${rowIndex}">${holeName}</div>`;
-                
-                // Hole Cells
-                for (let col = 1; col <= MAX_COLUMNS; col++) {
-                    const holeId = `${holeName}-${col}`;
-                    html += `
-                        <div class="hole-cell" data-row-index="${rowIndex}">
-                            <div class="staggered-row-content">
-                                <span id="dot-${holeId}" 
-                                      class="hole-dot pdf-hole-dot rounded-full border-2 border-gray-400 bg-white cursor-pointer text-white" 
-                                      data-hole-id="${holeId}"
-                                      onclick="openHoleModal('${holeId}', event)">
-                                    <span id="depth-label-${holeId}" class="font-semibold"></span>
-                                </span>
-                            </div>
-                        </div>`;
+    <!-- SIMPLE NAVIGATION SCRIPT -->
+    <script>
+    // Simple Navigation System
+    document.addEventListener('DOMContentLoaded', function() {
+        // Navigation buttons
+        const navButtons = document.querySelectorAll('.nav-btn, .nav-section-btn');
+        navButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const sectionName = this.getAttribute('data-section');
+                if (sectionName) {
+                    showSection(sectionName);
                 }
             });
+        });
 
-            gridContainer.innerHTML = html;
-        }
+        // Show home section by default
+        showSection('home');
+    });
 
-        window.openHoleModal = function(holeId, event) {
-            currentHoleId = holeId;
-            const data = holeData[holeId] || { depth: '', status: '' };
-            const target = event.target.closest('.hole-dot');
-            if (!target) return;
-
-            document.getElementById('modalHoleId').textContent = `Hole: ${holeId}`;
-            document.getElementById('holeDepth').value = data.depth || '';
-            document.getElementById('holeCondition').value = data.status || '';
-
-            const rect = target.getBoundingClientRect();
-            const modal = document.getElementById('holeModal');
-            const containerCardRect = document.querySelector('.container-card').getBoundingClientRect();
-            
-            const posX = rect.left - containerCardRect.left + (rect.width / 2);
-            const posY = rect.top - containerCardRect.top - 10; 
-
-            modal.style.top = `${posY}px`;
-            modal.style.left = `${posX}px`;
-            modal.style.transform = `translateX(-50%) translateY(-100%)`; 
-
-            modal.classList.remove('hidden');
-        }
-
-        window.saveHoleDataFromModal = function() {
-            if (!currentHoleId) return;
-
-            const depth = document.getElementById('holeDepth').value;
-            const status = document.getElementById('holeCondition').value;
-
-            if (!depth || !status) {
-                showNotification("Mohon isi Kedalaman dan Kondisi Lubang.", true);
-                return;
-            }
-
-            holeData[currentHoleId] = {
-                depth: parseFloat(depth).toFixed(1),
-                status: status
-            };
-
-            updateHoleDotUI(currentHoleId);
-            closeHoleModal();
-            saveSessionData();
-        }
-
-        window.closeHoleModal = function() {
-            document.getElementById('holeModal').classList.add('hidden');
-            currentHoleId = null;
-        }
-
-        function updateHoleDotUI(holeId) {
-            const data = holeData[holeId] || { depth: '0.0', status: '' };
-            const dot = document.getElementById(`dot-${holeId}`);
-            const depthLabel = document.getElementById(`depth-label-${holeId}`);
-            
-            if (!dot || !depthLabel) return;
-            
-            const status = data.status;
-            const depth = data.depth;
-
-            let colorStatus = '';
-            if (status === 'Kering') colorStatus = 'D';
-            else if (status === 'Basah') colorStatus = 'W';
-            else if (status === 'Collapse') colorStatus = 'C';
-
-            dot.classList.remove('status-D', 'status-W', 'status-C', 'border-gray-500'); 
-            dot.classList.add('bg-white', 'border-gray-400');
-
-            if (colorStatus === 'D') dot.classList.add('status-D', 'border-gray-500');
-            else if (colorStatus === 'W') dot.classList.add('status-W', 'border-gray-500');
-            else if (colorStatus === 'C') dot.classList.add('status-C', 'border-gray-500');
-
-            if (depth && status) {
-                depthLabel.textContent = depth;
-                dot.classList.remove('text-gray-700');
-                dot.classList.add('text-white');
-            } else {
-                depthLabel.textContent = '';
-                dot.classList.add('text-gray-700');
-            }
-            
-            dot.title = `Kedalaman: ${depth || 'Belum Diisi'}, Kondisi: ${status || 'Belum Diisi'}`;
-        }
-
-        // Function to load hole data from Firestore and apply to UI
-        function loadHoleData(data) {
-            holeData = data.holeData || {};
-            currentNorthDirection = data.northDirection || null;
-            
-            if (currentNorthDirection) {
-                document.getElementById('currentNorthDirection').textContent = currentNorthDirection.toUpperCase();
-                const compassDirections = document.querySelectorAll('.compass-direction');
-                compassDirections.forEach(direction => {
-                    if (direction.getAttribute('data-direction') === currentNorthDirection) {
-                        direction.classList.add('active');
-                    }
-                });
-                updatePdfCompass();
-            }
-
-            document.getElementById('pit').value = data.pit || 'Tempudo 2';
-            document.getElementById('shift').value = data.shift || '';
-            document.getElementById('lokasi').value = data.lokasi || ''; 
-            document.getElementById('tanggal').value = data.tanggal || '';
-            document.getElementById('planHole').value = data.planHole || '';
-            document.getElementById('namaCrew').value = data.namaCrew || '';
-            document.getElementById('namaGL').value = data.namaGL || '';
-            document.getElementById('burden').value = data.burden || '';
-            document.getElementById('spasi').value = data.spasi || '';
-            document.getElementById('unitDrilling').value = data.unitDrilling || '';
-
-            if (data.signatureBase64 && signaturePad && signaturePad.isEmpty()) {
-                signaturePad.fromDataURL(data.signatureBase64);
-            }
-
-            HOLE_ROWS.forEach(row => {
-                for (let col = 1; col <= MAX_COLUMNS; col++) {
-                    updateHoleDotUI(`${row}-${col}`);
-                }
-            });
-        }
-
-        // --- Firestore Data Management ---
-        function getDataPath(docId) {
-            const sessionDocId = currentSessionId || 'current_report';
-            return `artifacts/${appId}/users/${userId}/drill_blast_reports/${sessionDocId}`;
-        }
-
-        async function saveSessionData() {
-            if (!db || !userId) return;
-
-            let signatureBase64 = '';
-            if (signaturePad && !signaturePad.isEmpty()) {
-                signatureBase64 = signaturePad.toDataURL();
-            }
-            
-            try {
-                const docRef = doc(db, getDataPath('current_report'));
-                await setDoc(docRef, {
-                    pit: document.getElementById('pit').value,
-                    shift: document.getElementById('shift').value,
-                    lokasi: document.getElementById('lokasi').value,
-                    tanggal: document.getElementById('tanggal').value,
-                    planHole: document.getElementById('planHole').value,
-                    namaCrew: document.getElementById('namaCrew').value,
-                    namaGL: document.getElementById('namaGL').value,
-                    burden: document.getElementById('burden').value,
-                    spasi: document.getElementById('spasi').value,
-                    unitDrilling: document.getElementById('unitDrilling').value,
-                    holeData: holeData,
-                    signatureBase64: signatureBase64,
-                    northDirection: currentNorthDirection,
-                    timestamp: serverTimestamp(),
-                    userId: userId,
-                    sessionId: currentSessionId
-                });
-                console.log("Data session tersimpan");
-            } catch (error) {
-                console.error("Error saving session:", error);
-            }
-        }
-
-        function startDataListener() {
-            if (!db || !userId) return;
-
-            const docRef = doc(db, getDataPath('current_report'));
-            
-            onSnapshot(docRef, (docSnap) => {
-                if (docSnap.exists()) {
-                    loadHoleData(docSnap.data());
-                    showNotification("Data formulir berhasil dimuat.");
-                }
-            }, (error) => {
-                console.error("Error listening to data:", error);
-            });
-        }
-
-        window.saveData = async function() {
-            await saveSessionData();
-            showNotification("Data Laporan berhasil disimpan!");
+    function showSection(sectionName) {
+        console.log('Showing section:', sectionName);
+        
+        // Hide all sections
+        document.querySelectorAll('.content-section').forEach(section => {
+            section.classList.add('hidden');
+        });
+        
+        // Remove active class from all buttons
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.classList.remove('active', 'bg-white', 'text-gray-800');
+            btn.classList.add('bg-gray-700', 'text-white');
+        });
+        
+        // Show target section
+        const targetSection = document.getElementById(sectionName + 'Section');
+        if (targetSection) {
+            targetSection.classList.remove('hidden');
         }
         
-        // --- Report Generation Logic ---
-        function getJadwal(pit) {
-            if (pit === 'Tempudo 4') {
-                return '12:00-13:00 WITA';
-            } else if (pit === 'Tempudo 2' || pit === 'Tempudo 3') {
-                return '13:00-14:00 WITA';
-            }
-            return 'Jadwal Tidak Diketahui';
+        // Activate corresponding button
+        const activeButton = document.querySelector(`[data-section="${sectionName}"]`);
+        if (activeButton) {
+            activeButton.classList.remove('bg-gray-700', 'text-white');
+            activeButton.classList.add('active', 'bg-white', 'text-gray-800');
         }
 
-        function generateReportSummary() {
-            const pit = document.getElementById('pit').value;
-            const shift = document.getElementById('shift').value;
-            const lokasi = document.getElementById('lokasi').value;
-            const planHole = parseFloat(document.getElementById('planHole').value) || 0;
-            const burden = document.getElementById('burden').value;
-            const spasi = document.getElementById('spasi').value;
-            const unitDrilling = document.getElementById('unitDrilling').value;
-            const tanggal = document.getElementById('tanggal').value;
-            const namaCrew = document.getElementById('namaCrew').value;
-            const namaGL = document.getElementById('namaGL').value;
+        // Load database data if showing database section
+        if (sectionName === 'database') {
+            loadDatabaseData();
+        }
+    }
 
-            if (!pit || !shift || !lokasi || planHole === 0 || !burden || !spasi || !unitDrilling || !tanggal || !namaCrew || !namaGL) {
-                 return false; 
+    // Make function globally available
+    window.showSection = showSection;
+    </script>
+
+    <!-- MAIN APPLICATION SCRIPT -->
+    <script>
+    // Global variables
+    let signaturePad;
+    let currentHoleId = null;
+    let currentNorthDirection = null;
+    let holeData = {};
+    let importData = null;
+    let allReports = JSON.parse(localStorage.getItem('allSoundingReports') || '[]');
+
+    // Hole Grid Configuration
+    const HOLE_ROWS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O'];
+    const MAX_COLUMNS = 30;
+
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeApp();
+    });
+
+    function initializeApp() {
+        generateDrillGrid();
+        initCompassDirection();
+        initSignaturePad();
+        setupEventListeners();
+        initDatabase();
+        
+        // Set default date
+        document.getElementById('tanggal').value = new Date().toISOString().split('T')[0];
+        
+        // Generate user ID
+        document.getElementById('userIdDisplay').textContent = generateUserId();
+        
+        // Load saved data
+        setTimeout(loadSessionData, 1000);
+    }
+
+    function generateUserId() {
+        return 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    }
+
+    function showNotification(message, isError = false) {
+        const el = document.getElementById('notification');
+        el.textContent = message;
+        el.className = `p-3 mb-4 rounded-lg text-sm transition-opacity duration-300 ${isError ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`;
+        el.classList.remove('hidden');
+        setTimeout(() => {
+            el.classList.add('hidden');
+        }, 5000);
+    }
+
+    // Setup event listeners
+    function setupEventListeners() {
+        // Excel Import/Export
+        document.getElementById('importExcelBtn').addEventListener('click', importFromExcel);
+        document.getElementById('confirmImportBtn').addEventListener('click', confirmImport);
+        document.getElementById('downloadTemplateBtn').addEventListener('click', downloadTemplate);
+        document.getElementById('exportExcelBtn').addEventListener('click', exportToExcel);
+        document.getElementById('exportExcelBtn2').addEventListener('click', exportToExcel);
+
+        // Database Import
+        document.getElementById('importDatabaseBtn').addEventListener('click', importDatabaseFromExcel);
+
+        // Share Link
+        document.getElementById('generateShareLinkBtn').addEventListener('click', generateShareLink);
+        document.getElementById('copyShareLinkBtn').addEventListener('click', copyShareLink);
+
+        // Hole Modal
+        document.getElementById('saveHoleDataBtn').addEventListener('click', saveHoleDataFromModal);
+        document.getElementById('closeHoleModalBtn').addEventListener('click', closeHoleModal);
+
+        // Signature - FIXED event listeners
+        document.getElementById('clearSignatureBtn').addEventListener('click', clearSignature);
+        document.getElementById('clearSignatureBtnSmall').addEventListener('click', clearSignature);
+        document.getElementById('saveDataBtn').addEventListener('click', saveData);
+
+        // PDF Export
+        document.getElementById('generatePdfBtn').addEventListener('click', generateReportAndDownloadPDF);
+
+        // Copy to clipboard
+        document.getElementById('copyToClipboardBtn').addEventListener('click', function() {
+            copyToClipboard('copyOutputText');
+        });
+
+        // Form auto-save
+        const formInputs = document.querySelectorAll('#generalInfoInputs input, #generalInfoInputs select');
+        formInputs.forEach(input => {
+            input.addEventListener('change', saveSessionData);
+        });
+
+        // Handle window resize for signature pad
+        window.addEventListener('resize', function() {
+            setTimeout(initSignaturePad, 100);
+        });
+    }
+
+    function copyToClipboard(elementId) {
+        const copyText = document.getElementById(elementId);
+        try {
+            copyText.select();
+            copyText.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(copyText.value);
+            showNotification("Teks berhasil disalin ke clipboard!");
+        } catch (err) {
+            console.error('Failed to copy text: ', err);
+            showNotification("Gagal menyalin. Silakan salin manual.", true);
+        }
+    }
+
+    // Kompas Functions - FIXED
+    function initCompassDirection() {
+        const compassDirections = document.querySelectorAll('.compass-direction');
+        
+        compassDirections.forEach(direction => {
+            direction.addEventListener('click', function() {
+                compassDirections.forEach(dir => dir.classList.remove('active'));
+                this.classList.add('active');
+                currentNorthDirection = this.getAttribute('data-direction');
+                document.getElementById('currentNorthDirection').textContent = currentNorthDirection.toUpperCase();
+                updatePdfCompass();
+                saveSessionData();
+                showNotification(`Arah Utara diatur ke: ${currentNorthDirection.toUpperCase()}`);
+            });
+        });
+    }
+
+    function updatePdfCompass() {
+        // Reset all directions
+        const directions = ['pdfNorth', 'pdfEast', 'pdfSouth', 'pdfWest'];
+        directions.forEach(id => {
+            const element = document.getElementById(id);
+            element.textContent = '';
+            element.classList.remove('active');
+        });
+        
+        // Set active direction based on current selection
+        if (currentNorthDirection === 'utara') {
+            document.getElementById('pdfNorth').textContent = 'U';
+            document.getElementById('pdfNorth').classList.add('active');
+        } else if (currentNorthDirection === 'timur') {
+            document.getElementById('pdfEast').textContent = 'U';
+            document.getElementById('pdfEast').classList.add('active');
+        } else if (currentNorthDirection === 'selatan') {
+            document.getElementById('pdfSouth').textContent = 'U';
+            document.getElementById('pdfSouth').classList.add('active');
+        } else if (currentNorthDirection === 'barat') {
+            document.getElementById('pdfWest').textContent = 'U';
+            document.getElementById('pdfWest').classList.add('active');
+        }
+    }
+
+    // Signature Pad Functions - IMPROVED untuk freeform drawing
+    function initSignaturePad() {
+        const canvas = document.getElementById('signatureCanvas');
+        const placeholder = document.getElementById('signaturePlaceholder');
+        
+        if (!canvas) {
+            console.error("Canvas element not found!");
+            return;
+        }
+
+        // Clear any existing signature pad
+        if (signaturePad) {
+            signaturePad.off();
+            signaturePad = null;
+        }
+
+        // Fix canvas scaling issues
+        const container = canvas.parentElement;
+        const rect = container.getBoundingClientRect();
+        
+        // Set canvas size to match container
+        canvas.width = rect.width;
+        canvas.height = 150;
+        
+        // Get device pixel ratio
+        const ratio = Math.max(window.devicePixelRatio || 1, 1);
+        
+        // Set actual canvas buffer size
+        canvas.width = rect.width * ratio;
+        canvas.height = 150 * ratio;
+        
+        // Scale the context
+        const ctx = canvas.getContext('2d');
+        ctx.scale(ratio, ratio);
+        
+        // Set CSS size to match container
+        canvas.style.width = rect.width + 'px';
+        canvas.style.height = '150px';
+
+        // Initialize SignaturePad dengan konfigurasi yang lebih baik untuk freeform drawing
+        signaturePad = new SignaturePad(canvas, {
+            backgroundColor: 'rgb(255, 255, 255)',
+            minWidth: 0.5,   // Lebih tipis untuk detail yang lebih baik
+            maxWidth: 4,     // Lebih tebal untuk tekanan
+            penColor: 'rgb(0, 0, 0)',
+            throttle: 8,     // Lebih smooth
+            velocityFilterWeight: 0.7,
+            onBegin: function() {
+                placeholder.style.display = 'none';
+            },
+            onEnd: function() {
+                saveSessionData();
             }
+        });
 
-            const filledHoles = Object.values(holeData).filter(d => d.status);
-            const actualHoles = filledHoles.length;
+        // Enable signature pad
+        signaturePad.on();
+        
+        console.log("Signature pad initialized with freeform drawing");
+    }
+
+    function clearSignature() {
+        if (signaturePad) {
+            signaturePad.clear();
+            document.getElementById('signaturePlaceholder').style.display = 'block';
+            saveSessionData();
+            showNotification("Tanda tangan dihapus.");
+        }
+    }
+
+    // Hole Grid Functions
+    function generateDrillGrid() {
+        const gridContainer = document.getElementById('drillGrid');
+        let html = '';
+
+        // Header Row
+        html += `<div class="grid-header-cell border-t-0 pdf-grid-header-cell">HOLE ID</div>`;
+        for (let i = 1; i <= MAX_COLUMNS; i++) {
+            html += `<div class="grid-header-cell border-t-0 pdf-grid-header-cell">${i}</div>`;
+        }
+
+        // Data Rows
+        HOLE_ROWS.forEach((holeName, index) => {
+            const rowIndex = index + 1;
             
-            const validDepths = filledHoles
-                .map(d => parseFloat(d.depth))
-                .filter(d => !isNaN(d) && d > 0);
+            html += `<div class="grid-row-header pdf-grid-row-header" data-row-index="${rowIndex}">${holeName}</div>`;
+            
+            for (let col = 1; col <= MAX_COLUMNS; col++) {
+                const holeId = `${holeName}-${col}`;
+                html += `
+                    <div class="hole-cell" data-row-index="${rowIndex}">
+                        <div class="staggered-row-content">
+                            <span id="dot-${holeId}" 
+                                  class="hole-dot pdf-hole-dot rounded-full border-2 border-gray-400 bg-white cursor-pointer text-white relative" 
+                                  data-hole-id="${holeId}">
+                                <span id="depth-label-${holeId}" class="font-semibold absolute inset-0 flex items-center justify-center"></span>
+                            </span>
+                        </div>
+                    </div>`;
+            }
+        });
 
-            const totalDepth = validDepths.reduce((sum, d) => sum + d, 0);
-            const avgDepth = validDepths.length > 0 ? (totalDepth / validDepths.length).toFixed(2) : '0.0';
+        gridContainer.innerHTML = html;
 
-            const dryCount = filledHoles.filter(d => d.status === 'Kering').length;
-            const dryPercentage = actualHoles > 0 ? ((dryCount / actualHoles) * 100).toFixed(0) : '0';
+        // Add click events to hole dots
+        HOLE_ROWS.forEach(row => {
+            for (let col = 1; col <= MAX_COLUMNS; col++) {
+                const holeId = `${row}-${col}`;
+                document.getElementById(`dot-${holeId}`).addEventListener('click', function(e) {
+                    openHoleModal(holeId, e);
+                });
+            }
+        });
+    }
 
-            const jadwal = getJadwal(pit);
-            const copyText = `
-${pit} - ${shift}
+    function openHoleModal(holeId, event) {
+        currentHoleId = holeId;
+        const data = holeData[holeId] || { depth: '', status: '' };
+        const target = event.target.closest('.hole-dot');
+        if (!target) return;
+
+        document.getElementById('modalHoleId').textContent = `Hole: ${holeId}`;
+        document.getElementById('holeDepth').value = data.depth || '';
+        document.getElementById('holeCondition').value = data.status || '';
+
+        const rect = target.getBoundingClientRect();
+        const modal = document.getElementById('holeModal');
+        const containerCardRect = document.querySelector('.container-card').getBoundingClientRect();
+        
+        const posX = rect.left - containerCardRect.left + (rect.width / 2);
+        const posY = rect.top - containerCardRect.top - 10; 
+
+        modal.style.top = `${posY}px`;
+        modal.style.left = `${posX}px`;
+        modal.style.transform = `translateX(-50%) translateY(-100%)`; 
+
+        modal.classList.remove('hidden');
+    }
+
+    function saveHoleDataFromModal() {
+        if (!currentHoleId) return;
+
+        const depth = document.getElementById('holeDepth').value;
+        const status = document.getElementById('holeCondition').value;
+
+        if (!depth || !status) {
+            showNotification("Mohon isi Kedalaman dan Kondisi Lubang.", true);
+            return;
+        }
+
+        holeData[currentHoleId] = {
+            depth: parseFloat(depth).toFixed(1),
+            status: status
+        };
+
+        updateHoleDotUI(currentHoleId);
+        closeHoleModal();
+        saveSessionData();
+        updatePreviewData();
+    }
+
+    function closeHoleModal() {
+        document.getElementById('holeModal').classList.add('hidden');
+        currentHoleId = null;
+    }
+
+    function updateHoleDotUI(holeId) {
+        const data = holeData[holeId] || { depth: '0.0', status: '' };
+        const dot = document.getElementById(`dot-${holeId}`);
+        const depthLabel = document.getElementById(`depth-label-${holeId}`);
+        
+        if (!dot || !depthLabel) return;
+        
+        const status = data.status;
+        const depth = data.depth;
+
+        let colorStatus = '';
+        if (status === 'Kering') colorStatus = 'D';
+        else if (status === 'Basah') colorStatus = 'W';
+        else if (status === 'Collapse') colorStatus = 'C';
+
+        dot.classList.remove('status-D', 'status-W', 'status-C', 'border-gray-500'); 
+        dot.classList.add('bg-white', 'border-gray-400');
+
+        if (colorStatus === 'D') dot.classList.add('status-D', 'border-gray-500');
+        else if (colorStatus === 'W') dot.classList.add('status-W', 'border-gray-500');
+        else if (colorStatus === 'C') dot.classList.add('status-C', 'border-gray-500');
+
+        if (depth && status) {
+            depthLabel.textContent = depth;
+            dot.classList.remove('text-gray-700');
+            depthLabel.classList.remove('text-gray-700');
+            dot.classList.add('text-white');
+            depthLabel.classList.add('text-white');
+        } else {
+            depthLabel.textContent = '';
+            dot.classList.add('text-gray-700');
+        }
+        
+        dot.title = `Kedalaman: ${depth || 'Belum Diisi'}, Kondisi: ${status || 'Belum Diisi'}`;
+    }
+
+    // Excel Import/Export Functions
+    function downloadTemplate() {
+        try {
+            const templateData = [
+                ['ID HOLE', 'DEPTH HOLE (m)', 'HOLE CONDITION'],
+                ['A-1', '6.5', 'Kering'],
+                ['A-2', '7.2', 'Basah'],
+                ['A-3', '5.8', 'Collapse'],
+                ['B-1', '6.9', 'Kering'],
+                ['B-2', '7.5', 'Kering']
+            ];
+
+            const ws = XLSX.utils.aoa_to_sheet(templateData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Template Sounding");
+            
+            XLSX.writeFile(wb, `Sounding_Template_${new Date().toISOString().split('T')[0]}.xlsx`);
+            showNotification("Template Excel berhasil didownload!");
+            
+        } catch (error) {
+            console.error("Error downloading template:", error);
+            showNotification(`Gagal download template: ${error.message}`, true);
+        }
+    }
+
+    function importFromExcel() {
+        const fileInput = document.getElementById('excelImport');
+        const file = fileInput.files[0];
+        
+        if (!file) {
+            showNotification("Pilih file Excel terlebih dahulu!", true);
+            return;
+        }
+        
+        showNotification("Memproses file Excel...", false);
+        
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            try {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+                
+                // Validasi header
+                if (jsonData.length < 1 || 
+                    jsonData[0][0] !== 'ID HOLE' || 
+                    jsonData[0][1] !== 'DEPTH HOLE (m)' || 
+                    jsonData[0][2] !== 'HOLE CONDITION') {
+                    throw new Error("Format Excel tidak sesuai. Gunakan template yang disediakan.");
+                }
+                
+                // Process data
+                importData = {};
+                let validRows = 0;
+                let previewHtml = '';
+                
+                for (let i = 1; i < jsonData.length; i++) {
+                    const row = jsonData[i];
+                    if (row && row.length >= 3 && row[0] && row[1] && row[2]) {
+                        const holeId = row[0].toString().trim();
+                        const depth = parseFloat(row[1]);
+                        const condition = row[2].toString().trim();
+                        
+                        // Validasi hole ID format
+                        if (!/^[A-O]-\d+$/.test(holeId)) {
+                            console.warn(`Format ID HOLE tidak valid: ${holeId}`);
+                            continue;
+                        }
+                        
+                        // Validasi condition
+                        const validConditions = ['Kering', 'Basah', 'Collapse'];
+                        if (!validConditions.includes(condition)) {
+                            console.warn(`Kondisi tidak valid: ${condition}`);
+                            continue;
+                        }
+                        
+                        importData[holeId] = {
+                            depth: depth.toFixed(1),
+                            status: condition
+                        };
+                        validRows++;
+                        
+                        // Build preview (max 5 rows)
+                        if (validRows <= 5) {
+                            previewHtml += `<div class="py-1 border-b border-gray-200">${holeId}: ${depth}m (${condition})</div>`;
+                        }
+                    }
+                }
+                
+                if (validRows === 0) {
+                    throw new Error("Tidak ada data valid yang ditemukan dalam file Excel.");
+                }
+                
+                // Show preview
+                document.getElementById('importPreviewContent').innerHTML = 
+                    `${previewHtml}<div class="text-amber-600 font-semibold mt-2 py-1 border-t border-gray-300">Total: ${validRows} data valid</div>`;
+                document.getElementById('importPreview').classList.remove('hidden');
+                
+                showNotification(`Berhasil memproses ${validRows} data dari Excel!`);
+                
+            } catch (error) {
+                console.error("Error processing Excel:", error);
+                showNotification(`Gagal memproses Excel: ${error.message}`, true);
+            }
+        };
+        
+        reader.onerror = function() {
+            showNotification("Gagal membaca file Excel", true);
+        };
+        
+        reader.readAsArrayBuffer(file);
+    }
+
+    function confirmImport() {
+        if (!importData || Object.keys(importData).length === 0) {
+            showNotification("Tidak ada data untuk di-import!", true);
+            return;
+        }
+        
+        // Apply imported data to holeData
+        Object.entries(importData).forEach(([holeId, data]) => {
+            holeData[holeId] = {
+                depth: data.depth,
+                status: data.status
+            };
+            updateHoleDotUI(holeId);
+        });
+        
+        // Update plan hole count
+        const currentPlanHole = document.getElementById('planHole').value;
+        const importedCount = Object.keys(importData).length;
+        if (!currentPlanHole || parseInt(currentPlanHole) < importedCount) {
+            document.getElementById('planHole').value = importedCount;
+        }
+        
+        // Save to session
+        saveSessionData();
+        
+        showNotification(`✅ Berhasil import ${Object.keys(importData).length} data lubang!`);
+        document.getElementById('importPreview').classList.add('hidden');
+        document.getElementById('excelImport').value = '';
+        
+        importData = null;
+        
+        // Update preview
+        updatePreviewData();
+    }
+
+    function exportToExcel() {
+        if (Object.keys(holeData).length === 0) {
+            showNotification("Tidak ada data lubang untuk diexport.", true);
+            return;
+        }
+
+        try {
+            const excelData = [['ID HOLE', 'DEPTH HOLE (m)', 'HOLE CONDITION']];
+            
+            HOLE_ROWS.forEach(row => {
+                for (let col = 1; col <= MAX_COLUMNS; col++) {
+                    const holeId = `${row}-${col}`;
+                    const data = holeData[holeId];
+                    if (data && data.status) {
+                        excelData.push([holeId, data.depth || '', data.status || '']);
+                    }
+                }
+            });
+
+            const ws = XLSX.utils.aoa_to_sheet(excelData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Hole Data");
+            
+            const fileName = `Sounding_Data_${document.getElementById('lokasi').value || 'Report'}_${document.getElementById('tanggal').value || new Date().toISOString().split('T')[0]}.xlsx`;
+            XLSX.writeFile(wb, fileName);
+            
+            showNotification("Data berhasil diexport ke Excel!");
+            
+        } catch (error) {
+            console.error("Error exporting to Excel:", error);
+            showNotification(`Gagal export Excel: ${error.message}`, true);
+        }
+    }
+
+    // Database Functions
+    function initDatabase() {
+        // Load existing reports
+        allReports = JSON.parse(localStorage.getItem('allSoundingReports') || '[]');
+        console.log(`Loaded ${allReports.length} reports from database`);
+    }
+
+    function loadDatabaseData() {
+        const dbResults = document.getElementById('dbResults');
+        
+        if (allReports.length === 0) {
+            dbResults.innerHTML = `
+                <div class="text-center p-8 bg-gray-50 rounded-xl">
+                    <p class="text-gray-600">Belum ada data database. Import data Excel atau buat data baru di section E-SOUNDING.</p>
+                </div>
+            `;
+            return;
+        }
+
+        let html = '';
+        
+        // Sort reports by timestamp (newest first)
+        allReports.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        
+        allReports.forEach((report, index) => {
+            const stats = calculateStatisticsFromReport(report);
+            
+            html += `
+                <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h3 class="font-bold text-lg text-gray-800">${report.lokasi || 'Unknown Location'}</h3>
+                            <p class="text-sm text-gray-600">${report.tanggal} | ${report.shift} | ${report.pit}</p>
+                        </div>
+                        <span class="px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-sm font-semibold">
+                            ${stats.totalHoles} Lubang
+                        </span>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4 text-sm">
+                        <div>
+                            <span class="text-gray-600">Plan Hole:</span>
+                            <span class="font-semibold ml-1">${report.planHole || '-'}</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-600">B x S:</span>
+                            <span class="font-semibold ml-1">${report.burden || '-'} x ${report.spasi || '-'}</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-600">Rata Kedalaman:</span>
+                            <span class="font-semibold ml-1">${stats.avgDepth} m</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-600">Kering:</span>
+                            <span class="font-semibold ml-1 text-green-600">${stats.dryPercentage}%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-500">Crew: ${report.namaCrew || '-'} | GL: ${report.namaGL || '-'}</span>
+                        <div class="space-x-2">
+                            <button onclick="loadReportToForm('${report.id}')" class="px-3 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 transition">
+                                📋 Load
+                            </button>
+                            <button onclick="viewReportGrid('${report.id}')" class="px-3 py-1 bg-green-500 text-white text-sm rounded hover:bg-green-600 transition">
+                                👁️ View Grid
+                            </button>
+                            <button onclick="deleteReport('${report.id}')" class="px-3 py-1 bg-red-500 text-white text-sm rounded hover:bg-red-600 transition">
+                                🗑️ Hapus
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        dbResults.innerHTML = html;
+    }
+
+    function calculateStatisticsFromReport(report) {
+        const filledHoles = Object.values(report.holeData || {}).filter(d => d.status);
+        const actualHoles = filledHoles.length;
+        
+        const validDepths = filledHoles
+            .map(d => parseFloat(d.depth))
+            .filter(d => !isNaN(d) && d > 0);
+
+        const totalDepth = validDepths.reduce((sum, d) => sum + d, 0);
+        const avgDepth = validDepths.length > 0 ? (totalDepth / validDepths.length).toFixed(2) : '0.0';
+
+        const dryCount = filledHoles.filter(d => d.status === 'Kering').length;
+        const dryPercentage = actualHoles > 0 ? ((dryCount / actualHoles) * 100).toFixed(0) : '0';
+
+        return {
+            totalHoles: actualHoles,
+            avgDepth: avgDepth,
+            dryPercentage: dryPercentage,
+            wetCount: filledHoles.filter(d => d.status === 'Basah').length,
+            collapseCount: filledHoles.filter(d => d.status === 'Collapse').length
+        };
+    }
+
+    function loadReportToForm(reportId) {
+        const report = allReports.find(r => r.id === reportId);
+        if (!report) {
+            showNotification("Laporan tidak ditemukan", true);
+            return;
+        }
+        
+        // Load form data
+        document.getElementById('pit').value = report.pit || '';
+        document.getElementById('shift').value = report.shift || '';
+        document.getElementById('lokasi').value = report.lokasi || '';
+        document.getElementById('tanggal').value = report.tanggal || '';
+        document.getElementById('planHole').value = report.planHole || '';
+        document.getElementById('namaCrew').value = report.namaCrew || '';
+        document.getElementById('namaGL').value = report.namaGL || '';
+        document.getElementById('burden').value = report.burden || '';
+        document.getElementById('spasi').value = report.spasi || '';
+        document.getElementById('unitDrilling').value = report.unitDrilling || '';
+        
+        // Load hole data
+        holeData = {...report.holeData};
+        Object.keys(holeData).forEach(holeId => {
+            updateHoleDotUI(holeId);
+        });
+        
+        // Load signature
+        if (report.signatureBase64 && signaturePad) {
+            // Clear first
+            signaturePad.clear();
+            
+            // Create temporary image to load signature
+            const img = new Image();
+            img.onload = function() {
+                const ctx = signaturePad.canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, signaturePad.canvas.width, signaturePad.canvas.height);
+                document.getElementById('signaturePlaceholder').style.display = 'none';
+            };
+            img.src = report.signatureBase64;
+        }
+        
+        // Load north direction
+        if (report.northDirection) {
+            currentNorthDirection = report.northDirection;
+            document.getElementById('currentNorthDirection').textContent = currentNorthDirection.toUpperCase();
+            updatePdfCompass();
+            
+            // Activate corresponding compass direction
+            const compassDirections = document.querySelectorAll('.compass-direction');
+            compassDirections.forEach(dir => {
+                dir.classList.remove('active');
+                if (dir.getAttribute('data-direction') === currentNorthDirection) {
+                    dir.classList.add('active');
+                }
+            });
+        }
+        
+        // Save to session
+        saveSessionData();
+        
+        // Switch to e-sounding section
+        showSection('e-sounding');
+        
+        showNotification(`Laporan ${report.lokasi} berhasil dimuat!`);
+    }
+
+    function viewReportGrid(reportId) {
+        const report = allReports.find(r => r.id === reportId);
+        if (!report) {
+            showNotification("Laporan tidak ditemukan", true);
+            return;
+        }
+
+        // Create modal to show grid visualization
+        const modalHtml = `
+            <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div class="bg-white rounded-2xl p-6 max-w-4xl max-h-[90vh] overflow-auto">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-bold text-gray-800">Grid Visualization - ${report.lokasi}</h3>
+                        <button onclick="closeGridModal()" class="text-gray-500 hover:text-gray-700">
+                            ✕
+                        </button>
+                    </div>
+                    <div id="databaseGridContainer" class="border rounded-lg p-4 bg-gray-50">
+                        <!-- Grid will be generated here -->
+                    </div>
+                    <div class="mt-4 text-sm text-gray-600">
+                        <p><strong>Tanggal:</strong> ${report.tanggal} | <strong>Shift:</strong> ${report.shift} | <strong>PIT:</strong> ${report.pit}</p>
+                        <p><strong>Lokasi:</strong> ${report.lokasi} | <strong>Plan Hole:</strong> ${report.planHole}</p>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        const modal = document.createElement('div');
+        modal.innerHTML = modalHtml;
+        document.body.appendChild(modal);
+
+        // Generate grid for this report
+        generateDatabaseGrid(report, 'databaseGridContainer');
+    }
+
+    function closeGridModal() {
+        const modal = document.querySelector('.fixed.inset-0');
+        if (modal) {
+            modal.remove();
+        }
+    }
+
+    function generateDatabaseGrid(report, containerId) {
+        const container = document.getElementById(containerId);
+        let html = '<div class="database-grid">';
+
+        // Header Row
+        html += `<div class="grid-header-cell border-t-0">HOLE ID</div>`;
+        for (let i = 1; i <= MAX_COLUMNS; i++) {
+            html += `<div class="grid-header-cell border-t-0">${i}</div>`;
+        }
+
+        // Data Rows
+        HOLE_ROWS.forEach((holeName, index) => {
+            const rowIndex = index + 1;
+            
+            html += `<div class="grid-row-header" data-row-index="${rowIndex}">${holeName}</div>`;
+            
+            for (let col = 1; col <= MAX_COLUMNS; col++) {
+                const holeId = `${holeName}-${col}`;
+                const data = report.holeData[holeId] || { depth: '', status: '' };
+                const status = data.status;
+                const depth = data.depth;
+
+                let colorStatus = '';
+                if (status === 'Kering') colorStatus = 'D';
+                else if (status === 'Basah') colorStatus = 'W';
+                else if (status === 'Collapse') colorStatus = 'C';
+
+                let dotClass = 'hole-dot rounded-full border-2 border-gray-400 bg-white cursor-pointer text-white relative';
+                if (colorStatus === 'D') dotClass += ' status-D border-gray-500';
+                else if (colorStatus === 'W') dotClass += ' status-W border-gray-500';
+                else if (colorStatus === 'C') dotClass += ' status-C border-gray-500';
+
+                html += `
+                    <div class="hole-cell" data-row-index="${rowIndex}">
+                        <div class="staggered-row-content">
+                            <span class="${dotClass}" style="width: 18px; height: 18px; font-size: 0.45rem;">
+                                <span class="font-semibold absolute inset-0 flex items-center justify-center">
+                                    ${depth && status ? depth : ''}
+                                </span>
+                            </span>
+                        </div>
+                    </div>`;
+            }
+        });
+
+        html += '</div>';
+        container.innerHTML = html;
+    }
+
+    function deleteReport(reportId) {
+        if (confirm('Apakah Anda yakin ingin menghapus laporan ini?')) {
+            allReports = allReports.filter(report => report.id !== reportId);
+            localStorage.setItem('allSoundingReports', JSON.stringify(allReports));
+            loadDatabaseData();
+            showNotification("Laporan berhasil dihapus");
+        }
+    }
+
+    function importDatabaseFromExcel() {
+        const fileInput = document.getElementById('databaseExcelImport');
+        const file = fileInput.files[0];
+        
+        if (!file) {
+            showNotification("Pilih file Excel terlebih dahulu!", true);
+            return;
+        }
+        
+        showNotification("Memproses database Excel...", false);
+        
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            try {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                
+                let importedCount = 0;
+                
+                // Process each sheet
+                workbook.SheetNames.forEach(sheetName => {
+                    const sheet = workbook.Sheets[sheetName];
+                    const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+                    
+                    // Skip if not enough rows or wrong header
+                    if (jsonData.length < 2 || 
+                        jsonData[0][0] !== 'ID HOLE' || 
+                        jsonData[0][1] !== 'DEPTH HOLE (m)' || 
+                        jsonData[0][2] !== 'HOLE CONDITION') {
+                        return;
+                    }
+                    
+                    // Extract metadata from sheet name or first rows
+                    const reportData = {
+                        id: 'db_import_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                        pit: extractPitFromSheetName(sheetName),
+                        shift: 'SHIFT 1', // Default
+                        lokasi: sheetName,
+                        tanggal: new Date().toISOString().split('T')[0],
+                        planHole: 0,
+                        holeData: {},
+                        timestamp: new Date().toISOString()
+                    };
+                    
+                    // Process hole data
+                    for (let i = 1; i < jsonData.length; i++) {
+                        const row = jsonData[i];
+                        if (row && row.length >= 3 && row[0] && row[1] && row[2]) {
+                            const holeId = row[0].toString().trim();
+                            const depth = parseFloat(row[1]);
+                            const condition = row[2].toString().trim();
+                            
+                            if (/^[A-O]-\d+$/.test(holeId) && ['Kering', 'Basah', 'Collapse'].includes(condition)) {
+                                reportData.holeData[holeId] = {
+                                    depth: depth.toFixed(1),
+                                    status: condition
+                                };
+                                reportData.planHole++;
+                            }
+                        }
+                    }
+                    
+                    if (Object.keys(reportData.holeData).length > 0) {
+                        allReports.push(reportData);
+                        importedCount++;
+                    }
+                });
+                
+                if (importedCount > 0) {
+                    localStorage.setItem('allSoundingReports', JSON.stringify(allReports));
+                    showNotification(`✅ Berhasil import ${importedCount} laporan dari database Excel!`);
+                    loadDatabaseData();
+                } else {
+                    showNotification("Tidak ada data valid yang ditemukan dalam file Excel.", true);
+                }
+                
+            } catch (error) {
+                console.error("Error processing database Excel:", error);
+                showNotification(`Gagal memproses database Excel: ${error.message}`, true);
+            }
+        };
+        
+        reader.onerror = function() {
+            showNotification("Gagal membaca file Excel", true);
+        };
+        
+        reader.readAsArrayBuffer(file);
+    }
+
+    function extractPitFromSheetName(sheetName) {
+        if (sheetName.includes('Tempudo 2')) return 'Tempudo 2';
+        if (sheetName.includes('Tempudo 3')) return 'Tempudo 3';
+        if (sheetName.includes('Tempudo 4')) return 'Tempudo 4';
+        return 'Tempudo 2'; // Default
+    }
+
+    // Share Link Functions
+    function generateShareLink() {
+        const userId = document.getElementById('userIdDisplay').textContent;
+        const sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+
+        const baseUrl = window.location.href.split('?')[0];
+        const shareUrl = `${baseUrl}?session=${sessionId}&user=${userId}`;
+        
+        document.getElementById('shareableLink').value = shareUrl;
+        document.getElementById('shareLinkContainer').classList.remove('hidden');
+        
+        saveSessionData();
+        
+        showNotification("Link berhasil dibuat! Salin dan simpan untuk melanjutkan nanti.");
+    }
+
+    function copyShareLink() {
+        const shareLink = document.getElementById('shareableLink');
+        copyToClipboard('shareableLink');
+    }
+
+    // Data Management - FIXED signature saving
+    function saveData() {
+        // Save current report to database
+        saveReportToDatabase();
+        saveSessionData();
+        showNotification("Data Laporan berhasil disimpan!");
+    }
+
+    function saveSessionData() {
+        let signatureBase64 = '';
+        if (signaturePad && !signaturePad.isEmpty()) {
+            // Get signature data with proper scaling
+            const tempCanvas = document.createElement('canvas');
+            const tempCtx = tempCanvas.getContext('2d');
+            
+            // Set reasonable size for storage
+            tempCanvas.width = 400;
+            tempCanvas.height = 150;
+            
+            // Draw signature to temp canvas
+            tempCtx.drawImage(signaturePad.canvas, 0, 0, tempCanvas.width, tempCanvas.height);
+            signatureBase64 = tempCanvas.toDataURL();
+        }
+        
+        // Simpan ke localStorage sebagai fallback
+        const sessionData = {
+            pit: document.getElementById('pit').value,
+            shift: document.getElementById('shift').value,
+            lokasi: document.getElementById('lokasi').value,
+            tanggal: document.getElementById('tanggal').value,
+            planHole: document.getElementById('planHole').value,
+            namaCrew: document.getElementById('namaCrew').value,
+            namaGL: document.getElementById('namaGL').value,
+            burden: document.getElementById('burden').value,
+            spasi: document.getElementById('spasi').value,
+            unitDrilling: document.getElementById('unitDrilling').value,
+            holeData: holeData,
+            signatureBase64: signatureBase64,
+            northDirection: currentNorthDirection,
+            timestamp: new Date().toISOString()
+        };
+        
+        localStorage.setItem('soundingData', JSON.stringify(sessionData));
+        console.log("Data session tersimpan di localStorage");
+    }
+
+    function saveReportToDatabase() {
+        const signatureBase64 = signaturePad && !signaturePad.isEmpty() ? signaturePad.toDataURL() : '';
+        
+        const report = {
+            id: 'report_' + Date.now(),
+            pit: document.getElementById('pit').value,
+            shift: document.getElementById('shift').value,
+            lokasi: document.getElementById('lokasi').value,
+            tanggal: document.getElementById('tanggal').value,
+            planHole: document.getElementById('planHole').value,
+            namaCrew: document.getElementById('namaCrew').value,
+            namaGL: document.getElementById('namaGL').value,
+            burden: document.getElementById('burden').value,
+            spasi: document.getElementById('spasi').value,
+            unitDrilling: document.getElementById('unitDrilling').value,
+            holeData: {...holeData},
+            signatureBase64: signatureBase64,
+            northDirection: currentNorthDirection,
+            timestamp: new Date().toISOString(),
+            statistics: calculateStatistics()
+        };
+        
+        // Add to reports array
+        allReports.push(report);
+        
+        // Save to localStorage
+        localStorage.setItem('allSoundingReports', JSON.stringify(allReports));
+        
+        console.log("Report saved to database:", report.id);
+    }
+
+    function calculateStatistics() {
+        const filledHoles = Object.values(holeData).filter(d => d.status);
+        const actualHoles = filledHoles.length;
+        
+        const validDepths = filledHoles
+            .map(d => parseFloat(d.depth))
+            .filter(d => !isNaN(d) && d > 0);
+
+        const totalDepth = validDepths.reduce((sum, d) => sum + d, 0);
+        const avgDepth = validDepths.length > 0 ? (totalDepth / validDepths.length).toFixed(2) : '0.0';
+
+        const dryCount = filledHoles.filter(d => d.status === 'Kering').length;
+        const dryPercentage = actualHoles > 0 ? ((dryCount / actualHoles) * 100).toFixed(0) : '0';
+
+        return {
+            totalHoles: actualHoles,
+            avgDepth: avgDepth,
+            dryPercentage: dryPercentage,
+            wetCount: filledHoles.filter(d => d.status === 'Basah').length,
+            collapseCount: filledHoles.filter(d => d.status === 'Collapse').length
+        };
+    }
+
+    function loadSessionData() {
+        const savedData = localStorage.getItem('soundingData');
+        if (savedData) {
+            try {
+                const data = JSON.parse(savedData);
+                
+                // Load form data
+                document.getElementById('pit').value = data.pit || '';
+                document.getElementById('shift').value = data.shift || '';
+                document.getElementById('lokasi').value = data.lokasi || '';
+                document.getElementById('tanggal').value = data.tanggal || '';
+                document.getElementById('planHole').value = data.planHole || '';
+                document.getElementById('namaCrew').value = data.namaCrew || '';
+                document.getElementById('namaGL').value = data.namaGL || '';
+                document.getElementById('burden').value = data.burden || '';
+                document.getElementById('spasi').value = data.spasi || '';
+                document.getElementById('unitDrilling').value = data.unitDrilling || '';
+                
+                // Load hole data
+                if (data.holeData) {
+                    holeData = data.holeData;
+                    Object.keys(holeData).forEach(holeId => {
+                        updateHoleDotUI(holeId);
+                    });
+                }
+                
+                // Load signature - FIXED
+                if (data.signatureBase64 && signaturePad) {
+                    // Clear first
+                    signaturePad.clear();
+                    
+                    // Create temporary image to load signature
+                    const img = new Image();
+                    img.onload = function() {
+                        const ctx = signaturePad.canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, signaturePad.canvas.width, signaturePad.canvas.height);
+                        document.getElementById('signaturePlaceholder').style.display = 'none';
+                    };
+                    img.src = data.signatureBase64;
+                }
+                
+                // Load north direction
+                if (data.northDirection) {
+                    currentNorthDirection = data.northDirection;
+                    document.getElementById('currentNorthDirection').textContent = currentNorthDirection.toUpperCase();
+                    updatePdfCompass();
+                    
+                    // Activate corresponding compass direction
+                    const compassDirections = document.querySelectorAll('.compass-direction');
+                    compassDirections.forEach(dir => {
+                        if (dir.getAttribute('data-direction') === currentNorthDirection) {
+                            dir.classList.add('active');
+                        }
+                    });
+                }
+                
+                console.log("Data session berhasil dimuat");
+                showNotification("Data sebelumnya berhasil dimuat!");
+                
+            } catch (error) {
+                console.error("Error loading session data:", error);
+                showNotification("Gagal memuat data sebelumnya", true);
+            }
+        }
+        
+        updatePreviewData();
+    }
+
+    function updatePreviewData() {
+        const stats = calculateStatistics();
+        
+        document.getElementById('statTotalHoles').textContent = stats.totalHoles;
+        document.getElementById('statAvgDepth').textContent = stats.avgDepth + ' m';
+        document.getElementById('statDryPercentage').textContent = stats.dryPercentage + '%';
+        
+        // Update current data preview
+        const currentDataEl = document.getElementById('currentData');
+        if (stats.totalHoles > 0) {
+            currentDataEl.innerHTML = `
+                <div class="bg-white rounded-xl p-4 shadow border border-gray-200">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="font-semibold text-gray-700">Lokasi:</span>
+                        <span class="text-gray-900">${document.getElementById('lokasi').value || '-'}</span>
+                    </div>
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="font-semibold text-gray-700">Total Lubang:</span>
+                        <span class="text-amber-600 font-bold">${stats.totalHoles}</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="font-semibold text-gray-700">Kondisi Kering:</span>
+                        <span class="text-green-600 font-bold">${stats.dryPercentage}%</span>
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    // PDF Generation Functions - IMPROVED untuk capture full content
+    function generateReportAndDownloadPDF() {
+        // Update report data first
+        updateReportData();
+        
+        // Show loading notification
+        showNotification("Membuat PDF... Harap tunggu");
+        
+        // Use html2canvas and jsPDF
+        const { jsPDF } = window.jspdf;
+        
+        const element = document.getElementById('pdfCaptureArea');
+        
+        // Ensure element is visible for capture
+        const originalDisplay = element.style.display;
+        element.style.display = 'block';
+        
+        // Add PDF-specific styles
+        element.classList.add('pdf-optimized');
+        
+        // Use html2canvas dengan konfigurasi yang lebih baik untuk capture full content
+        html2canvas(element, {
+            scale: 2, // Higher scale for better quality
+            useCORS: true,
+            allowTaint: true,
+            logging: false,
+            backgroundColor: "#ffffff",
+            scrollX: 0,
+            scrollY: 0,
+            width: element.scrollWidth,
+            height: element.scrollHeight,
+            onclone: function(clonedDoc) {
+                // Apply PDF-specific styles to cloned document
+                const clonedElement = clonedDoc.getElementById('pdfCaptureArea');
+                if (clonedElement) {
+                    clonedElement.style.width = '100%';
+                    clonedElement.style.maxWidth = '100%';
+                    clonedElement.style.overflow = 'hidden';
+                    
+                    // Show PDF-only elements
+                    const pdfOnlyElements = clonedDoc.querySelectorAll('.pdf-only');
+                    pdfOnlyElements.forEach(el => {
+                        el.style.display = 'block';
+                    });
+                    
+                    // Hide screen-only elements
+                    const screenOnlyElements = clonedDoc.querySelectorAll('.screen-only');
+                    screenOnlyElements.forEach(el => {
+                        el.style.display = 'none';
+                    });
+                }
+            }
+        }).then(canvas => {
+            // Restore original display
+            element.style.display = originalDisplay;
+            element.classList.remove('pdf-optimized');
+            
+            const imgData = canvas.toDataURL('image/jpeg', 0.9);
+            const pdf = new jsPDF({
+                orientation: 'landscape',
+                unit: 'mm',
+                format: 'a4'
+            });
+
+            const pageWidth = pdf.internal.pageSize.getWidth();
+            const pageHeight = pdf.internal.pageSize.getHeight();
+            
+            // Calculate dimensions to fit the page dengan margin
+            const margin = 5; // 5mm margin
+            const imgWidth = pageWidth - (2 * margin);
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+            
+            // Check if content needs multiple pages
+            let heightLeft = imgHeight;
+            let position = margin;
+            
+            // Add first page
+            pdf.addImage(imgData, 'JPEG', margin, position, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
+            
+            // Add additional pages if needed
+            while (heightLeft >= 0) {
+                position = heightLeft - imgHeight + margin;
+                pdf.addPage();
+                pdf.addImage(imgData, 'JPEG', margin, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+            }
+            
+            // Generate filename
+            const pit = document.getElementById('pit').value || 'Unknown';
+            const lokasi = document.getElementById('lokasi').value || 'Unknown';
+            const tanggal = document.getElementById('tanggal').value || new Date().toISOString().split('T')[0];
+            const filename = `Sounding_Report_${pit}_${lokasi}_${tanggal}.pdf`;
+            
+            // Save PDF
+            pdf.save(filename);
+            
+            showNotification("PDF berhasil di-download!");
+            
+        }).catch(error => {
+            console.error("Error generating PDF:", error);
+            element.style.display = originalDisplay;
+            element.classList.remove('pdf-optimized');
+            showNotification("Gagal membuat PDF: " + error.message, true);
+        });
+    }
+
+    function getJadwal(pit) {
+        if (pit === 'Tempudo 4') {
+            return '12:00-13:00 WITA';
+        } else if (pit === 'Tempudo 2' || pit === 'Tempudo 3') {
+            return '13:00-14:00 WITA';
+        }
+        return 'Jadwal Tidak Diketahui';
+    }
+
+    function updateReportData() {
+        // Update report header data
+        document.getElementById('report_tanggal').textContent = document.getElementById('tanggal').value || '-';
+        document.getElementById('report_shift').textContent = document.getElementById('shift').value || '-';
+        document.getElementById('report_pit').textContent = document.getElementById('pit').value || '-';
+        document.getElementById('report_lokasi').textContent = document.getElementById('lokasi').value || '-';
+        document.getElementById('report_planHole').textContent = document.getElementById('planHole').value || '-';
+        
+        const burden = document.getElementById('burden').value || '-';
+        const spasi = document.getElementById('spasi').value || '-';
+        document.getElementById('report_geometri').textContent = `${burden} x ${spasi}`;
+        
+        document.getElementById('report_unit').textContent = document.getElementById('unitDrilling').value || '-';
+        document.getElementById('report_north_direction').textContent = currentNorthDirection ? currentNorthDirection.toUpperCase() : 'BELUM DIPILIH';
+        
+        // Update signature in report
+        const signatureImg = document.getElementById('report_signature_img');
+        if (signaturePad && !signaturePad.isEmpty()) {
+            // Create a clean version of the signature for PDF
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = 200;
+            tempCanvas.height = 80;
+            const tempCtx = tempCanvas.getContext('2d');
+            
+            // White background
+            tempCtx.fillStyle = 'white';
+            tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+            
+            // Draw signature
+            tempCtx.drawImage(signaturePad.canvas, 0, 0, tempCanvas.width, tempCanvas.height);
+            
+            signatureImg.src = tempCanvas.toDataURL();
+            signatureImg.style.display = 'block';
+        } else {
+            signatureImg.style.display = 'none';
+        }
+        
+        // Update crew name
+        document.getElementById('report_crew_name').textContent = document.getElementById('namaCrew').value || '(Nama Crew)';
+        
+        // Update copy-paste output dengan format yang benar
+        updateCopyOutput();
+    }
+
+    function updateCopyOutput() {
+        const stats = calculateStatistics();
+        const pit = document.getElementById('pit').value;
+        const shift = document.getElementById('shift').value;
+        const lokasi = document.getElementById('lokasi').value;
+        const planHole = document.getElementById('planHole').value;
+        const burden = document.getElementById('burden').value;
+        const spasi = document.getElementById('spasi').value;
+        const unitDrilling = document.getElementById('unitDrilling').value;
+        
+        const jadwal = getJadwal(pit);
+        
+        // Format sesuai permintaan
+        const outputText = `${pit} - ${shift}
 ⏰ JADWAL PELAKSANAAN PELEDAKAN : ${jadwal}
 
 ${lokasi}
 Plan : ${planHole} hole
-Actual : ${actualHoles} hole
-Depth : ${avgDepth} m
-Dry : ${dryPercentage} %
+Actual : ${stats.totalHoles} hole
+Depth : ${stats.avgDepth} m
+Dry : ${stats.dryPercentage} %
 Geometri : ${burden} x ${spasi}
 Diameter : 171 mm
 Unit : ${unitDrilling}
 Arah Utara : ${currentNorthDirection ? currentNorthDirection.toUpperCase() : 'BELUM DIPILIH'}
             `.trim();
 
-            document.getElementById('report_tanggal').textContent = tanggal;
-            document.getElementById('report_shift').textContent = shift;
-            document.getElementById('report_pit').textContent = pit;
-            document.getElementById('report_lokasi').textContent = lokasi;
-            document.getElementById('report_planHole').textContent = planHole;
-            document.getElementById('report_geometri').textContent = `${burden} x ${spasi} m`;
-            document.getElementById('report_unit').textContent = unitDrilling;
-            document.getElementById('report_north_direction').textContent = currentNorthDirection ? currentNorthDirection.toUpperCase() : 'BELUM DIPILIH';
-            document.getElementById('report_crew_name').textContent = `(${namaCrew} - ${namaGL})`;
-            
-            document.getElementById('report_summary_text').textContent = copyText;
+        document.getElementById('copyOutputText').value = outputText;
+        document.getElementById('report_summary_text').textContent = outputText;
+        document.getElementById('copyOutputContainer').classList.remove('hidden');
+    }
 
-            const signatureBase64 = signaturePad && !signaturePad.isEmpty() ? signaturePad.toDataURL() : '';
-            document.getElementById('report_signature_img').src = signatureBase64 || '';
-            
-            document.getElementById('copyOutputText').value = copyText;
-            document.getElementById('copyOutputContainer').classList.remove('hidden');
-
-            return { pit, shift, lokasi, tanggal, copyText };
-        }
-
-        // --- Export to Excel Function ---
-        window.exportToExcel = function() {
-            if (Object.keys(holeData).length === 0) {
-                showNotification("Tidak ada data lubang untuk diexport.", true);
-                return;
-            }
-
-            try {
-                const excelData = [['ID HOLE', 'DEPTH HOLE (m)', 'HOLE CONDITION']];
-                
-                HOLE_ROWS.forEach(row => {
-                    for (let col = 1; col <= MAX_COLUMNS; col++) {
-                        const holeId = `${row}-${col}`;
-                        const data = holeData[holeId];
-                        if (data && data.status) {
-                            excelData.push([holeId, data.depth || '', data.status || '']);
-                        }
-                    }
-                });
-
-                const ws = XLSX.utils.aoa_to_sheet(excelData);
-                const wb = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(wb, ws, "Hole Data");
-                
-                const fileName = `Sounding_Data_${document.getElementById('lokasi').value || 'Report'}_${document.getElementById('tanggal').value || new Date().toISOString().split('T')[0]}.xlsx`;
-                XLSX.writeFile(wb, fileName);
-                
-                showNotification("Data berhasil diexport ke Excel!");
-                
-            } catch (error) {
-                console.error("Error exporting to Excel:", error);
-                showNotification(`Gagal export Excel: ${error.message}`, true);
-            }
-        }
-
-        // --- Improved PDF Generation with Landscape ---
-        window.generateReportAndDownloadPDF = async function() {
-            const data = generateReportSummary();
-
-            if (!data) {
-                showNotification("Mohon lengkapi semua data di kolom atas sebelum download PDF.", true);
-                return;
-            }
-            
-            showNotification("Sedang memproses PDF Landscape, mohon tunggu...");
-
-            try {
-                // Sembunyikan bagian mining dispatch untuk PDF
-                const miningDispatchSection = document.querySelector('#pdfCaptureArea .screen-only');
-                if (miningDispatchSection) {
-                    miningDispatchSection.style.display = 'none';
-                }
-
-                // Optimasi untuk mobile: kurangi skala dan atur dimensi
-                const input = document.getElementById('pdfCaptureArea');
-                const { jsPDF } = window.jspdf;
-
-                // Gunakan landscape orientation
-                const doc = new jsPDF({
-                    orientation: 'landscape',
-                    unit: 'mm',
-                    format: 'a4'
-                });
-
-                // Optimasi untuk mobile: kurangi skala
-                const scale = window.innerWidth < 768 ? 0.8 : 1.0;
-                
-                const canvas = await html2canvas(input, {
-                    scale: scale,
-                    useCORS: true,
-                    backgroundColor: '#ffffff',
-                    scrollX: 0,
-                    scrollY: -window.scrollY,
-                    width: input.scrollWidth,
-                    height: input.scrollHeight,
-                    onclone: function(clonedDoc) {
-                        // Pastikan elemen PDF capture area memiliki lebar penuh
-                        const pdfArea = clonedDoc.getElementById('pdfCaptureArea');
-                        if (pdfArea) {
-                            pdfArea.style.width = '100%';
-                            pdfArea.style.maxWidth = '100%';
-                            pdfArea.style.overflow = 'hidden';
-                        }
-                        
-                        // Perbaiki font di dalam lubang untuk PDF
-                        const holeDots = clonedDoc.querySelectorAll('.hole-dot');
-                        holeDots.forEach(dot => {
-                            dot.style.fontWeight = '700';
-                            dot.style.fontSize = '0.45rem';
-                            dot.style.display = 'flex';
-                            dot.style.alignItems = 'center';
-                            dot.style.justifyContent = 'center';
-                        });
-                    }
-                });
-
-                const imgData = canvas.toDataURL('image/jpeg', 0.9);
-                
-                const pdfWidth = doc.internal.pageSize.getWidth();
-                const pdfHeight = doc.internal.pageSize.getHeight();
-                const imgWidth = canvas.width;
-                const imgHeight = canvas.height;
-                
-                // Calculate dimensions to fit the image in the PDF
-                const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight) * 0.95;
-                const imgWidthPdf = imgWidth * ratio;
-                const imgHeightPdf = imgHeight * ratio;
-                
-                // Center the image on the page
-                const x = (pdfWidth - imgWidthPdf) / 2;
-                const y = (pdfHeight - imgHeightPdf) / 2;
-
-                doc.addImage(imgData, 'JPEG', x, y, imgWidthPdf, imgHeightPdf);
-                doc.save(`Sounding_Report_${data.lokasi}_${data.tanggal}.pdf`);
-                
-                // Tampilkan kembali mining dispatch section
-                if (miningDispatchSection) {
-                    miningDispatchSection.style.display = 'block';
-                }
-                
-                showNotification("PDF Landscape berhasil dibuat dan diunduh!", false);
-
-            } catch (error) {
-                console.error("Kesalahan saat membuat PDF:", error);
-                showNotification(`Gagal membuat PDF: ${error.message}`, true);
-                
-                // Pastikan mining dispatch section ditampilkan kembali jika error
-                const miningDispatchSection = document.querySelector('#pdfCaptureArea .screen-only');
-                if (miningDispatchSection) {
-                    miningDispatchSection.style.display = 'block';
-                }
-            }
-        }
-
-        // --- App Initialization ---
-        function initApp() {
-            generateDrillGrid();
-            initCompassDirection();
-
-            const canvas = document.getElementById('signatureCanvas');
-            if (canvas) {
-                const ratio = Math.max(window.devicePixelRatio || 1, 1);
-                canvas.width = canvas.offsetWidth * ratio;
-                canvas.height = canvas.offsetHeight * ratio;
-                canvas.getContext('2d').scale(ratio, ratio);
-                
-                signaturePad = new SignaturePad(canvas, {
-                    backgroundColor: 'rgb(255, 255, 255)' 
-                });
-            }
-
-            const formInputs = document.querySelectorAll('#generalInfoInputs input, #generalInfoInputs select');
-            formInputs.forEach(input => {
-                input.addEventListener('change', saveSessionData);
-            });
-        }
-
-        // Start the whole process
-        document.addEventListener('DOMContentLoaded', initializeFirebase);
+    // Make functions globally available
+    window.loadReportToForm = loadReportToForm;
+    window.viewReportGrid = viewReportGrid;
+    window.deleteReport = deleteReport;
+    window.closeGridModal = closeGridModal;
     </script>
 
 </body>

@@ -1331,12 +1331,51 @@
         'user': { password: 'user123', role: 'user', name: 'Regular User' }
     };
 
-    // Database Configuration
-    const DATABASE_CONFIG = {
-        useGist: true,
-        gistId: localStorage.getItem('databaseGistId'),
-        githubToken: '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' // Isi dengan token GitHub jika ingin menggunakan Gist
-    };
+  const DATABASE_CONFIG = {
+    useGist: true,
+    githubToken: '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', // Ganti dengan token Anda
+    gistId: localStorage.getItem('databaseGistId'),
+    serverUrl: '' // Kosongkan
+};
+
+// Ganti fungsi syncWithGist dengan yang lebih robust:
+async function syncWithGist() {
+    try {
+        // Jika belum ada gistId, buat baru
+        if (!DATABASE_CONFIG.gistId) {
+            console.log('Membuat Gist baru...');
+            return await createNewGist();
+        }
+
+        console.log('Mengambil data dari Gist:', DATABASE_CONFIG.gistId);
+        
+        // Coba ambil data dari gist yang ada
+        const response = await fetch(`https://api.github.com/gists/${DATABASE_CONFIG.gistId}`, {
+            headers: {
+                'Authorization': `token ${DATABASE_CONFIG.githubToken}`,
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        });
+        
+        if (!response.ok) {
+            if (response.status === 404) {
+                console.log('Gist tidak ditemukan, membuat baru...');
+                return await createNewGist();
+            }
+            throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+        }
+        
+        const gist = await response.json();
+        const content = gist.files['sounding_database.json'].content;
+        console.log('Berhasil mengambil data dari Gist');
+        
+        return JSON.parse(content);
+    } catch (error) {
+        console.error('Gist sync error:', error);
+        // Fallback: buat gist baru
+        return await createNewGist();
+    }
+}
 
     document.addEventListener('DOMContentLoaded', function() {
         initializeApp();

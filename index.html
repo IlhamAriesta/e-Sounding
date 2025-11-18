@@ -4,14 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>E-SOUNDING SYSTEM - PT. KALIMANTAN PRIMA PERSADA</title>
-    <!-- Muat Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Muat SignaturePad -->
     <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
-    <!-- Muat jsPDF dan html2canvas untuk Ekspor PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <!-- Muat SheetJS untuk Export Excel -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     
     <style>
@@ -62,7 +58,6 @@
             box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
         }
 
-        /* --- STAGGERED GRID STYLES --- */
         .drill-grid-area {
             display: grid;
             grid-template-columns: 60px repeat(30, minmax(25px, 1fr)); 
@@ -86,12 +81,6 @@
             align-items: center;
             justify-content: center;
             font-size: 0.6rem;
-        }
-        .grid-header-cell:first-child {
-            position: sticky;
-            left: 0;
-            z-index: 20;
-            background: linear-gradient(135deg, #e2e8f0 0%, #f1f5f9 100%);
         }
 
         .grid-row-header {
@@ -175,6 +164,7 @@
             height: 22px;
             font-weight: 700;
             cursor: pointer;
+            border-radius: 50%;
         }
         .hole-dot:hover {
             transform: scale(1.3);
@@ -184,14 +174,17 @@
         .hole-dot.status-D { 
             background: linear-gradient(135deg, #34d399 0%, #059669 100%);
             border: 2px solid #059669;
+            color: white;
         }
         .hole-dot.status-W { 
             background: linear-gradient(135deg, #60a5fa 0%, #2563eb 100%);
             border: 2px solid #2563eb;
+            color: white;
         }
         .hole-dot.status-C { 
             background: linear-gradient(135deg, #fca5a5 0%, #ef4444 100%);
             border: 2px solid #ef4444;
+            color: white;
         }
         
         .hole-modal {
@@ -211,7 +204,6 @@
             to { opacity: 1; transform: scale(1) translateY(0); }
         }
 
-        /* Perbaikan Signature Pad Styles */
         .signature-container {
             position: relative;
             width: 100%;
@@ -261,88 +253,73 @@
             z-index: 1;
         }
 
-        #pdfCaptureArea {
-            background-color: white;
-            padding: 12px;
+        .login-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            max-width: 100%;
-            overflow: hidden;
-            border-radius: 8px;
-            border: 1px solid #e5e7eb;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
         }
 
-        /* PDF-specific styles */
-        .pdf-optimized {
-            width: 100% !important;
-            max-width: 100% !important;
-            overflow: hidden !important;
-        }
-        
-        .pdf-drill-grid {
-            grid-template-columns: 50px 40px repeat(30, minmax(15px, 1fr)) !important;
-            font-size: 0.4rem !important;
-        }
-        
-        /* PERBAIKAN: Font depth hole diperbesar */
-        .pdf-hole-dot {
-            width: 22px !important;
-            height: 22px !important;
-            font-size: 0.7rem !important;
-            font-weight: 700 !important;
-        }
-
-        .pdf-hole-dot span {
-            font-size: 0.7rem !important;
-            font-weight: 700 !important;
-        }
-
-        .pdf-grid-header-cell {
-            padding: 0.2rem 0.1rem !important;
-            font-size: 0.4rem !important;
-        }
-        
-        .pdf-grid-row-header {
-            padding: 0.2rem 0.1rem !important;
-            font-size: 0.45rem !important;
-        }
-
-        .pdf-row-count-cell {
-            padding: 0.2rem 0.1rem !important;
-            font-size: 0.4rem !important;
-        }
-
-        /* Optimasi tambahan untuk PDF */
-        .pdf-optimized #pdfCaptureArea {
-            padding: 15px !important;
-            width: 1200px !important;
-            max-width: 1200px !important;
-        }
-
-        .pdf-optimized .text-lg {
-            font-size: 1.3rem !important;
-        }
-
-        .pdf-optimized .text-md {
-            font-size: 1.1rem !important;
-        }
-
-        .pdf-optimized .text-sm {
-            font-size: 1rem !important;
-        }
-
-        .pdf-optimized .text-xs {
-            font-size: 0.9rem !important;
-        }
-
-        .share-link-container {
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-            border: 1px solid #cbd5e1;
+        .login-container {
+            background: white;
+            padding: 2rem;
             border-radius: 12px;
-            padding: 1.5rem;
-            margin: 1rem 0;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 400px;
         }
 
-        /* Kompas Arah Mata Angin Styles */
+        .user-info {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logout-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .logout-btn:hover {
+            background: #dc2626;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .content-section {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .nav-btn.active {
+            border-color: #d97706;
+            box-shadow: 0 10px 15px -3px rgba(217, 119, 6, 0.3);
+            background: white !important;
+            color: #92400e !important;
+        }
+
+        /* KOMPAS STYLES SEDERHANA */
         .compass-container {
             display: flex;
             flex-direction: column;
@@ -431,7 +408,6 @@
             transition: all 0.3s ease;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             z-index: 5;
-            font-size: 0;
         }
         
         .compass-direction:hover {
@@ -443,11 +419,11 @@
             background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
             color: white;
             box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.5);
-            font-size: 1rem;
         }
         
         .compass-direction.active::after {
             content: "U";
+            font-size: 1rem;
         }
         
         .compass-direction.north {
@@ -474,273 +450,38 @@
             transform: translateY(-50%);
         }
 
-        /* Navigation Styles */
-        .nav-btn {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 2px solid transparent;
-            font-weight: 600;
-        }
-
-        .nav-btn.active {
-            border-color: #d97706;
-            box-shadow: 0 10px 15px -3px rgba(217, 119, 6, 0.3);
-            background: white !important;
-            color: #92400e !important;
-        }
-
-        .content-section {
-            animation: fadeIn 0.5s ease-in-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Premium card effects */
-        .premium-card {
-            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-            border-radius: 12px;
-            cursor: pointer;
-        }
-
-        .premium-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15);
-        }
-
-        /* Import/Export Section */
+        /* IMPORT/EXPORT SECTION */
         .import-export-section {
             background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
             border: 1px solid #cbd5e1;
             border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
         }
 
-        /* Database Styles */
-        .database-grid {
-            display: grid;
-            grid-template-columns: 60px 50px repeat(30, minmax(25px, 1fr));
-            border-top: 1px solid #e5e7eb;
-            overflow-x: auto;
-            min-width: 100%;
-            background-color: white;
-            font-size: 0.5rem;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        .custom-notification {
+            transform: translateX(100%);
         }
-
-        .database-grid .hole-dot {
-            width: 20px;
-            height: 20px;
-            font-size: 0.45rem;
-        }
-
-        /* Hide elements for PDF */
-        .screen-only {
-            display: block;
-        }
-        
-        .pdf-only {
-            display: none;
-        }
-        
-        @media print {
-            .screen-only {
-                display: none !important;
-            }
-            .pdf-only {
-                display: block !important;
-            }
-        }
-
-        /* Tombol Generate */
-        .generate-btn {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: white;
-            font-weight: bold;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3);
-        }
-
-        .generate-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.4);
-        }
-
-        .generate-btn:disabled {
-            background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        /* Login Modal Styles */
-        .login-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .login-container {
+        .premium-card {
             background: white;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-            width: 90%;
-            max-width: 400px;
-        }
-
-        .user-info {
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-            border-radius: 8px;
-            padding: 0.75rem 1rem;
-            margin-bottom: 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logout-btn {
-            background: #ef4444;
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
             cursor: pointer;
-            font-size: 0.8rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
-
-        .logout-btn:hover {
-            background: #dc2626;
-        }
-
-        /* Kompas untuk PDF */
-        .pdf-compass-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 1rem;
-            padding: 0.5rem;
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-            border-radius: 8px;
-            border: 1px solid #cbd5e1;
-        }
-        
-        .pdf-compass-wrapper {
-            position: relative;
-            width: 120px;
-            height: 120px;
-            margin: 0 auto;
-        }
-        
-        .pdf-compass-base {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
-            border: 2px solid #9ca3af;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .pdf-compass-center {
-            width: 15px;
-            height: 15px;
-            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-            border-radius: 50%;
-            z-index: 10;
-        }
-        
-        .pdf-compass-axis {
-            position: absolute;
-            background-color: #6b7280;
-            border-radius: 2px;
-        }
-        
-        .pdf-compass-axis-horizontal {
-            width: 100px;
-            height: 3px;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-        
-        .pdf-compass-axis-vertical {
-            width: 3px;
-            height: 100px;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-        
-        .pdf-compass-direction {
-            position: absolute;
-            width: 25px;
-            height: 25px;
-            background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
-            color: #6b7280;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 0.7rem;
-            z-index: 5;
-        }
-        
-        .pdf-compass-direction.active {
-            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-            color: white;
-        }
-        
-        .pdf-compass-direction.north {
-            top: 5px;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-        
-        .pdf-compass-direction.east {
-            top: 50%;
-            right: 5px;
-            transform: translateY(-50%);
-        }
-        
-        .pdf-compass-direction.south {
-            bottom: 5px;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-        
-        .pdf-compass-direction.west {
-            top: 50%;
-            left: 5px;
-            transform: translateY(-50%);
+        .premium-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            border-color: #f59e0b;
         }
     </style>
 </head>
 <body>
 
-    <!-- PREMIUM HEADER WITH NAVIGATION -->
+    <!-- HEADER -->
     <header class="bg-gradient-to-r from-gray-800 to-gray-600 text-white shadow-2xl mb-6 rounded-2xl overflow-hidden mx-4 mt-4">
         <div class="container mx-auto px-6 py-4">
-            <!-- Main Header -->
             <div class="text-center mb-6">
                 <h1 class="text-3xl md:text-4xl font-bold mb-2 tracking-tight">
                     <span class="bg-clip-text text-transparent bg-gradient-to-r from-gray-200 to-gray-100">
@@ -751,7 +492,6 @@
                 <p class="text-gray-200 mt-2 text-sm">Digital Blast Hole Monitoring & Reporting</p>
             </div>
 
-            <!-- Navigation Menu -->
             <nav class="flex flex-wrap justify-center gap-3 mb-2" id="mainNavigation">
                 <button data-section="home" class="nav-btn active px-5 py-3 bg-white text-gray-800 font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
                     🏠 HOME
@@ -772,7 +512,7 @@
         </div>
     </header>
 
-    <!-- Login Modal -->
+    <!-- LOGIN MODAL -->
     <div id="loginModal" class="login-modal hidden">
         <div class="login-container">
             <h2 class="text-2xl font-bold text-center mb-6 text-gray-800">Login Sistem</h2>
@@ -841,7 +581,7 @@
 
         <!-- E-SOUNDING SECTION -->
         <div id="e-soundingSection" class="content-section hidden">
-            <!-- Section Informasi Umum dengan SHIFT -->
+            <!-- FORM INPUT -->
             <div id="generalInfoInputs" class="grid grid-cols-1 md:grid-cols-5 gap-4 p-6 mb-6 border border-gray-200 rounded-xl bg-gray-50">
                 <div><label for="tanggal" class="form-label">Tanggal</label><input type="date" id="tanggal" class="input-field"></div>
                 <div>
@@ -869,33 +609,27 @@
                 <div><label for="unitDrilling" class="form-label">Unit Drilling</label><input type="text" id="unitDrilling" class="input-field" placeholder="Unit"></div>
             </div>
 
-            <!-- Arah Mata Angin dengan Kompas - DIREVISI -->
+            <!-- KOMPAS SEDERHANA -->
             <div class="compass-container">
                 <div class="compass-title">Pilih Arah Utara dengan mengklik salah satu arah pada kompas:</div>
                 
                 <div class="compass-wrapper">
-                    <!-- Garis horizontal -->
                     <div class="compass-axis compass-axis-horizontal"></div>
-                    <!-- Garis vertikal -->
                     <div class="compass-axis compass-axis-vertical"></div>
                     
-                    <!-- Lingkaran tengah -->
                     <div class="compass-base">
                         <div class="compass-center"></div>
                     </div>
                     
-                    <!-- Arah-arah mata angin (kosong, akan muncul U saat dipilih) -->
-                    <div class="compass-direction north" data-direction="utara"></div>
-                    <div class="compass-direction east" data-direction="timur"></div>
-                    <div class="compass-direction south" data-direction="selatan"></div>
-                    <div class="compass-direction west" data-direction="barat"></div>
+                    <div class="compass-direction north" data-direction="^"></div>
+                    <div class="compass-direction east" data-direction=">"></div>
+                    <div class="compass-direction south" data-direction="v"></div>
+                    <div class="compass-direction west" data-direction="<"></div>
                 </div>
-                
-                <!-- KETERANGAN ARAH UTARA DIHAPUS -->
             </div>
 
-            <!-- IMPORT/EXPORT SECTION -->
-            <div class="import-export-section p-6 mb-6">
+            <!-- IMPORT/EXPORT -->
+            <div class="import-export-section">
                 <h3 class="text-xl font-bold mb-4 text-gray-800 text-center">📊 IMPORT/EXPORT DATA</h3>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -904,7 +638,6 @@
                         <h4 class="font-bold mb-3 text-amber-800 text-lg">📥 IMPORT FROM EXCEL</h4>
                         <p class="text-sm text-gray-600 mb-4">Format: ID HOLE, DEPTH HOLE (m), HOLE CONDITION</p>
                         
-                        <!-- TAMBAHAN: Tombol Hapus Semua Lubang -->
                         <div class="mb-4">
                             <button id="clearAllHolesBtn" class="w-full px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition flex items-center justify-center font-semibold mb-2">
                                 🗑️ HAPUS SEMUA DATA LUBANG
@@ -945,146 +678,15 @@
                 </div>
             </div>
 
-            <!-- Share Link Section -->
-            <div id="shareLinkContainer" class="share-link-container hidden">
-                <h3 class="font-bold text-lg mb-2 text-gray-800">🔗 Link untuk Melanjutkan Pekerjaan</h3>
-                <p class="text-sm text-gray-600 mb-2">Simpan link ini untuk melanjutkan pekerjaan di shift berikutnya:</p>
-                <div class="flex gap-2">
-                    <input type="text" id="shareableLink" class="input-field flex-1" readonly>
-                    <button id="copyShareLinkBtn" class="px-4 py-2 gold-gradient text-white rounded-lg hover:shadow-lg transition">
-                        Salin Link
-                    </button>
-                </div>
-                <p class="text-xs text-gray-500 mt-2">Link ini akan menyimpan semua data yang sudah diinput</p>
-            </div>
-
-            <!-- Notifikasi & User ID -->
-            <div id="notification" class="hidden p-3 mb-4 rounded-lg text-sm" role="alert"></div>
-            <div class="mb-4 text-sm text-gray-600">
-                User ID (untuk sinkronisasi): <span id="userIdDisplay" class="font-mono bg-gray-100 p-1 rounded">...</span>
-                <button id="generateShareLinkBtn" class="ml-4 px-3 py-1 gold-gradient text-white text-sm rounded hover:shadow-lg transition">
-                    🔗 Buat Link Share
-                </button>
-            </div>
-
-            <!-- Container Khusus untuk Konten yang akan Di-Capture ke PDF -->
-            <div id="pdfCaptureArea" class="bg-white pdf-optimized">
-
-                <!-- Title yang muncul di PDF -->
-                 <div class="text-center mb-4">
-                    <h1 class="text-lg font-bold mb-1 text-gray-800">PT. KALIMANTAN PRIMA PERSADA - DISTRIK INDE</h1>
-                    <h2 class="text-md font-semibold text-gray-700">PEMERIKSAAN KONDISI & KEDALAMAN LUBANG TEMBAK</h2>
-                </div>
-
-                <!-- Ringkasan Data Umum (Untuk PDF) -->
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-1 mb-3 text-xs p-2 border border-gray-300 rounded-lg">
-                    <div><span class="font-semibold">Tanggal:</span> <span id="report_tanggal" class="font-medium"></span></div>
-                    <div><span class="font-semibold">Shift:</span> <span id="report_shift" class="font-medium"></span></div>
-                    <div><span class="font-semibold">PIT:</span> <span id="report_pit" class="font-medium"></span></div>
-                    <div><span class="font-semibold">Lokasi:</span> <span id="report_lokasi" class="font-medium"></span></div>
-                    <div><span class="font-semibold">Plan Hole:</span> <span id="report_planHole" class="font-medium"></span></div>
-                    <div><span class="font-semibold">B x S:</span> <span id="report_geometri" class="font-medium"></span></div>
-                    <div><span class="font-semibold">Unit:</span> <span id="report_unit" class="font-medium"></span></div>
-                    <div><span class="font-semibold">Arah Utara:</span> <span id="report_north_direction" class="font-medium"></span></div>
-                </div>
-
-                <!-- Kompas untuk PDF - DIPERBAIKI -->
-                <div id="pdfCompassContainer" class="pdf-compass-container">
-                    <div class="text-xs font-semibold mb-1">Diagram Arah Utara:</div>
-                    <div class="pdf-compass-wrapper">
-                        <div class="pdf-compass-axis pdf-compass-axis-horizontal"></div>
-                        <div class="pdf-compass-axis pdf-compass-axis-vertical"></div>
-                        <div class="pdf-compass-base">
-                            <div class="pdf-compass-center"></div>
-                        </div>
-                        <div class="pdf-compass-direction north" id="pdfNorth"></div>
-                        <div class="pdf-compass-direction east" id="pdfEast"></div>
-                        <div class="pdf-compass-direction south" id="pdfSouth"></div>
-                        <div class="pdf-compass-direction west" id="pdfWest"></div>
-                    </div>
-                </div>
-
-                <!-- Section Grid Pemeriksaan Lubang -->
-                <div class="overflow-x-auto mb-6">
-                    <h3 class="text-md font-bold mb-1 text-gray-700">Visualisasi Kondisi Lubang (Staggered Pattern)</h3>
-                    <div id="drillGrid" class="drill-grid-area bg-white rounded-lg border border-gray-300 pdf-drill-grid">
-                        <!-- Grid akan di-generate di sini oleh JavaScript -->
-                    </div>
-                </div>
-
-                <!-- Section Keterangan Ringkas & TTD - FIXED untuk PDF -->
-                <div class="mt-6 flex justify-between gap-4 border-t pt-3">
-                    
-                    <!-- Keterangan Status -->
-                    <div class="w-1/3">
-                        <h4 class="font-semibold mb-1 text-gray-700 text-sm">Keterangan Status:</h4>
-                        <ul class="text-xs space-y-1">
-                            <li class="flex items-center"><span class="hole-dot w-3 h-3 rounded-full status-D mr-2"></span> D: KERING (Ideal)</li>
-                            <li class="flex items-center"><span class="hole-dot w-3 h-3 rounded-full status-W mr-2"></span> W: BASAH (Ada Air)</li>
-                            <li class="flex items-center"><span class="hole-dot w-3 h-3 rounded-full status-C mr-2"></span> C: COLLAPSE</li> 
-                        </ul>
-                    </div>
-
-                    <!-- Tanda Tangan Area - FIXED untuk PDF -->
-                    <div class="w-1/3 text-center">
-                        <h3 class="font-semibold mb-1 text-gray-700 text-sm">Tanda Tangan Pemeriksa:</h3>
-                        <div class="w-full max-w-[120px] h-16 mx-auto border border-gray-400 bg-gray-100 flex items-center justify-center">
-                            <img id="report_signature_img" class="max-w-full max-h-full" alt="Tanda Tangan Pemeriksa">
-                        </div>
-                        <p class="mt-1 text-xs font-medium" id="report_crew_name">(Nama Crew)</p>
-                    </div>
-
-                    <!-- Additional Info untuk PDF -->
-                    <div class="w-1/3 text-center pdf-only">
-                        <h3 class="font-semibold mb-1 text-gray-700 text-sm">Informasi Tambahan:</h3>
-                        <div class="text-xs text-gray-600 space-y-1">
-                            <p>Dokumen ini dibuat secara digital</p>
-                            <p>PT. Kalimantan Prima Persada</p>
-                            <p>Distrik Inde</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Ringkasan Data Copas (Hanya untuk screen, tidak untuk PDF) -->
-                <div class="screen-only">
-                    <h3 class="text-sm font-bold my-2 text-gray-800 border-t pt-3">Ringkasan Data untuk Mining Dispatch:</h3>
-                    <pre id="report_summary_text" class="whitespace-pre-wrap p-2 bg-gray-100 border rounded text-xs font-mono"></pre>
-                </div>
-
-            </div> 
-            <!-- END pdfCaptureArea -->
-
-
-            <!-- Modal Pop-up untuk Input Lubang - DIPERBAIKI POSISI -->
-            <div id="holeModal" class="hole-modal hidden">
-                <h4 class="font-bold mb-3 text-lg text-gray-800" id="modalHoleId">Hole: A-1</h4>
-                
-                <div class="mb-4">
-                    <label for="holeDepth" class="form-label text-sm">Kedalaman (m):</label>
-                    <input type="number" step="0.1" id="holeDepth" class="input-field" placeholder="0.0">
-                </div>
-
-                <div class="mb-4">
-                    <label for="holeCondition" class="form-label text-sm">Kondisi Lubang:</label>
-                    <select id="holeCondition" class="input-field">
-                        <option value="">Pilih Kondisi</option>
-                        <option value="Kering">Kering</option>
-                        <option value="Basah">Basah</option>
-                        <option value="Collapse">Collapse</option>
-                    </select>
-                </div>
-
-                <div class="flex space-x-2">
-                    <button id="saveHoleDataBtn" class="flex-1 px-3 py-2 gold-gradient text-white text-sm font-semibold rounded-lg hover:shadow-lg transition duration-200">
-                        Simpan
-                    </button>
-                    <button id="closeHoleModalBtn" class="flex-1 px-3 py-2 bg-gray-300 text-gray-800 text-sm font-semibold rounded-lg hover:bg-gray-400 transition duration-200">
-                        Batal
-                    </button>
+            <!-- GRID LUBANG -->
+            <div class="overflow-x-auto mb-6">
+                <h3 class="text-md font-bold mb-1 text-gray-700">Visualisasi Kondisi Lubang (Staggered Pattern)</h3>
+                <div id="drillGrid" class="drill-grid-area bg-white rounded-lg border border-gray-300">
+                    <!-- Grid akan diisi oleh JavaScript -->
                 </div>
             </div>
 
-            <!-- Section Tanda Tangan (Screen Only) - IMPROVED -->
+            <!-- TANDA TANGAN -->
             <div class="mt-8 border-t pt-6">
                 <h3 class="text-lg font-bold mb-4 text-gray-700">Tanda Tangan (TTD) - Pemeriksa</h3>
                 
@@ -1103,47 +705,23 @@
                         Hapus TTD
                     </button>
                     <button id="saveDataBtn" class="flex-1 px-4 py-2 gold-gradient text-white font-semibold rounded-lg hover:shadow-lg transition duration-200">
-                        Simpan Data
+                        Simpan Data Sementara
                     </button>
                 </div>
             </div>
 
-            <!-- Section for Report Generation and Copying (Screen Only) -->
+            <!-- TOMBOL ACTION -->
             <div class="mt-8 pt-6 border-t">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                     <button id="generatePdfBtn" class="w-full px-4 py-3 gold-gradient text-white font-bold rounded-lg hover:shadow-lg transition duration-200 shadow-md">
-                        📄 DOWNLOAD PDF (LANDSCAPE)
+                        📄 DOWNLOAD PDF
                     </button>
                     <button id="exportExcelBtn2" class="w-full px-4 py-3 bg-gray-600 text-white font-bold rounded-lg hover:bg-gray-700 transition duration-200 shadow-md">
                         📊 EXPORT EXCEL
                     </button>
-                    <button id="generateFinalReportBtn" class="w-full px-4 py-3 generate-btn transition duration-200 shadow-md">
-                        🚀 GENERATE & SIMPAN KE DATABASE
+                    <button id="generateFinalReportBtn" class="w-full px-4 py-3 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 transition duration-200 shadow-md">
+                        🚀 SIMPAN KE DATABASE
                     </button>
-                </div>
-
-                <!-- Database Sync Section -->
-                <div class="mt-6 p-4 bg-blue-50 border border-blue-300 rounded-lg">
-                    <h4 class="font-bold text-lg mb-2 text-gray-800">🔄 Sinkronisasi Database</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <button id="syncDatabaseBtn" class="w-full px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold">
-                            🔄 Sync dengan Database Server
-                        </button>
-                        <button id="exportDatabaseBtn" class="w-full px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-semibold">
-                            💾 Export Database ke File
-                        </button>
-                    </div>
-                    <div id="syncStatus" class="mt-2 text-sm text-gray-600"></div>
-                </div>
-
-                <!-- Copy Paste Output -->
-                <div id="copyOutputContainer" class="hidden mt-6 p-4 bg-amber-50 border border-amber-300 rounded-lg">
-                    <h4 class="font-bold text-lg mb-2 text-gray-800">Format Data untuk Salin (Copas)</h4>
-                    <textarea id="copyOutputText" class="w-full h-40 font-mono text-sm p-2 border rounded resize-none bg-white" readonly></textarea>
-                    <button id="copyToClipboardBtn" class="mt-2 px-3 py-1 gold-gradient text-white text-sm rounded hover:shadow-lg transition">
-                        Salin ke Clipboard
-                    </button>
-                    <p class="text-xs text-amber-600 mt-2">Gunakan teks ini untuk Mining Dispatch atau grup WA.</p>
                 </div>
             </div>
         </div>
@@ -1153,7 +731,6 @@
             <div class="bg-white rounded-2xl p-8 shadow-2xl border border-gray-200">
                 <h2 class="text-3xl font-bold text-gray-900 mb-6 text-center">👁️ DATA PREVIEW</h2>
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <!-- Recent Reports -->
                     <div class="bg-gray-50 rounded-2xl p-6">
                         <h3 class="text-xl font-bold text-gray-800 mb-4">📋 Data Saat Ini</h3>
                         <div id="currentData" class="space-y-3">
@@ -1163,7 +740,6 @@
                         </div>
                     </div>
                     
-                    <!-- Statistics -->
                     <div class="bg-amber-50 rounded-2xl p-6">
                         <h3 class="text-xl font-bold text-amber-800 mb-4">📈 Statistik</h3>
                         <div class="space-y-4">
@@ -1188,26 +764,20 @@
         <!-- DATABASE SECTION -->
         <div id="databaseSection" class="content-section hidden">
             <div class="bg-white rounded-2xl p-8 shadow-2xl border border-gray-200">
-                <h2 class="text-3xl font-bold text-gray-900 mb-6 text-center">💾 DATABASE TERPUSAT</h2>
+                <h2 class="text-3xl font-bold text-gray-900 mb-6 text-center">💾 DATABASE</h2>
                 
-                <!-- Database Info & Controls -->
                 <div class="mb-6 p-4 bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-xl">
-                    <h3 class="text-xl font-bold mb-4 text-blue-800 text-center">📊 Database Terpusat - Diakses Semua User</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <button id="syncDatabaseBtn2" class="w-full px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold">
+                    <h3 class="text-xl font-bold mb-4 text-blue-800 text-center">Database Terpusat</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <button id="syncDatabaseBtn" class="w-full px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold">
                             🔄 Refresh Database
-                        </button>
-                        <button id="importDatabaseFileBtn" class="w-full px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-semibold">
-                            📥 Import dari File
                         </button>
                         <button id="clearLocalDatabaseBtn" class="w-full px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-semibold">
                             🗑️ Hapus Data Lokal
                         </button>
                     </div>
-                    <div id="databaseSyncStatus" class="mt-3 text-center text-sm text-blue-700 font-medium"></div>
                 </div>
 
-                <!-- User Info & Logout -->
                 <div id="userInfoSection" class="user-info hidden">
                     <div>
                         <span id="userRoleDisplay" class="font-semibold"></span>
@@ -1217,27 +787,12 @@
                         Logout
                     </button>
                 </div>
-                
-                <!-- Database Import Section (Admin Only) -->
-                <div id="adminOnlySection" class="import-export-section p-6 mb-6 hidden">
-                    <h3 class="text-xl font-bold mb-4 text-gray-800 text-center">📥 IMPORT DATABASE EXCEL</h3>
-                    <div class="border border-amber-300 rounded-xl p-5 bg-amber-50">
-                        <p class="text-sm text-gray-600 mb-4">Import file Excel berisi multiple data sounding sekaligus</p>
-                        <input type="file" id="databaseExcelImport" accept=".xlsx,.xls" 
-                               class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100 mb-4" />
-                        <button id="importDatabaseBtn" class="w-full px-4 py-3 gold-gradient text-white rounded-lg hover:shadow-lg transition font-semibold">
-                            🚀 IMPORT DATABASE
-                        </button>
-                    </div>
-                </div>
 
-                <!-- Database Results -->
                 <div id="dbResults" class="space-y-6">
                     <div class="text-center p-8 bg-gray-50 rounded-xl">
                         <div class="text-4xl mb-4">📊</div>
-                        <h3 class="text-xl font-bold text-gray-700 mb-2">Database Terpusat</h3>
+                        <h3 class="text-xl font-bold text-gray-700 mb-2">Database</h3>
                         <p class="text-gray-600">Data akan ditampilkan di sini setelah sinkronisasi</p>
-                        <p class="text-sm text-gray-500 mt-2">Klik "Refresh Database" untuk memuat data terbaru</p>
                     </div>
                 </div>
             </div>
@@ -1245,11 +800,120 @@
 
     </div>
 
-    <!-- SIMPLE NAVIGATION SCRIPT -->
+    <!-- MODAL INPUT LUBANG -->
+    <div id="holeModal" class="hole-modal hidden">
+        <h4 class="font-bold mb-3 text-lg text-gray-800" id="modalHoleId">Hole: A-1</h4>
+        
+        <div class="mb-4">
+            <label for="holeDepth" class="form-label text-sm">Kedalaman (m):</label>
+            <input type="number" step="0.1" id="holeDepth" class="input-field" placeholder="0.0">
+        </div>
+
+        <div class="mb-4">
+            <label for="holeCondition" class="form-label text-sm">Kondisi Lubang:</label>
+            <select id="holeCondition" class="input-field">
+                <option value="">Pilih Kondisi</option>
+                <option value="Kering">Kering</option>
+                <option value="Basah">Basah</option>
+                <option value="Collapse">Collapse</option>
+            </select>
+        </div>
+
+        <div class="flex space-x-2">
+            <button id="saveHoleDataBtn" class="flex-1 px-3 py-2 gold-gradient text-white text-sm font-semibold rounded-lg hover:shadow-lg transition duration-200">
+                Simpan
+            </button>
+            <button id="closeHoleModalBtn" class="flex-1 px-3 py-2 bg-gray-300 text-gray-800 text-sm font-semibold rounded-lg hover:bg-gray-400 transition duration-200">
+                Batal
+            </button>
+        </div>
+    </div>
+
+    <!-- SCRIPT UTAMA -->
     <script>
-    // Simple Navigation System
+    // VARIABEL GLOBAL
+    let signaturePad;
+    let currentHoleId = null;
+    let currentNorthDirection = null;
+    let holeData = {};
+    let importData = null;
+    let currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+
+    const HOLE_ROWS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O'];
+    const MAX_COLUMNS = 30;
+
+    const USERS = {
+        'admin': { password: 'admin123', role: 'admin', name: 'Administrator' },
+        'user': { password: 'user123', role: 'user', name: 'Regular User' }
+    };
+
+    // INISIALISASI APLIKASI
     document.addEventListener('DOMContentLoaded', function() {
-        // Navigation buttons
+        console.log('Initializing E-Sounding System...');
+        initializeApp();
+        initializeEventListeners();
+        generateDrillGrid();
+        loadSessionData();
+    });
+
+    function initializeApp() {
+        // Set tanggal default
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('tanggal').value = today;
+        
+        // Initialize Signature Pad
+        const canvas = document.getElementById('signatureCanvas');
+        if (canvas) {
+            signaturePad = new SignaturePad(canvas, {
+                backgroundColor: 'rgba(255, 255, 255, 0)',
+                penColor: 'rgb(0, 0, 0)',
+                minWidth: 1.5,
+                maxWidth: 3,
+                throttle: 16
+            });
+            
+            function resizeCanvas() {
+                const ratio = Math.max(window.devicePixelRatio || 1, 1);
+                canvas.width = canvas.offsetWidth * ratio;
+                canvas.height = canvas.offsetHeight * ratio;
+                canvas.getContext("2d").scale(ratio, ratio);
+                
+                // Redraw if there was a signature
+                const savedSignature = localStorage.getItem('sounding_signature');
+                if (savedSignature) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        document.getElementById('signaturePlaceholder').style.display = 'none';
+                    };
+                    img.src = savedSignature;
+                } else {
+                    signaturePad.clear();
+                }
+            }
+            
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+            
+            signaturePad.addEventListener('beginStroke', () => {
+                document.getElementById('signaturePlaceholder').style.display = 'none';
+            });
+        }
+
+        // Initialize Compass
+        const compassDirections = document.querySelectorAll('.compass-direction');
+        compassDirections.forEach(direction => {
+            direction.addEventListener('click', function() {
+                compassDirections.forEach(dir => dir.classList.remove('active'));
+                this.classList.add('active');
+                currentNorthDirection = this.getAttribute('data-direction');
+                console.log('North direction set to:', currentNorthDirection);
+                showNotification('ARAH MATA ANGIN TELAH DITAMBAHKAN');
+            });
+        });
+
+        // Initialize Navigation
         const navButtons = document.querySelectorAll('.nav-btn, .nav-section-btn');
         navButtons.forEach(button => {
             button.addEventListener('click', function() {
@@ -1260,657 +924,1246 @@
             });
         });
 
-        // Home section cards clickable
+        // Home section cards
         const homeCards = document.querySelectorAll('.premium-card');
         homeCards.forEach(card => {
             card.addEventListener('click', function() {
-                const targetSection = this.getAttribute('onclick');
-                if (targetSection) {
-                    // Extract section name from onclick attribute
-                    const sectionName = targetSection.replace("showSection('", "").replace("')", "");
-                    showSection(sectionName);
-                }
+                showSection('e-sounding');
             });
         });
 
-        // Show home section by default
         showSection('home');
-    });
+    }
 
+    function initializeEventListeners() {
+        // Login/Logout
+        document.getElementById('loginBtn').addEventListener('click', showLoginModal);
+        document.getElementById('cancelLoginBtn').addEventListener('click', hideLoginModal);
+        document.getElementById('loginForm').addEventListener('submit', handleLogin);
+        document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+
+        // Hole Modal
+        document.getElementById('saveHoleDataBtn').addEventListener('click', saveHoleData);
+        document.getElementById('closeHoleModalBtn').addEventListener('click', closeHoleModal);
+
+        // Signature
+        document.getElementById('clearSignatureBtn').addEventListener('click', clearSignature);
+        document.getElementById('clearSignatureBtnSmall').addEventListener('click', clearSignature);
+
+        // Import/Export
+        document.getElementById('importExcelBtn').addEventListener('click', handleExcelImport);
+        document.getElementById('confirmImportBtn').addEventListener('click', confirmImport);
+        document.getElementById('exportExcelBtn').addEventListener('click', exportToExcel);
+        document.getElementById('exportExcelBtn2').addEventListener('click', exportToExcel);
+        document.getElementById('downloadTemplateBtn').addEventListener('click', downloadTemplate);
+        document.getElementById('clearAllHolesBtn').addEventListener('click', clearAllHoles);
+
+        // Database
+        document.getElementById('syncDatabaseBtn').addEventListener('click', syncDatabase);
+        document.getElementById('clearLocalDatabaseBtn').addEventListener('click', clearLocalDatabase);
+
+        // Report Generation
+        document.getElementById('saveDataBtn').addEventListener('click', saveData);
+        document.getElementById('generatePdfBtn').addEventListener('click', generatePdf);
+        document.getElementById('generateFinalReportBtn').addEventListener('click', generateFinalReport);
+
+        // Form auto-save
+        const formInputs = document.querySelectorAll('#generalInfoInputs input, #generalInfoInputs select');
+        formInputs.forEach(input => {
+            input.addEventListener('change', saveSessionData);
+        });
+    }
+
+    // FUNGSI NAVIGASI
     function showSection(sectionName) {
         console.log('Showing section:', sectionName);
         
-        // Hide all sections
+        // Sembunyikan semua section
         document.querySelectorAll('.content-section').forEach(section => {
             section.classList.add('hidden');
         });
         
-        // Remove active class from all buttons
+        // Update navigation buttons
         document.querySelectorAll('.nav-btn').forEach(btn => {
             btn.classList.remove('active', 'bg-white', 'text-gray-800');
             btn.classList.add('bg-gray-700', 'text-white');
         });
         
-        // Show target section
+        // Tampilkan section yang dipilih
         const targetSection = document.getElementById(sectionName + 'Section');
         if (targetSection) {
             targetSection.classList.remove('hidden');
         }
         
-        // Activate corresponding button
+        // Update active button
         const activeButton = document.querySelector(`[data-section="${sectionName}"]`);
         if (activeButton) {
             activeButton.classList.remove('bg-gray-700', 'text-white');
             activeButton.classList.add('active', 'bg-white', 'text-gray-800');
         }
 
-        // Load database data if showing database section
-        if (sectionName === 'database') {
-            loadDatabaseData();
+        // Auto-refresh data di section preview
+        if (sectionName === 'preview') {
+            updatePreviewData();
+        }
+        
+        // Auto-sync database jika admin
+        if (sectionName === 'database' && currentUser && currentUser.role === 'admin') {
+            syncDatabase();
         }
     }
 
-    // Make function globally available
-    window.showSection = showSection;
-    </script>
+    // FUNGSI GRID LUBANG
+    function generateDrillGrid() {
+        const drillGrid = document.getElementById('drillGrid');
+        if (!drillGrid) return;
 
-    <!-- MAIN APPLICATION SCRIPT -->
-    <script>
-    // Global variables
-    let signaturePad;
-    let currentHoleId = null;
-    let currentNorthDirection = null;
-    let holeData = {};
-    let importData = null;
-    let currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+        let gridHTML = '';
 
-    // Hole Grid Configuration
-    const HOLE_ROWS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O'];
-    const MAX_COLUMNS = 30;
+        // Header row
+        gridHTML += '<div class="grid-header-cell" style="grid-row: 1; grid-column: 1;"></div>';
+        gridHTML += '<div class="grid-header-cell" style="grid-row: 1; grid-column: 2;">COUNT</div>';
+        
+        for (let col = 1; col <= MAX_COLUMNS; col++) {
+            gridHTML += `<div class="grid-header-cell" style="grid-row: 1; grid-column: ${col + 2};">${col}</div>`;
+        }
 
-    // User credentials
-    const USERS = {
-        'admin': { password: 'admin123', role: 'admin', name: 'Administrator' },
-        'user': { password: 'user123', role: 'user', name: 'Regular User' }
-    };
-
-    // ==================== DATABASE TERPUSAT DENGAN LOCALSTORAGE SHARED ====================
-
-    const SHARED_DATABASE_KEY = 'sounding_shared_database';
-    const DATABASE_CONFIG = {
-        useShared: true,
-        fileName: 'sounding_database.json'
-    };
-
-    // Fungsi untuk menyimpan ke database terpusat (shared localStorage)
-    function saveToSharedDatabase(report) {
-        try {
-            // Ambil database yang ada
-            const sharedDb = JSON.parse(localStorage.getItem(SHARED_DATABASE_KEY) || '{}');
+        // Data rows
+        HOLE_ROWS.forEach((row, rowIndex) => {
+            const gridRow = rowIndex + 2;
             
-            // Inisialisasi jika belum ada
-            if (!sharedDb.reports) {
-                sharedDb.reports = [];
-                sharedDb.metadata = {
-                    created: new Date().toISOString(),
-                    lastUpdated: new Date().toISOString(),
-                    totalReports: 0
-                };
+            // Row header
+            gridHTML += `<div class="grid-row-header" style="grid-row: ${gridRow}; grid-column: 1;">${row}</div>`;
+            
+            // Row count cell
+            gridHTML += `<div class="row-count-cell" style="grid-row: ${gridRow}; grid-column: 2;" id="count-${row}">0</div>`;
+            
+            // Hole cells
+            for (let col = 1; col <= MAX_COLUMNS; col++) {
+                const holeId = `${row}-${col}`;
+                const holeInfo = holeData[holeId] || {};
+                const statusClass = getStatusClass(holeInfo.condition);
+                const depth = holeInfo.depth || '';
+                
+                gridHTML += `
+                    <div class="hole-cell" style="grid-row: ${gridRow}; grid-column: ${col + 2};" 
+                         data-hole-id="${holeId}" data-row-index="${rowIndex}">
+                        <div class="staggered-row-content">
+                            <div class="hole-dot ${statusClass}" data-hole-id="${holeId}">
+                                ${depth}
+                            </div>
+                        </div>
+                    </div>
+                `;
             }
-            
-            // Cek apakah report sudah ada (update)
-            const existingIndex = sharedDb.reports.findIndex(r => r.id === report.id);
-            if (existingIndex !== -1) {
-                sharedDb.reports[existingIndex] = report;
-            } else {
-                // Tambah report baru
-                sharedDb.reports.push(report);
+        });
+
+        drillGrid.innerHTML = gridHTML;
+
+        // Add click event listeners to hole dots
+        setTimeout(() => {
+            const holeDots = document.querySelectorAll('.hole-dot');
+            holeDots.forEach(dot => {
+                dot.addEventListener('click', function() {
+                    const holeId = this.getAttribute('data-hole-id');
+                    openHoleModal(holeId);
+                });
+            });
+        }, 100);
+    }
+
+    function getStatusClass(condition) {
+        if (!condition) return '';
+        
+        switch(condition.toLowerCase()) {
+            case 'kering': return 'status-D';
+            case 'basah': return 'status-W';
+            case 'collapse': return 'status-C';
+            default: return '';
+        }
+    }
+
+    function openHoleModal(holeId) {
+        currentHoleId = holeId;
+        const modal = document.getElementById('holeModal');
+        const holeInfo = holeData[holeId] || {};
+        
+        document.getElementById('modalHoleId').textContent = `Hole: ${holeId}`;
+        document.getElementById('holeDepth').value = holeInfo.depth || '';
+        document.getElementById('holeCondition').value = holeInfo.condition || '';
+        
+        // Position modal near the clicked dot
+        const dot = document.querySelector(`[data-hole-id="${holeId}"]`);
+        if (dot) {
+            const rect = dot.getBoundingClientRect();
+            modal.style.top = (rect.top + window.scrollY - 100) + 'px';
+            modal.style.left = (rect.left + window.scrollX - 100) + 'px';
+        }
+        
+        modal.classList.remove('hidden');
+    }
+
+    function closeHoleModal() {
+        document.getElementById('holeModal').classList.add('hidden');
+        currentHoleId = null;
+    }
+
+    function saveHoleData() {
+        if (!currentHoleId) return;
+        
+        const depth = document.getElementById('holeDepth').value;
+        const condition = document.getElementById('holeCondition').value;
+        
+        if (!depth || !condition) {
+            showNotification('Kedalaman dan kondisi harus diisi!', true);
+            return;
+        }
+        
+        holeData[currentHoleId] = {
+            depth: parseFloat(depth),
+            condition: condition
+        };
+        
+        updateHoleDotUI(currentHoleId);
+        updateRowCounters();
+        saveSessionData();
+        
+        closeHoleModal();
+        showNotification(`Data lubang ${currentHoleId} berhasil disimpan`);
+    }
+
+    function updateHoleDotUI(holeId) {
+        const holeInfo = holeData[holeId];
+        const dot = document.querySelector(`.hole-dot[data-hole-id="${holeId}"]`);
+        
+        if (dot && holeInfo) {
+            dot.className = 'hole-dot ' + getStatusClass(holeInfo.condition);
+            dot.textContent = holeInfo.depth;
+        } else if (dot) {
+            dot.className = 'hole-dot';
+            dot.textContent = '';
+        }
+    }
+
+    function updateRowCounters() {
+        HOLE_ROWS.forEach(row => {
+            let count = 0;
+            for (let col = 1; col <= MAX_COLUMNS; col++) {
+                const holeId = `${row}-${col}`;
+                if (holeData[holeId] && holeData[holeId].depth) {
+                    count++;
+                }
             }
-            
-            // Update metadata
-            sharedDb.metadata.lastUpdated = new Date().toISOString();
-            sharedDb.metadata.totalReports = sharedDb.reports.length;
-            
-            // Simpan ke localStorage
-            localStorage.setItem(SHARED_DATABASE_KEY, JSON.stringify(sharedDb));
-            
-            console.log('Data berhasil disimpan ke database terpusat');
-            return true;
-            
-        } catch (error) {
-            console.error('Gagal menyimpan ke database terpusat:', error);
-            return false;
+            const countElement = document.getElementById(`count-${row}`);
+            if (countElement) {
+                countElement.textContent = count;
+            }
+        });
+    }
+
+    function clearAllHoles() {
+        if (confirm('Apakah Anda yakin ingin menghapus SEMUA data lubang?')) {
+            holeData = {};
+            generateDrillGrid();
+            updateRowCounters();
+            saveSessionData();
+            showNotification('Semua data lubang berhasil dihapus');
         }
     }
 
-    // Fungsi untuk mengambil semua data dari database terpusat
-    function loadFromSharedDatabase() {
-        try {
-            const sharedDb = JSON.parse(localStorage.getItem(SHARED_DATABASE_KEY) || '{}');
-            return sharedDb.reports || [];
-        } catch (error) {
-            console.error('Gagal mengambil data dari database terpusat:', error);
-            return [];
+    // FUNGSI IMPORT/EXCEL EXCEL
+    function handleExcelImport() {
+        const fileInput = document.getElementById('excelImport');
+        const file = fileInput.files[0];
+        
+        if (!file) {
+            showNotification('Pilih file Excel terlebih dahulu!', true);
+            return;
         }
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+                
+                importData = [];
+                let previewHTML = '<table class="w-full text-xs border-collapse">';
+                previewHTML += '<tr><th class="border p-1">ID HOLE</th><th class="border p-1">DEPTH (m)</th><th class="border p-1">CONDITION</th></tr>';
+                
+                jsonData.forEach((row, index) => {
+                    if (index === 0 && row[0] === 'ID HOLE') return;
+                    
+                    if (row.length >= 3 && row[0] && row[1] && row[2]) {
+                        const holeId = String(row[0]).trim().toUpperCase();
+                        const depth = parseFloat(row[1]);
+                        const condition = String(row[2]).trim();
+                        
+                        if (isValidHoleId(holeId) && !isNaN(depth) && isValidCondition(condition)) {
+                            importData.push({ holeId, depth, condition });
+                            
+                            previewHTML += `<tr>
+                                <td class="border p-1">${holeId}</td>
+                                <td class="border p-1">${depth}</td>
+                                <td class="border p-1">${condition}</td>
+                            </tr>`;
+                        }
+                    }
+                });
+                
+                previewHTML += '</table>';
+                
+                if (importData.length > 0) {
+                    document.getElementById('importPreviewContent').innerHTML = previewHTML;
+                    document.getElementById('importPreview').classList.remove('hidden');
+                    showNotification(`Berhasil membaca ${importData.length} data dari Excel`);
+                } else {
+                    showNotification('Tidak ada data valid yang ditemukan dalam file Excel', true);
+                }
+                
+            } catch (error) {
+                console.error('Error reading Excel file:', error);
+                showNotification('Error membaca file Excel: ' + error.message, true);
+            }
+        };
+        
+        reader.onerror = function() {
+            showNotification('Error membaca file', true);
+        };
+        
+        reader.readAsArrayBuffer(file);
     }
 
-    // Fungsi untuk sinkronisasi database lokal dengan database terpusat
-    function syncWithSharedDatabase() {
-        try {
-            // 1. Ambil data dari database terpusat
-            const sharedData = loadFromSharedDatabase();
-            
-            // 2. Ambil data lokal
-            const localData = JSON.parse(localStorage.getItem('allSoundingReports') || '[]');
-            
-            // 3. Merge data (prioritaskan data terpusat untuk menghindari konflik)
-            const mergedData = mergeDatabases(sharedData, localData);
-            
-            // 4. Simpan data yang sudah di-merge ke kedua database
-            localStorage.setItem('allSoundingReports', JSON.stringify(mergedData));
-            
-            // Update database terpusat dengan data merged
-            const sharedDb = JSON.parse(localStorage.getItem(SHARED_DATABASE_KEY) || '{}');
-            sharedDb.reports = mergedData;
-            sharedDb.metadata = {
-                ...sharedDb.metadata,
-                lastUpdated: new Date().toISOString(),
-                totalReports: mergedData.length
+    function confirmImport() {
+        if (!importData || importData.length === 0) {
+            showNotification('Tidak ada data untuk diimport', true);
+            return;
+        }
+        
+        if (!confirm(`Import ${importData.length} data? Data existing akan ditimpa.`)) {
+            return;
+        }
+        
+        let importedCount = 0;
+        importData.forEach(item => {
+            holeData[item.holeId] = {
+                depth: item.depth,
+                condition: item.condition
             };
-            localStorage.setItem(SHARED_DATABASE_KEY, JSON.stringify(sharedDb));
+            importedCount++;
+        });
+        
+        generateDrillGrid();
+        updateRowCounters();
+        saveSessionData();
+        
+        document.getElementById('importPreview').classList.add('hidden');
+        document.getElementById('excelImport').value = '';
+        importData = null;
+        
+        showNotification(`Berhasil mengimport ${importedCount} data lubang`);
+    }
+
+    function isValidHoleId(holeId) {
+        const pattern = /^[A-O]-[1-9][0-9]?$/;
+        return pattern.test(holeId);
+    }
+
+    function isValidCondition(condition) {
+        const validConditions = ['kering', 'basah', 'collapse', 'Kering', 'Basah', 'Collapse'];
+        return validConditions.includes(condition);
+    }
+
+    function exportToExcel() {
+        try {
+            const exportData = [['ID HOLE', 'DEPTH HOLE (m)', 'HOLE CONDITION']];
             
-            console.log('Sinkronisasi berhasil. Total data:', mergedData.length);
-            return mergedData;
+            HOLE_ROWS.forEach(row => {
+                for (let col = 1; col <= MAX_COLUMNS; col++) {
+                    const holeId = `${row}-${col}`;
+                    const holeInfo = holeData[holeId];
+                    if (holeInfo && holeInfo.depth) {
+                        exportData.push([holeId, holeInfo.depth, holeInfo.condition]);
+                    }
+                }
+            });
+            
+            const ws = XLSX.utils.aoa_to_sheet(exportData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Sounding Data');
+            
+            const pit = document.getElementById('pit').value || 'Unknown';
+            const lokasi = document.getElementById('lokasi').value || 'Unknown';
+            const tanggal = document.getElementById('tanggal').value || new Date().toISOString().split('T')[0];
+            const filename = `Sounding_${pit}_${lokasi}_${tanggal}.xlsx`;
+            
+            XLSX.writeFile(wb, filename);
+            showNotification(`Data berhasil diexport ke ${filename}`);
             
         } catch (error) {
-            console.error('Sinkronisasi gagal:', error);
-            return null;
+            console.error('Error exporting to Excel:', error);
+            showNotification('Error exporting to Excel: ' + error.message, true);
         }
     }
 
-    // Fungsi untuk merge database
-    function mergeDatabases(sharedData, localData) {
-        const mergedMap = new Map();
+    function downloadTemplate() {
+        const templateData = [
+            ['ID HOLE', 'DEPTH HOLE (m)', 'HOLE CONDITION'],
+            ['A-1', '12.5', 'Kering'],
+            ['A-2', '13.2', 'Basah'],
+            ['B-1', '11.8', 'Collapse'],
+            ['C-3', '14.1', 'Kering']
+        ];
         
-        // Prioritaskan data dari database terpusat
-        sharedData.forEach(report => {
-            if (report && report.id) {
-                mergedMap.set(report.id, report);
-            }
-        });
+        const ws = XLSX.utils.aoa_to_sheet(templateData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Template');
+        XLSX.writeFile(wb, 'Sounding_Template.xlsx');
         
-        // Tambahkan data lokal yang belum ada di database terpusat
-        localData.forEach(report => {
-            if (report && report.id && !mergedMap.has(report.id)) {
-                mergedMap.set(report.id, report);
-            }
-        });
-        
-        return Array.from(mergedMap.values());
+        showNotification('Template Excel berhasil didownload');
     }
 
-    // ==================== TAMPILAN DATABASE UNTUK SEMUA USER ====================
-
-    // Fungsi untuk menampilkan database terpusat di section database
-    function loadSharedDatabaseData() {
-        const sharedData = loadFromSharedDatabase();
-        const dbResults = document.getElementById('dbResults');
+    // FUNGSI SESSION MANAGEMENT
+    function saveSessionData() {
+        const sessionData = {
+            holeData: holeData,
+            formData: {
+                pit: document.getElementById('pit').value,
+                shift: document.getElementById('shift').value,
+                lokasi: document.getElementById('lokasi').value,
+                tanggal: document.getElementById('tanggal').value,
+                planHole: document.getElementById('planHole').value,
+                namaCrew: document.getElementById('namaCrew').value,
+                namaGL: document.getElementById('namaGL').value,
+                burden: document.getElementById('burden').value,
+                spasi: document.getElementById('spasi').value,
+                unitDrilling: document.getElementById('unitDrilling').value
+            },
+            northDirection: currentNorthDirection,
+            timestamp: new Date().toISOString()
+        };
         
-        if (sharedData.length === 0) {
-            dbResults.innerHTML = `
-                <div class="text-center p-8 bg-gray-50 rounded-xl">
-                    <div class="text-4xl mb-4">📊</div>
-                    <h3 class="text-xl font-bold text-gray-700 mb-2">Database Masih Kosong</h3>
-                    <p class="text-gray-600">Belum ada data yang disimpan di database terpusat.</p>
-                    <p class="text-sm text-gray-500 mt-2">Buat laporan di section E-SOUNDING untuk mulai mengisi database.</p>
-                </div>
-            `;
+        localStorage.setItem('sounding_session', JSON.stringify(sessionData));
+        
+        // Simpan tanda tangan secara terpisah
+        if (signaturePad && !signaturePad.isEmpty()) {
+            localStorage.setItem('sounding_signature', signaturePad.toDataURL());
+        }
+    }
+
+    function loadSessionData() {
+        const saved = localStorage.getItem('sounding_session');
+        if (saved) {
+            try {
+                const sessionData = JSON.parse(saved);
+                
+                if (sessionData.formData) {
+                    Object.keys(sessionData.formData).forEach(key => {
+                        const element = document.getElementById(key);
+                        if (element) {
+                            element.value = sessionData.formData[key];
+                        }
+                    });
+                }
+                
+                if (sessionData.holeData) {
+                    holeData = { ...sessionData.holeData };
+                    generateDrillGrid();
+                    updateRowCounters();
+                }
+                
+                if (sessionData.northDirection) {
+                    currentNorthDirection = sessionData.northDirection;
+                    const compassDirections = document.querySelectorAll('.compass-direction');
+                    compassDirections.forEach(dir => {
+                        dir.classList.remove('active');
+                        if (dir.getAttribute('data-direction') === currentNorthDirection) {
+                            dir.classList.add('active');
+                        }
+                    });
+                }
+                
+                console.log('Session data loaded successfully');
+                
+            } catch (error) {
+                console.error('Error loading session data:', error);
+            }
+        }
+    }
+
+    // FUNGSI PDF YANG SUDAH DIPERBAIKI - DENGAN FONT LEBIH BESAR DAN KOMPAS DINAMIS
+    function generatePdf() {
+        if (Object.keys(holeData).length === 0) {
+            showNotification('Tidak ada data lubang untuk dibuat PDF!', true);
             return;
         }
 
-        let html = '';
-        
-        // Tampilkan info database
-        const sharedDb = JSON.parse(localStorage.getItem(SHARED_DATABASE_KEY) || '{}');
-        const metadata = sharedDb.metadata || {};
-        
-        html += `
-            <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-xl p-6 mb-6">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-center">
-                    <div>
-                        <div class="text-2xl font-bold text-blue-600">${sharedData.length}</div>
-                        <div class="text-sm text-blue-800">Total Laporan</div>
-                    </div>
-                    <div>
-                        <div class="text-2xl font-bold text-green-600">${getUniqueValues(sharedData, 'pit').length}</div>
-                        <div class="text-sm text-green-800">Jumlah PIT</div>
-                    </div>
-                    <div>
-                        <div class="text-2xl font-bold text-purple-600">${getUniqueValues(sharedData, 'lokasi').length}</div>
-                        <div class="text-sm text-purple-800">Lokasi Berbeda</div>
-                    </div>
-                    <div>
-                        <div class="text-lg font-bold text-amber-600">${formatDate(metadata.lastUpdated)}</div>
-                        <div class="text-sm text-amber-800">Update Terakhir</div>
-                    </div>
-                </div>
-            </div>
-        `;
+        showNotification('🔄 Membuat PDF...');
 
-        // Sort reports by timestamp (newest first)
-        sharedData.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-        
-        // Filter dan search
-        html += `
-            <div class="bg-white border border-gray-200 rounded-xl p-4 mb-6">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                        <label class="form-label text-sm">Cari berdasarkan Lokasi/Nama:</label>
-                        <input type="text" id="searchDatabase" placeholder="Cari..." 
-                               class="input-field text-sm" onkeyup="filterDatabase()">
-                    </div>
-                    <div>
-                        <label class="form-label text-sm">Filter berdasarkan PIT:</label>
-                        <select id="filterPit" class="input-field text-sm" onchange="filterDatabase()">
-                            <option value="">Semua PIT</option>
-                            <option value="Tempudo 2">Tempudo 2</option>
-                            <option value="Tempudo 3">Tempudo 3</option>
-                            <option value="Tempudo 4">Tempudo 4</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="form-label text-sm">Filter berdasarkan Shift:</label>
-                        <select id="filterShift" class="input-field text-sm" onchange="filterDatabase()">
-                            <option value="">Semua Shift</option>
-                            <option value="SHIFT 1">SHIFT 1</option>
-                            <option value="SHIFT 2">SHIFT 2</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-        `;
+        // Buat elemen sementara untuk PDF - DENGAN FONT LEBIH BESAR
+        const pdfElement = document.createElement('div');
+        pdfElement.style.padding = '20px';
+        pdfElement.style.backgroundColor = 'white';
+        pdfElement.style.width = '1100px';
+        pdfElement.style.fontFamily = 'Arial, sans-serif';
+        pdfElement.style.fontSize = '14px'; // FONT LEBIH BESAR
+        pdfElement.style.color = '#000000';
+        pdfElement.style.lineHeight = '1.4';
 
-        // Data reports
-        html += `<div id="databaseResultsContainer">`;
+        // Generate grid untuk PDF DENGAN FONT LEBIH BESAR
+        let gridHTML = '<div style="display: grid; grid-template-columns: 40px 40px ' + Array(MAX_COLUMNS).fill('32px').join(' ') + '; gap: 1px; font-size: 12px; margin: 8px 0;">'; // FONT LEBIH BESAR
         
-        sharedData.forEach((report, index) => {
-            const stats = report.statistics || calculateStatisticsFromReport(report);
+        // Header
+        gridHTML += '<div style="font-weight: bold; text-align: center; padding: 4px; background: #f3f4f6; font-size: 11px;"></div>';
+        gridHTML += '<div style="font-weight: bold; text-align: center; padding: 4px; background: #f3f4f6; font-size: 11px;">COUNT</div>';
+        for (let col = 1; col <= MAX_COLUMNS; col++) {
+            gridHTML += `<div style="font-weight: bold; text-align: center; padding: 4px; background: #f3f4f6; font-size: 11px;">${col}</div>`;
+        }
+
+        // Data rows
+        HOLE_ROWS.forEach((row, rowIndex) => {
+            // Row header
+            gridHTML += `<div style="font-weight: bold; text-align: center; padding: 4px; background: #e5e7eb; font-size: 12px;">${row}</div>`;
             
-            html += `
-                <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow database-item" 
-                     data-lokasi="${report.lokasi || ''}" 
-                     data-pit="${report.pit || ''}" 
-                     data-shift="${report.shift || ''}"
-                     data-crew="${report.namaCrew || ''}">
-                    <div class="flex justify-between items-start mb-4">
-                        <div class="flex-1">
-                            <div class="flex items-center gap-3 mb-2">
-                                <h3 class="font-bold text-lg text-gray-800">${report.lokasi || 'Unknown Location'}</h3>
-                                <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded">${report.pit || 'No PIT'}</span>
-                                <span class="px-2 py-1 bg-gray-100 text-gray-800 text-xs font-semibold rounded">${report.shift || 'No Shift'}</span>
+            // Row count
+            let rowCount = 0;
+            for (let col = 1; col <= MAX_COLUMNS; col++) {
+                const holeId = `${row}-${col}`;
+                if (holeData[holeId] && holeData[holeId].depth) {
+                    rowCount++;
+                }
+            }
+            gridHTML += `<div style="font-weight: bold; text-align: center; padding: 4px; background: #fef3c7; font-size: 12px;">${rowCount}</div>`;
+            
+            // Hole cells dengan staggered pattern DAN FONT LEBIH BESAR
+            for (let col = 1; col <= MAX_COLUMNS; col++) {
+                const holeId = `${row}-${col}`;
+                const holeInfo = holeData[holeId] || {};
+                let bgColor = '#f9fafb';
+                let borderColor = '#d1d5db';
+                let text = '';
+                
+                if (holeInfo.condition) {
+                    switch(holeInfo.condition.toLowerCase()) {
+                        case 'kering': 
+                            bgColor = '#34d399';
+                            borderColor = '#059669';
+                            break;
+                        case 'basah': 
+                            bgColor = '#60a5fa';
+                            borderColor = '#2563eb';
+                            break;
+                        case 'collapse': 
+                            bgColor = '#fca5a5';
+                            borderColor = '#ef4444';
+                            break;
+                    }
+                    text = holeInfo.depth || '';
+                }
+                
+                const staggered = [1,3,5,7,9,11,13,15].includes(rowIndex) ? 'translateX(6px)' : 'translateX(0)';
+                
+                gridHTML += `
+                    <div style="transform: ${staggered}; display: flex; justify-content: center; align-items: center; height: 32px;">
+                        <div style="background: ${bgColor}; border: 2px solid ${borderColor}; color: white; border-radius: 50%; width: 25px; height: 25px; display: flex; align-items: top; justify-content: center; font-size: 13px; font-weight: bold; font-family: Arial, sans-serif;">
+                            ${text}
+                        </div>
+                    </div>
+                `;
+            }
+        });
+
+        gridHTML += '</div>';
+
+        // KOMPAS DINAMIS BERDASARKAN ARAH YANG DIPILIH
+        let compassHTML = '';
+        if (currentNorthDirection) {
+            let uPosition = 'top: 5px; left: 50%; transform: translateX(-50%);';
+            
+            switch(currentNorthDirection) {
+                case '^':
+                    uPosition = 'top: 5px; left: 50%; transform: translateX(-50%);';
+                    break;
+                case '>':
+                    uPosition = 'top: 50%; right: 5px; transform: translateY(-50%);';
+                    break;
+                case 'v':
+                    uPosition = 'bottom: 5px; left: 50%; transform: translateX(-50%);';
+                    break;
+                case '<':
+                    uPosition = 'top: 50%; left: 5px; transform: translateY(-50%);';
+                    break;
+            }
+            
+            compassHTML = `
+                <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                    <div style="font-weight: bold; margin-bottom: 8px; font-size: 16px;">Arah Utara</div> <!-- FONT LEBIH BESAR -->
+                    <div style="width: 80px; height: 80px; border: 2px solid #333; border-radius: 50%; position: relative; background: #f8fafc;">
+                        <div style="position: absolute; ${uPosition} width: 25px; height: 25px; background: #f59e0b; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px;">
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Handle signature - AMAN DARI CROSS-ORIGIN
+        let signatureHTML = '<span style="color: #999; font-size: 12px;">Tanda Tangan</span>'; // FONT LEBIH BESAR
+        if (signaturePad && !signaturePad.isEmpty()) {
+            try {
+                const signatureDataUrl = signaturePad.toDataURL();
+                signatureHTML = `<img src="${signatureDataUrl}" style="max-height: 70px; max-width: 180px;" />`; // UKURAN LEBIH BESAR
+            } catch (error) {
+                console.warn('Cannot export signature:', error);
+                signatureHTML = '<span style="color: #999; font-size: 12px;">[Tanda Tangan - Tidak dapat diexport]</span>';
+            }
+        }
+
+        // Isi konten PDF dengan layout baru - FONT LEBIH BESAR
+        pdfElement.innerHTML = `
+            <div style="text-align: center; margin-bottom: 20px; border-bottom: 2px solid #333; padding-bottom: 15px;">
+                <h1 style="font-size: 24px; font-weight: bold; margin: 0; color: #1f2937;">PT. KALIMANTAN PRIMA PERSADA - DISTRIK INDE</h1> <!-- FONT LEBIH BESAR -->
+                <h2 style="font-size: 18px; font-weight: bold; margin: 5px 0; color: #374151;">PEMERIKSAAN KONDISI & KEDALAMAN LUBANG TEMBAK</h2> <!-- FONT LEBIH BESAR -->
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; font-size: 17px; border: 1px solid #e5e7eb; padding: 10px; border-radius: 6px;"> <!-- FONT LEBIH BESAR -->
+                <div><strong>Tanggal:</strong> ${document.getElementById('tanggal').value || '-'}</div>
+                <div><strong>Shift:</strong> ${document.getElementById('shift').value || '-'}</div>
+                <div><strong>PIT:</strong> ${document.getElementById('pit').value || '-'}</div>
+                <div><strong>Lokasi:</strong> ${document.getElementById('lokasi').value || '-'}</div>
+                <div><strong>Plan Hole:</strong> ${document.getElementById('planHole').value || '-'}</div>
+                <div><strong>B x S:</strong> ${document.getElementById('burden').value || '-'} x ${document.getElementById('spasi').value || '-'}</div>
+                <div><strong>Unit:</strong> ${document.getElementById('unitDrilling').value || '-'}</div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <h3 style="font-size: 16px; font-weight: bold; margin-bottom: 10px; text-align: center;">Visualisasi Kondisi Lubang (Staggered Pattern)</h3> <!-- FONT LEBIH BESAR DAN DI TENGAH -->
+                ${gridHTML}
+            </div>
+
+            <div style="display: flex; justify-content: space-between; margin-top: 25px; border-top: 1px solid #ccc; padding-top: 15px;">
+                <div style="flex: 1;">
+                    <h4 style="font-size: 14px; font-weight: bold; margin-bottom: 8px;">Keterangan Status:</h4> <!-- FONT LEBIH BESAR -->
+                    <ul style="font-size: 13px; margin: 0; padding-left: 20px;"> <!-- FONT LEBIH BESAR -->
+                        <li style="margin-bottom: 5px;">🟢 D: KERING (Ideal)</li>
+                        <li style="margin-bottom: 5px;">🔵 W: BASAH (Ada Air)</li>
+                        <li>🔴 C: COLLAPSE</li>
+                    </ul>
+                </div>
+                
+                ${compassHTML}
+                
+                <div style="flex: 1; text-align: center;">
+                    <h4 style="font-size: 14px; font-weight: bold; margin-bottom: 8px;">Tanda Tangan Pemeriksa:</h4> <!-- FONT LEBIH BESAR -->
+                    <div style="border: 1px solid #ccc; height: 80px; width: 200px; margin: 0 auto; display: flex; align-items: center; justify-content: center; background: white;">
+                        ${signatureHTML}
+                    </div>
+                    <p style="font-size: 13px; margin-top: 5px; font-weight: bold;">${document.getElementById('namaCrew').value || 'Pemeriksa'}</p> <!-- FONT LEBIH BESAR -->
+                </div>
+            </div>
+
+            <div style="margin-top: 20px; font-size: 11px; color: #666; text-align: center; border-top: 1px solid #eee; padding-top: 10px;"> <!-- FONT LEBIH BESAR -->
+                <p>Dokumen ini dibuat secara digital - PT. Kalimantan Prima Persada - Distrik Inde</p>
+                <p>Generated on: ${new Date().toLocaleString('id-ID')}</p>
+            </div>
+        `;
+
+        // Tambahkan ke body sementara
+        document.body.appendChild(pdfElement);
+
+        // Generate PDF dengan html2canvas options yang aman
+        html2canvas(pdfElement, {
+            scale: 2,
+            useCORS: false,
+            allowTaint: false,
+            logging: false,
+            width: 1100,
+            height: pdfElement.scrollHeight,
+            backgroundColor: '#ffffff',
+            onclone: function(clonedDoc) {
+                const images = clonedDoc.querySelectorAll('img');
+                images.forEach(img => {
+                    if (!img.src.startsWith('data:')) {
+                        img.style.display = 'none';
+                    }
+                });
+            }
+        }).then(canvas => {
+            const imgData = canvas.toDataURL('image/jpeg', 0.95);
+            const pdf = new jspdf.jsPDF({
+                orientation: 'landscape',
+                unit: 'mm',
+                format: 'a4'
+            });
+
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = pdf.internal.pageSize.getHeight();
+            const imgWidth = canvas.width;
+            const imgHeight = canvas.height;
+            const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+            const imgX = (pdfWidth - imgWidth * ratio) / 2;
+            const imgY = 5;
+
+            pdf.addImage(imgData, 'JPEG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
+            
+            const pit = document.getElementById('pit').value || 'Unknown';
+            const lokasi = document.getElementById('lokasi').value || 'Unknown';
+            const tanggal = document.getElementById('tanggal').value || new Date().toISOString().split('T')[0];
+            const filename = `Sounding_Report_${pit}_${lokasi}_${tanggal}.pdf`;
+            
+            pdf.save(filename);
+
+            // Hapus elemen sementara
+            document.body.removeChild(pdfElement);
+            
+            showNotification('✅ PDF berhasil di-generate dan didownload!');
+        }).catch(error => {
+            console.error('Error generating PDF:', error);
+            document.body.removeChild(pdfElement);
+            showNotification('❌ Gagal membuat PDF: ' + error.message, true);
+        });
+    }
+
+    // ... (FUNGSI LAINNYA TETAP SAMA) ...
+
+    // FUNGSI LOGIN/LOGOUT
+    function showLoginModal() {
+        document.getElementById('loginModal').classList.remove('hidden');
+    }
+
+    function hideLoginModal() {
+        document.getElementById('loginModal').classList.add('hidden');
+        document.getElementById('loginForm').reset();
+    }
+
+    function handleLogin(e) {
+        e.preventDefault();
+        
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        
+        if (!username || !password) {
+            showNotification('Username dan password harus diisi!', true);
+            return;
+        }
+        
+        const user = USERS[username];
+        if (user && user.password === password) {
+            currentUser = {
+                username: username,
+                role: user.role,
+                name: user.name
+            };
+            
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            updateUserInterface();
+            hideLoginModal();
+            showNotification(`Login berhasil! Selamat datang ${user.name}`);
+            
+            // Jika admin, sync database
+            if (user.role === 'admin') {
+                syncDatabase();
+            }
+        } else {
+            showNotification('Username atau password salah!', true);
+        }
+    }
+
+    function handleLogout() {
+        currentUser = null;
+        localStorage.removeItem('currentUser');
+        updateUserInterface();
+        showNotification('Logout berhasil!');
+    }
+
+    function updateUserInterface() {
+        const userInfoSection = document.getElementById('userInfoSection');
+        const loginBtn = document.getElementById('loginBtn');
+        
+        if (currentUser) {
+            userInfoSection.classList.remove('hidden');
+            document.getElementById('userRoleDisplay').textContent = 
+                currentUser.role === 'admin' ? '👨‍💼 ADMIN' : '👤 USER';
+            document.getElementById('userNameDisplay').textContent = currentUser.name;
+            loginBtn.textContent = '🔐 ' + currentUser.name;
+            loginBtn.classList.add('bg-green-600', 'hover:bg-green-500');
+            loginBtn.classList.remove('bg-blue-600', 'hover:bg-blue-500');
+        } else {
+            userInfoSection.classList.add('hidden');
+            loginBtn.textContent = '🔐 LOGIN';
+            loginBtn.classList.remove('bg-green-600', 'hover:bg-green-500');
+            loginBtn.classList.add('bg-blue-600', 'hover:bg-blue-500');
+        }
+    }
+
+    // FUNGSI DATABASE
+    function syncDatabase() {
+        showNotification('🔄 Menyinkronisasi database...');
+        
+        // Simulasi delay sinkronisasi
+        setTimeout(() => {
+            const allData = getAllStoredData();
+            const dbResults = document.getElementById('dbResults');
+            
+            if (allData.length === 0) {
+                dbResults.innerHTML = `
+                    <div class="text-center p-8 bg-gray-50 rounded-xl">
+                        <div class="text-4xl mb-4">📭</div>
+                        <h3 class="text-xl font-bold text-gray-700 mb-2">Database Kosong</h3>
+                        <p class="text-gray-600">Belum ada data yang disimpan ke database</p>
+                    </div>
+                `;
+                showNotification('Database kosong');
+                return;
+            }
+            
+            let dbHTML = `
+                <div class="mb-4 flex justify-between items-center">
+                    <h3 class="text-lg font-bold text-gray-800">Data Tersimpan (${allData.length} entri)</h3>
+                    <button onclick="exportAllData()" class="px-4 py-2 gold-gradient text-white rounded-lg hover:shadow-lg transition text-sm font-semibold">
+                        💾 Export Semua Data
+                    </button>
+                </div>
+            `;
+            
+            allData.forEach((data, index) => {
+                const holeCount = Object.keys(data.holeData || {}).length;
+                const date = new Date(data.timestamp).toLocaleDateString('id-ID');
+                
+                dbHTML += `
+                    <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+                        <div class="flex justify-between items-start mb-3">
+                            <div>
+                                <h4 class="font-bold text-gray-800">${data.formData?.pit || 'Unknown'} - ${data.formData?.lokasi || 'Unknown'}</h4>
+                                <p class="text-sm text-gray-600">${date} - Shift: ${data.formData?.shift || '-'}</p>
                             </div>
-                            <p class="text-sm text-gray-600">
-                                📅 ${report.tanggal} | 
-                                👷 ${report.namaCrew || 'No Crew'} | 
-                                🏗️ ${report.namaGL || 'No GL'}
-                            </p>
-                            <p class="text-xs text-gray-500 mt-1">
-                                Dibuat oleh: <span class="font-semibold">${report.createdBy || 'unknown'}</span> | 
-                                ${new Date(report.timestamp).toLocaleString()}
-                            </p>
+                            <span class="bg-amber-100 text-amber-800 text-xs font-semibold px-2 py-1 rounded">
+                                ${holeCount} lubang
+                            </span>
                         </div>
-                        <span class="px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-sm font-semibold whitespace-nowrap">
-                            ${stats.totalHoles} Lubang
-                        </span>
-                    </div>
-                    
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4 text-sm">
-                        <div class="text-center">
-                            <div class="text-gray-600">Plan Hole</div>
-                            <div class="font-semibold text-lg">${report.planHole || '-'}</div>
+                        
+                        <div class="grid grid-cols-2 gap-2 text-xs mb-3">
+                            <div><strong>Crew:</strong> ${data.formData?.namaCrew || '-'}</div>
+                            <div><strong>GL:</strong> ${data.formData?.namaGL || '-'}</div>
+                            <div><strong>B x S:</strong> ${data.formData?.burden || '-'} x ${data.formData?.spasi || '-'}</div>
+                            <div><strong>Unit:</strong> ${data.formData?.unitDrilling || '-'}</div>
                         </div>
-                        <div class="text-center">
-                            <div class="text-gray-600">B x S</div>
-                            <div class="font-semibold">${report.burden || '-'} x ${report.spasi || '-'}</div>
-                        </div>
-                        <div class="text-center">
-                            <div class="text-gray-600">Kedalaman</div>
-                            <div class="font-semibold text-amber-700">${stats.avgDepth} m</div>
-                        </div>
-                        <div class="text-center">
-                            <div class="text-gray-600">Kondisi Kering</div>
-                            <div class="font-semibold text-green-600">${stats.dryPercentage}%</div>
-                        </div>
-                    </div>
-                    
-                    <div class="flex justify-between items-center pt-4 border-t border-gray-100">
-                        <div class="text-sm text-gray-500">
-                            <span class="font-semibold">Arah Utara:</span> ${report.northDirection ? report.northDirection.toUpperCase() : 'Tidak ada'}
-                        </div>
-                        <div class="space-x-2">
-                            <button onclick="loadReportToForm('${report.id}')" 
-                                    class="px-3 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 transition flex items-center gap-1">
-                                <span>📋</span> Load
+                        
+                        <div class="flex space-x-2">
+                            <button onclick="loadDatabaseEntry(${index})" class="flex-1 px-3 py-2 bg-blue-600 text-white text-xs font-semibold rounded-lg hover:bg-blue-700 transition">
+                                📂 Load
                             </button>
-                            <button onclick="viewReportGrid('${report.id}')" 
-                                    class="px-3 py-1 bg-green-500 text-white text-sm rounded hover:bg-green-600 transition flex items-center gap-1">
-                                <span>👁️</span> View Grid
-                            </button>
-                            <button onclick="downloadReportPDF('${report.id}')" 
-                                    class="px-3 py-1 bg-purple-500 text-white text-sm rounded hover:bg-purple-600 transition flex items-center gap-1">
-                                <span>📄</span> PDF
+                            <button onclick="previewDatabaseEntry(${index})" class="flex-1 px-3 py-2 bg-gray-600 text-white text-xs font-semibold rounded-lg hover:bg-gray-700 transition">
+                                👁️ Preview
                             </button>
                             ${currentUser && currentUser.role === 'admin' ? `
-                            <button onclick="deleteReport('${report.id}')" 
-                                    class="px-3 py-1 bg-red-500 text-white text-sm rounded hover:bg-red-600 transition flex items-center gap-1">
-                                <span>🗑️</span> Hapus
-                            </button>
+                                <button onclick="deleteDatabaseEntry(${index})" class="px-3 py-2 bg-red-600 text-white text-xs font-semibold rounded-lg hover:bg-red-700 transition">
+                                    🗑️ Hapus
+                                </button>
                             ` : ''}
                         </div>
                     </div>
+                `;
+            });
+            
+            dbResults.innerHTML = dbHTML;
+            showNotification(`✅ Database berhasil disinkronisasi! ${allData.length} entri ditemukan.`);
+            
+        }, 1500);
+    }
+
+    function getAllStoredData() {
+        const allData = [];
+        
+        // Ambil semua key dari localStorage
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            
+            if (key.startsWith('sounding_data_')) {
+                try {
+                    const data = JSON.parse(localStorage.getItem(key));
+                    allData.push({
+                        ...data,
+                        storageKey: key
+                    });
+                } catch (error) {
+                    console.error('Error parsing data for key:', key, error);
+                }
+            }
+        }
+        
+        // Urutkan berdasarkan timestamp (terbaru pertama)
+        return allData.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    }
+
+    function loadDatabaseEntry(index) {
+        const allData = getAllStoredData();
+        if (index >= 0 && index < allData.length) {
+            const data = allData[index];
+            
+            // Load form data
+            if (data.formData) {
+                Object.keys(data.formData).forEach(key => {
+                    const element = document.getElementById(key);
+                    if (element) {
+                        element.value = data.formData[key];
+                    }
+                });
+            }
+            
+            // Load hole data
+            if (data.holeData) {
+                holeData = { ...data.holeData };
+                generateDrillGrid();
+                updateRowCounters();
+            }
+            
+            // Load north direction
+            if (data.northDirection) {
+                currentNorthDirection = data.northDirection;
+                const compassDirections = document.querySelectorAll('.compass-direction');
+                compassDirections.forEach(dir => {
+                    dir.classList.remove('active');
+                    if (dir.getAttribute('data-direction') === currentNorthDirection) {
+                        dir.classList.add('active');
+                    }
+                });
+            }
+            
+            // Switch to e-sounding section
+            showSection('e-sounding');
+            showNotification('Data berhasil dimuat dari database!');
+        }
+    }
+
+    function previewDatabaseEntry(index) {
+        const allData = getAllStoredData();
+        if (index >= 0 && index < allData.length) {
+            const data = allData[index];
+            
+            // Tampilkan preview dalam modal sederhana
+            const holeCount = Object.keys(data.holeData || {}).length;
+            const date = new Date(data.timestamp).toLocaleString('id-ID');
+            
+            let previewHTML = `
+                <div class="bg-white p-6 rounded-xl max-w-2xl max-h-96 overflow-y-auto">
+                    <h3 class="text-xl font-bold mb-4 text-gray-800">Preview Data</h3>
+                    
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div><strong>PIT:</strong> ${data.formData?.pit || '-'}</div>
+                        <div><strong>Lokasi:</strong> ${data.formData?.lokasi || '-'}</div>
+                        <div><strong>Tanggal:</strong> ${data.formData?.tanggal || '-'}</div>
+                        <div><strong>Shift:</strong> ${data.formData?.shift || '-'}</div>
+                        <div><strong>Crew:</strong> ${data.formData?.namaCrew || '-'}</div>
+                        <div><strong>GL:</strong> ${data.formData?.namaGL || '-'}</div>
+                        <div><strong>Plan Hole:</strong> ${data.formData?.planHole || '-'}</div>
+                        <div><strong>B x S:</strong> ${data.formData?.burden || '-'} x ${data.formData?.spasi || '-'}</div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <strong>Total Lubang:</strong> ${holeCount}
+                    </div>
+                    
+                    <div class="mb-4">
+                        <strong>Waktu Simpan:</strong> ${date}
+                    </div>
+                    
+                    <div class="flex justify-end space-x-2">
+                        <button onclick="closePreviewModal()" class="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition">
+                            Tutup
+                        </button>
+                        <button onclick="loadDatabaseEntry(${index}); closePreviewModal()" class="px-4 py-2 gold-gradient text-white rounded-lg hover:shadow-lg transition">
+                            Load Data
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // Buat modal preview
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            modal.id = 'previewModal';
+            modal.innerHTML = previewHTML;
+            
+            document.body.appendChild(modal);
+            
+            // Tambahkan event listener untuk tutup modal
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closePreviewModal();
+                }
+            });
+        }
+    }
+
+    function closePreviewModal() {
+        const modal = document.getElementById('previewModal');
+        if (modal) {
+            document.body.removeChild(modal);
+        }
+    }
+
+    function deleteDatabaseEntry(index) {
+        if (!confirm('Apakah Anda yakin ingin menghapus data ini?')) {
+            return;
+        }
+        
+        const allData = getAllStoredData();
+        if (index >= 0 && index < allData.length) {
+            const data = allData[index];
+            localStorage.removeItem(data.storageKey);
+            showNotification('Data berhasil dihapus dari database!');
+            syncDatabase(); // Refresh tampilan
+        }
+    }
+
+    function clearLocalDatabase() {
+        if (!confirm('HAPUS SEMUA DATA LOKAL? Tindakan ini tidak dapat dibatalkan!')) {
+            return;
+        }
+        
+        let deletedCount = 0;
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key.startsWith('sounding_data_')) {
+                localStorage.removeItem(key);
+                deletedCount++;
+            }
+        }
+        
+        showNotification(`${deletedCount} data berhasil dihapus dari database lokal!`);
+        syncDatabase();
+    }
+
+    function exportAllData() {
+        try {
+            const allData = getAllStoredData();
+            if (allData.length === 0) {
+                showNotification('Tidak ada data untuk diexport!', true);
+                return;
+            }
+            
+            // Format data untuk Excel
+            const exportData = [['PIT', 'LOKASI', 'TANGGAL', 'SHIFT', 'CREW', 'GL', 'PLAN_HOLE', 'BURDEN', 'SPASI', 'UNIT', 'HOLE_ID', 'DEPTH', 'CONDITION', 'TIMESTAMP']];
+            
+            allData.forEach(data => {
+                const formData = data.formData || {};
+                
+                // Export setiap hole secara individual
+                if (data.holeData) {
+                    Object.entries(data.holeData).forEach(([holeId, holeInfo]) => {
+                        exportData.push([
+                            formData.pit || '',
+                            formData.lokasi || '',
+                            formData.tanggal || '',
+                            formData.shift || '',
+                            formData.namaCrew || '',
+                            formData.namaGL || '',
+                            formData.planHole || '',
+                            formData.burden || '',
+                            formData.spasi || '',
+                            formData.unitDrilling || '',
+                            holeId,
+                            holeInfo.depth || '',
+                            holeInfo.condition || '',
+                            data.timestamp || ''
+                        ]);
+                    });
+                }
+            });
+            
+            const ws = XLSX.utils.aoa_to_sheet(exportData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'All_Sounding_Data');
+            
+            const filename = `Sounding_Complete_Database_${new Date().toISOString().split('T')[0]}.xlsx`;
+            XLSX.writeFile(wb, filename);
+            
+            showNotification(`✅ Semua data (${allData.length} entri) berhasil diexport!`);
+            
+        } catch (error) {
+            console.error('Error exporting all data:', error);
+            showNotification('❌ Gagal mengexport data: ' + error.message, true);
+        }
+    }
+
+    // FUNGSI UTILITAS
+    function saveData() {
+        saveSessionData();
+        showNotification('✅ Data berhasil disimpan sementara!');
+    }
+
+    function generateFinalReport() {
+        if (Object.keys(holeData).length === 0) {
+            showNotification('Tidak ada data lubang untuk disimpan!', true);
+            return;
+        }
+        
+        // Simpan ke database
+        const timestamp = new Date().toISOString();
+        const storageKey = `sounding_data_${timestamp}`;
+        
+        const dataToSave = {
+            holeData: holeData,
+            formData: {
+                pit: document.getElementById('pit').value,
+                shift: document.getElementById('shift').value,
+                lokasi: document.getElementById('lokasi').value,
+                tanggal: document.getElementById('tanggal').value,
+                planHole: document.getElementById('planHole').value,
+                namaCrew: document.getElementById('namaCrew').value,
+                namaGL: document.getElementById('namaGL').value,
+                burden: document.getElementById('burden').value,
+                spasi: document.getElementById('spasi').value,
+                unitDrilling: document.getElementById('unitDrilling').value
+            },
+            northDirection: currentNorthDirection,
+            timestamp: timestamp,
+            user: currentUser ? currentUser.username : 'anonymous'
+        };
+        
+        localStorage.setItem(storageKey, JSON.stringify(dataToSave));
+        
+        showNotification('🚀 Data berhasil disimpan ke database!');
+        
+        // Auto generate PDF
+        setTimeout(() => {
+            generatePdf();
+        }, 1000);
+    }
+
+    function clearSignature() {
+        if (signaturePad) {
+            signaturePad.clear();
+            document.getElementById('signaturePlaceholder').style.display = 'block';
+            localStorage.removeItem('sounding_signature');
+        }
+    }
+
+    function showNotification(message, isError = false) {
+        // Hapus notifikasi sebelumnya
+        const existingNotification = document.querySelector('.custom-notification');
+        if (existingNotification) {
+            document.body.removeChild(existingNotification);
+        }
+        
+        const notification = document.createElement('div');
+        notification.className = `custom-notification fixed top-4 right-4 z-50 px-6 py-3 rounded-lg shadow-lg font-semibold text-white transform transition-all duration-300 ${
+            isError ? 'bg-red-500' : 'bg-green-500'
+        }`;
+        notification.textContent = message;
+        
+        document.body.appendChild(notification);
+        
+        // Animasi masuk
+        setTimeout(() => {
+            notification.style.transform = 'translateX(0)';
+        }, 10);
+        
+        // Auto hide setelah 3 detik
+        setTimeout(() => {
+            notification.style.transform = 'translateX(100%)';
+            setTimeout(() => {
+                if (document.body.contains(notification)) {
+                    document.body.removeChild(notification);
+                }
+            }, 300);
+        }, 3000);
+    }
+
+    // Inisialisasi user interface saat load
+    updateUserInterface();
+
+    function updateUserInterface() {
+        const userInfoSection = document.getElementById('userInfoSection');
+        const loginBtn = document.getElementById('loginBtn');
+        
+        if (currentUser) {
+            userInfoSection.classList.remove('hidden');
+            document.getElementById('userRoleDisplay').textContent = 
+                currentUser.role === 'admin' ? '👨‍💼 ADMIN' : '👤 USER';
+            document.getElementById('userNameDisplay').textContent = currentUser.name;
+            loginBtn.textContent = '🔐 ' + currentUser.name;
+            loginBtn.classList.add('bg-green-600', 'hover:bg-green-500');
+            loginBtn.classList.remove('bg-blue-600', 'hover:bg-blue-500');
+        } else {
+            userInfoSection.classList.add('hidden');
+            loginBtn.textContent = '🔐 LOGIN';
+            loginBtn.classList.remove('bg-green-600', 'hover:bg-green-500');
+            loginBtn.classList.add('bg-blue-600', 'hover:bg-blue-500');
+        }
+    }
+
+    function updatePreviewData() {
+        const currentDataDiv = document.getElementById('currentData');
+        const totalHoles = Object.keys(holeData).length;
+        const statTotalHoles = document.getElementById('statTotalHoles');
+        const statAvgDepth = document.getElementById('statAvgDepth');
+        const statDryPercentage = document.getElementById('statDryPercentage');
+        
+        if (totalHoles === 0) {
+            currentDataDiv.innerHTML = `
+                <div class="bg-white rounded-xl p-4 shadow border border-gray-200">
+                    <div class="text-sm text-gray-600">Isi data di section E-SOUNDING untuk melihat preview</div>
+                </div>
+            `;
+            statTotalHoles.textContent = '0';
+            statAvgDepth.textContent = '0.0 m';
+            statDryPercentage.textContent = '0%';
+            return;
+        }
+        
+        // Hitung statistik
+        let totalDepth = 0;
+        let dryCount = 0;
+        
+        Object.values(holeData).forEach(hole => {
+            totalDepth += hole.depth || 0;
+            if (hole.condition && hole.condition.toLowerCase() === 'kering') {
+                dryCount++;
+            }
+        });
+        
+        const avgDepth = totalDepth / totalHoles;
+        const dryPercentage = ((dryCount / totalHoles) * 100).toFixed(1);
+        
+        // Update statistics
+        statTotalHoles.textContent = totalHoles;
+        statAvgDepth.textContent = avgDepth.toFixed(1) + ' m';
+        statDryPercentage.textContent = dryPercentage + '%';
+        
+        // Update current data preview
+        let previewHTML = '';
+        const recentHoles = Object.entries(holeData).slice(-5); // 5 data terakhir
+        
+        recentHoles.forEach(([holeId, holeInfo]) => {
+            const statusColor = holeInfo.condition === 'Kering' ? 'text-green-600' : 
+                              holeInfo.condition === 'Basah' ? 'text-blue-600' : 'text-red-600';
+            
+            previewHTML += `
+                <div class="bg-white rounded-xl p-3 shadow border border-gray-200">
+                    <div class="flex justify-between items-center">
+                        <span class="font-semibold text-gray-800">${holeId}</span>
+                        <span class="text-sm ${statusColor}">${holeInfo.condition}</span>
+                    </div>
+                    <div class="text-sm text-gray-600 mt-1">Kedalaman: ${holeInfo.depth} m</div>
                 </div>
             `;
         });
         
-        html += `</div>`;
-        
-        dbResults.innerHTML = html;
-    }
-
-    // Fungsi untuk filter database
-    function filterDatabase() {
-        const searchTerm = document.getElementById('searchDatabase').value.toLowerCase();
-        const pitFilter = document.getElementById('filterPit').value;
-        const shiftFilter = document.getElementById('filterShift').value;
-        
-        const items = document.querySelectorAll('.database-item');
-        
-        items.forEach(item => {
-            const lokasi = item.getAttribute('data-lokasi').toLowerCase();
-            const pit = item.getAttribute('data-pit');
-            const shift = item.getAttribute('data-shift');
-            const crew = item.getAttribute('data-crew').toLowerCase();
-            
-            const matchesSearch = !searchTerm || 
-                                lokasi.includes(searchTerm) || 
-                                crew.includes(searchTerm);
-            
-            const matchesPit = !pitFilter || pit === pitFilter;
-            const matchesShift = !shiftFilter || shift === shiftFilter;
-            
-            if (matchesSearch && matchesPit && matchesShift) {
-                item.style.display = 'block';
-            } else {
-                item.style.display = 'none';
-            }
-        });
-    }
-
-    // Helper functions
-    function getUniqueValues(data, key) {
-        const values = data.map(item => item[key]).filter(Boolean);
-        return [...new Set(values)];
-    }
-
-    function formatDate(dateString) {
-        if (!dateString) return '-';
-        const date = new Date(dateString);
-        return date.toLocaleDateString('id-ID') + ' ' + date.toLocaleTimeString('id-ID', {hour: '2-digit', minute: '2-digit'});
-    }
-
-    // ==================== INTEGRASI KE SYSTEM YANG ADA ====================
-
-    // Ganti fungsi saveReportToDatabase
-    function saveReportToDatabase() {
-        const signatureBase64 = signaturePad && !signaturePad.isEmpty() ? signaturePad.toDataURL() : '';
-        
-        const report = {
-            id: 'report_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
-            pit: document.getElementById('pit').value,
-            shift: document.getElementById('shift').value,
-            lokasi: document.getElementById('lokasi').value,
-            tanggal: document.getElementById('tanggal').value,
-            planHole: document.getElementById('planHole').value,
-            namaCrew: document.getElementById('namaCrew').value,
-            namaGL: document.getElementById('namaGL').value,
-            burden: document.getElementById('burden').value,
-            spasi: document.getElementById('spasi').value,
-            unitDrilling: document.getElementById('unitDrilling').value,
-            holeData: {...holeData},
-            signatureBase64: signatureBase64,
-            northDirection: currentNorthDirection,
-            timestamp: new Date().toISOString(),
-            statistics: calculateStatistics(),
-            createdBy: currentUser ? currentUser.username : 'anonymous'
-        };
-        
-        // 1. Simpan ke localStorage (backup)
-        let allReports = JSON.parse(localStorage.getItem('allSoundingReports') || '[]');
-        allReports.push(report);
-        localStorage.setItem('allSoundingReports', JSON.stringify(allReports));
-        
-        // 2. Simpan ke database terpusat
-        saveToSharedDatabase(report);
-        
-        console.log("Report saved to both local and shared database:", report.id);
-        
-        return report.id;
-    }
-
-    // Ganti fungsi syncDatabase
-    function syncDatabase() {
-        showNotification("Menyinkronisasi database terpusat...", false);
-        updateSyncStatus("🔄 Menyinkronisasi database...");
-
-        try {
-            const syncedData = syncWithSharedDatabase();
-            
-            if (syncedData) {
-                updateSyncStatus(`✅ Database tersinkronisasi! Total: ${syncedData.length} laporan`);
-                showNotification(`Database berhasil disinkronisasi! Total: ${syncedData.length} laporan`);
-                
-                // Refresh tampilan database
-                if (!document.getElementById('databaseSection').classList.contains('hidden')) {
-                    loadSharedDatabaseData();
-                }
-            }
-            
-        } catch (error) {
-            console.error('Sync error:', error);
-            updateSyncStatus("❌ Gagal sinkronisasi");
-            showNotification("Gagal menyinkronisasi database", true);
-        }
-    }
-
-    // Ganti fungsi loadDatabaseData di section database
-    function loadDatabaseData() {
-        // Selalu gunakan database terpusat untuk tampilan
-        loadSharedDatabaseData();
-    }
-
-    // Ganti fungsi deleteReport untuk menghapus dari database terpusat
-    function deleteReport(reportId) {
-        if (!currentUser || currentUser.role !== 'admin') {
-            showNotification("Anda tidak memiliki akses untuk menghapus laporan", true);
-            return;
+        if (recentHoles.length === 0) {
+            previewHTML = `
+                <div class="bg-white rounded-xl p-4 shadow border border-gray-200">
+                    <div class="text-sm text-gray-600">Tidak ada data lubang</div>
+                </div>
+            `;
         }
         
-        if (confirm('Apakah Anda yakin ingin menghapus laporan ini dari database terpusat?')) {
-            try {
-                // Hapus dari database terpusat
-                const sharedDb = JSON.parse(localStorage.getItem(SHARED_DATABASE_KEY) || '{}');
-                if (sharedDb.reports) {
-                    sharedDb.reports = sharedDb.reports.filter(report => report.id !== reportId);
-                    sharedDb.metadata.totalReports = sharedDb.reports.length;
-                    sharedDb.metadata.lastUpdated = new Date().toISOString();
-                    localStorage.setItem(SHARED_DATABASE_KEY, JSON.stringify(sharedDb));
-                }
-                
-                // Hapus dari localStorage (opsional)
-                const localData = JSON.parse(localStorage.getItem('allSoundingReports') || '[]');
-                const updatedLocalData = localData.filter(report => report.id !== reportId);
-                localStorage.setItem('allSoundingReports', JSON.stringify(updatedLocalData));
-                
-                showNotification("Laporan berhasil dihapus dari database terpusat");
-                loadSharedDatabaseData();
-                
-            } catch (error) {
-                showNotification("Gagal menghapus laporan: " + error.message, true);
-            }
-        }
+        currentDataDiv.innerHTML = previewHTML;
     }
 
-    // Ganti fungsi loadReportToForm untuk mencari dari database terpusat
-    function loadReportToForm(reportId) {
-        const sharedData = loadFromSharedDatabase();
-        const report = sharedData.find(r => r.id === reportId);
-        
-        if (!report) {
-            // Fallback ke localStorage
-            const allReports = JSON.parse(localStorage.getItem('allSoundingReports') || '[]');
-            const localReport = allReports.find(r => r.id === reportId);
-            if (!localReport) {
-                showNotification("Laporan tidak ditemukan", true);
-                return;
-            }
-            loadReportData(localReport);
-        } else {
-            loadReportData(report);
-        }
-    }
-
-    function loadReportData(report) {
-        // Load form data
-        document.getElementById('pit').value = report.pit || '';
-        document.getElementById('shift').value = report.shift || '';
-        document.getElementById('lokasi').value = report.lokasi || '';
-        document.getElementById('tanggal').value = report.tanggal || '';
-        document.getElementById('planHole').value = report.planHole || '';
-        document.getElementById('namaCrew').value = report.namaCrew || '';
-        document.getElementById('namaGL').value = report.namaGL || '';
-        document.getElementById('burden').value = report.burden || '';
-        document.getElementById('spasi').value = report.spasi || '';
-        document.getElementById('unitDrilling').value = report.unitDrilling || '';
-        
-        // Load hole data
-        holeData = {...report.holeData};
-        
-        // Update ALL hole dots
-        HOLE_ROWS.forEach(row => {
-            for (let col = 1; col <= MAX_COLUMNS; col++) {
-                const holeId = `${row}-${col}`;
-                updateHoleDotUI(holeId);
-            }
-        });
-        
-        // Update row counters
-        updateRowCounters();
-        
-        // Load signature
-        if (report.signatureBase64 && signaturePad) {
-            signaturePad.clear();
-            const img = new Image();
-            img.onload = function() {
-                const ctx = signaturePad.canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, signaturePad.canvas.width, signaturePad.canvas.height);
-                document.getElementById('signaturePlaceholder').style.display = 'none';
-            };
-            img.src = report.signatureBase64;
-        }
-        
-        // Load north direction
-        if (report.northDirection) {
-            currentNorthDirection = report.northDirection;
-            updatePdfCompass();
-            const compassDirections = document.querySelectorAll('.compass-direction');
-            compassDirections.forEach(dir => {
-                dir.classList.remove('active');
-                if (dir.getAttribute('data-direction') === currentNorthDirection) {
-                    dir.classList.add('active');
-                }
-            });
-        }
-        
-        saveSessionData();
-        showSection('e-sounding');
-        showNotification(`Laporan ${report.lokasi} berhasil dimuat dari database terpusat!`);
-    }
-
-    // ==================== INISIALISASI ====================
-
-    document.addEventListener('DOMContentLoaded', function() {
-        initializeApp();
-        checkLoginStatus();
-        
-        // Inisialisasi database terpusat pertama kali
-        setTimeout(() => {
-            const sharedDb = JSON.parse(localStorage.getItem(SHARED_DATABASE_KEY) || '{}');
-            if (!sharedDb.reports) {
-                // Migrasi data lokal ke database terpusat jika ada
-                const localData = JSON.parse(localStorage.getItem('allSoundingReports') || '[]');
-                if (localData.length > 0) {
-                    const sharedDb = {
-                        reports: localData,
-                        metadata: {
-                            created: new Date().toISOString(),
-                            lastUpdated: new Date().toISOString(),
-                            totalReports: localData.length
-                        }
-                    };
-                    localStorage.setItem(SHARED_DATABASE_KEY, JSON.stringify(sharedDb));
-                    console.log('Data lokal dimigrasikan ke database terpusat:', localData.length, 'laporan');
-                }
-            }
-        }, 2000);
-    });
-
-    // ... (fungsi-fungsi lainnya tetap sama) ...
-
-    // Update fungsi showSection untuk selalu sinkronisasi saat buka database
-    function showSection(sectionName) {
-        console.log('Showing section:', sectionName);
-        
-        // Hide all sections
-        document.querySelectorAll('.content-section').forEach(section => {
-            section.classList.add('hidden');
-        });
-        
-        // Remove active class from all buttons
-        document.querySelectorAll('.nav-btn').forEach(btn => {
-            btn.classList.remove('active', 'bg-white', 'text-gray-800');
-            btn.classList.add('bg-gray-700', 'text-white');
-        });
-        
-        // Show target section
-        const targetSection = document.getElementById(sectionName + 'Section');
-        if (targetSection) {
-            targetSection.classList.remove('hidden');
-        }
-        
-        // Activate corresponding button
-        const activeButton = document.querySelector(`[data-section="${sectionName}"]`);
-        if (activeButton) {
-            activeButton.classList.remove('bg-gray-700', 'text-white');
-            activeButton.classList.add('active', 'bg-white', 'text-gray-800');
-        }
-
-        // Load database data if showing database section - SELALU SINKRONISASI
-        if (sectionName === 'database') {
-            syncDatabase(); // Sinkronisasi dulu
-            setTimeout(() => {
-                loadSharedDatabaseData(); // Kemudian tampilkan
-            }, 500);
-        }
-    }
-
-    // Make functions globally available
-    window.loadReportToForm = loadReportToForm;
-    window.viewReportGrid = viewReportGrid;
-    window.deleteReport = deleteReport;
-    window.closeGridModal = closeGridModal;
-    window.downloadReportPDF = downloadReportPDF;
-    window.filterDatabase = filterDatabase;
-    </script>
-
+    console.log('E-Sounding System initialized successfully!');
+</script>
 </body>
 </html>

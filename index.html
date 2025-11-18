@@ -1333,13 +1333,10 @@
 
     // Database Configuration
     const DATABASE_CONFIG = {
-        // Opsi 1: Menggunakan JSON Server (ganti dengan URL server Anda)
-        serverUrl: 'http://localhost:3001',
-        
-        // Opsi 2: Menggunakan GitHub Gist (untuk demo)
+	serverUrl: '',
         useGist: true,
         gistId: localStorage.getItem('databaseGistId'),
-        githubToken: '' // Isi dengan token GitHub jika ingin menggunakan Gist
+        githubToken: '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' // Isi dengan token GitHub jika ingin menggunakan Gist
     };
 
     document.addEventListener('DOMContentLoaded', function() {

@@ -827,7 +827,7 @@
                         <div class="premium-card p-6 gold-gradient text-white" onclick="showSection('database')">
                             <div class="text-4xl mb-4">💾</div>
                             <h3 class="font-bold mb-3 text-lg">DATABASE</h3>
-                            <p class="text-sm text-amber-100">Lihat dan kelola semua data sounding yang pernah diinput</p>
+                            <p class="text-sm text-amber-100">Lihat dan kelala semua data sounding yang pernah diinput</p>
                             <div class="mt-3 text-amber-200 font-semibold">Klik untuk mengelola →</div>
                         </div>
                     </div>
@@ -1331,51 +1331,13 @@
         'user': { password: 'user123', role: 'user', name: 'Regular User' }
     };
 
-  const DATABASE_CONFIG = {
-    useGist: true,
-    githubToken: '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', // Ganti dengan token Anda
-    gistId: localStorage.getItem('databaseGistId'),
-    serverUrl: '' // Kosongkan
-};
-
-// Ganti fungsi syncWithGist dengan yang lebih robust:
-async function syncWithGist() {
-    try {
-        // Jika belum ada gistId, buat baru
-        if (!DATABASE_CONFIG.gistId) {
-            console.log('Membuat Gist baru...');
-            return await createNewGist();
-        }
-
-        console.log('Mengambil data dari Gist:', DATABASE_CONFIG.gistId);
-        
-        // Coba ambil data dari gist yang ada
-        const response = await fetch(`https://api.github.com/gists/${DATABASE_CONFIG.gistId}`, {
-            headers: {
-                'Authorization': `token ${DATABASE_CONFIG.githubToken}`,
-                'Accept': 'application/vnd.github.v3+json'
-            }
-        });
-        
-        if (!response.ok) {
-            if (response.status === 404) {
-                console.log('Gist tidak ditemukan, membuat baru...');
-                return await createNewGist();
-            }
-            throw new Error(`HTTP ${response.status}: ${await response.text()}`);
-        }
-        
-        const gist = await response.json();
-        const content = gist.files['sounding_database.json'].content;
-        console.log('Berhasil mengambil data dari Gist');
-        
-        return JSON.parse(content);
-    } catch (error) {
-        console.error('Gist sync error:', error);
-        // Fallback: buat gist baru
-        return await createNewGist();
-    }
-}
+    // PERBAIKAN: Konfigurasi Database dengan GitHub Gist
+    const DATABASE_CONFIG = {
+        useGist: true,
+        githubToken: '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',
+        gistId: localStorage.getItem('databaseGistId') || null,
+        fileName: 'sounding_database.json'
+    };
 
     document.addEventListener('DOMContentLoaded', function() {
         initializeApp();
@@ -1481,24 +1443,20 @@ async function syncWithGist() {
         document.getElementById('clearAllHolesBtn').addEventListener('click', clearAllHoles);
     }
 
-    // ==================== DATABASE SYNC FUNCTIONS ====================
+    // ==================== PERBAIKAN: DATABASE SYNC FUNCTIONS ====================
 
     async function syncDatabase() {
-        showNotification("Menyinkronisasi database...", false);
-        updateSyncStatus("🔄 Menyinkronisasi dengan server...");
+        showNotification("Menyinkronisasi database dengan GitHub Gist...", false);
+        updateSyncStatus("🔄 Menyinkronisasi dengan GitHub Gist...");
 
         try {
-            let remoteData = null;
+            let remoteData = [];
 
-            if (DATABASE_CONFIG.useGist && DATABASE_CONFIG.gistId) {
-                // Sync dengan GitHub Gist
+            if (DATABASE_CONFIG.useGist) {
                 remoteData = await syncWithGist();
-            } else {
-                // Sync dengan JSON Server
-                remoteData = await syncWithJsonServer();
             }
 
-            if (remoteData) {
+            if (remoteData && remoteData.length > 0) {
                 // Merge data lokal dengan remote
                 const localData = JSON.parse(localStorage.getItem('allSoundingReports') || '[]');
                 const mergedData = mergeDatabaseData(localData, remoteData);
@@ -1510,82 +1468,177 @@ async function syncWithGist() {
                 showNotification(`Database berhasil disinkronisasi! Total: ${mergedData.length} laporan`);
                 
                 // Refresh tampilan database
-                if (document.getElementById('databaseSection').classList.contains('hidden') === false) {
+                if (!document.getElementById('databaseSection').classList.contains('hidden')) {
                     loadDatabaseData();
                 }
             } else {
-                updateSyncStatus("ℹ️ Tidak ada data remote yang ditemukan");
+                // Jika tidak ada data remote, gunakan data lokal
+                const localData = JSON.parse(localStorage.getItem('allSoundingReports') || '[]');
+                if (localData.length > 0) {
+                    // Upload data lokal ke Gist
+                    await uploadToGist(localData);
+                    updateSyncStatus(`✅ Data lokal diupload ke Gist! Total: ${localData.length} laporan`);
+                } else {
+                    updateSyncStatus("ℹ️ Tidak ada data untuk disinkronisasi");
+                }
             }
         } catch (error) {
             console.error('Sync error:', error);
             updateSyncStatus("❌ Gagal sinkronisasi: " + error.message);
-            showNotification("Gagal menyinkronisasi database", true);
+            showNotification("Gagal menyinkronisasi database: " + error.message, true);
         }
     }
 
+    // PERBAIKAN: Fungsi sinkronisasi dengan Gist yang lebih robust
     async function syncWithGist() {
-        if (!DATABASE_CONFIG.gistId) {
-            // Buat Gist baru jika belum ada
-            return await createNewGist();
-        }
-
         try {
-            const response = await fetch(`https://api.github.com/gists/${DATABASE_CONFIG.gistId}`);
-            if (!response.ok) throw new Error('Gist tidak ditemukan');
+            // Jika belum ada gistId, buat Gist baru
+            if (!DATABASE_CONFIG.gistId) {
+                console.log('Membuat Gist baru...');
+                const localData = JSON.parse(localStorage.getItem('allSoundingReports') || '[]');
+                return await createNewGist(localData);
+            }
+
+            console.log('Mengambil data dari Gist:', DATABASE_CONFIG.gistId);
+            
+            // Coba ambil data dari gist yang ada
+            const response = await fetch(`https://api.github.com/gists/${DATABASE_CONFIG.gistId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `token ${DATABASE_CONFIG.githubToken}`,
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            if (!response.ok) {
+                if (response.status === 404) {
+                    console.log('Gist tidak ditemukan, membuat baru...');
+                    const localData = JSON.parse(localStorage.getItem('allSoundingReports') || '[]');
+                    return await createNewGist(localData);
+                }
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
             
             const gist = await response.json();
-            const content = gist.files['sounding_database.json'].content;
-            return JSON.parse(content);
+            
+            // Periksa apakah file ada di Gist
+            if (!gist.files || !gist.files[DATABASE_CONFIG.fileName]) {
+                console.log('File tidak ditemukan di Gist, membuat baru...');
+                const localData = JSON.parse(localStorage.getItem('allSoundingReports') || '[]');
+                return await createNewGist(localData);
+            }
+            
+            const content = gist.files[DATABASE_CONFIG.fileName].content;
+            
+            // Jika content kosong, kembalikan array kosong
+            if (!content || content.trim() === '') {
+                return [];
+            }
+            
+            const parsedData = JSON.parse(content);
+            console.log('Berhasil mengambil data dari Gist:', parsedData.length, 'records');
+            
+            return parsedData;
+            
         } catch (error) {
-            console.warn('Gist tidak ditemukan, membuat yang baru...');
-            return await createNewGist();
+            console.error('Gist sync error:', error);
+            
+            // Fallback: buat gist baru dengan data lokal
+            try {
+                const localData = JSON.parse(localStorage.getItem('allSoundingReports') || '[]');
+                return await createNewGist(localData);
+            } catch (fallbackError) {
+                console.error('Fallback juga gagal:', fallbackError);
+                throw new Error('Gagal sinkronisasi dengan Gist: ' + error.message);
+            }
         }
     }
 
-    async function createNewGist() {
-        const localData = JSON.parse(localStorage.getItem('allSoundingReports') || '[]');
-        const gistData = {
-            files: {
-                'sounding_database.json': {
-                    content: JSON.stringify(localData, null, 2)
-                }
-            },
-            description: 'E-Sounding System Database',
-            public: false
-        };
-
+    // PERBAIKAN: Fungsi untuk membuat Gist baru
+    async function createNewGist(data = []) {
         try {
+            const gistData = {
+                files: {
+                    [DATABASE_CONFIG.fileName]: {
+                        content: JSON.stringify(data, null, 2)
+                    }
+                },
+                description: 'E-Sounding System Database - PT. Kalimantan Prima Persada',
+                public: false
+            };
+
+            console.log('Membuat Gist baru...');
+            
             const response = await fetch('https://api.github.com/gists', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': DATABASE_CONFIG.githubToken ? `token ${DATABASE_CONFIG.githubToken}` : ''
+                    'Authorization': `token ${DATABASE_CONFIG.githubToken}`,
+                    'Accept': 'application/vnd.github.v3+json'
                 },
                 body: JSON.stringify(gistData)
             });
 
-            if (!response.ok) throw new Error('Gagal membuat Gist');
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Gagal membuat Gist: ${response.status} ${errorText}`);
+            }
 
             const gist = await response.json();
             DATABASE_CONFIG.gistId = gist.id;
             localStorage.setItem('databaseGistId', gist.id);
             
-            return localData;
+            console.log('Gist baru dibuat:', gist.id);
+            return data;
+            
         } catch (error) {
             console.error('Gagal membuat Gist:', error);
-            throw error;
+            throw new Error('Tidak dapat membuat Gist baru: ' + error.message);
         }
     }
 
-    async function syncWithJsonServer() {
+    // PERBAIKAN: Fungsi untuk upload data ke Gist
+    async function uploadToGist(data) {
         try {
-            // Coba ambil data dari server
-            const response = await fetch(`${DATABASE_CONFIG.serverUrl}/reports`);
-            if (!response.ok) throw new Error('Server tidak merespon');
+            // Jika belum ada gistId, buat baru
+            if (!DATABASE_CONFIG.gistId) {
+                return await createNewGist(data);
+            }
+
+            const gistData = {
+                files: {
+                    [DATABASE_CONFIG.fileName]: {
+                        content: JSON.stringify(data, null, 2)
+                    }
+                },
+                description: 'E-Sounding System Database - PT. Kalimantan Prima Persada - Updated: ' + new Date().toISOString()
+            };
+
+            const response = await fetch(`https://api.github.com/gists/${DATABASE_CONFIG.gistId}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `token ${DATABASE_CONFIG.githubToken}`,
+                    'Accept': 'application/vnd.github.v3+json'
+                },
+                body: JSON.stringify(gistData)
+            });
+
+            if (!response.ok) {
+                if (response.status === 404) {
+                    // Gist tidak ditemukan, buat baru
+                    console.log('Gist tidak ditemukan, membuat baru...');
+                    return await createNewGist(data);
+                }
+                throw new Error(`Gagal update Gist: ${response.status}`);
+            }
+
+            console.log('Data berhasil diupload ke Gist');
+            return true;
             
-            return await response.json();
         } catch (error) {
-            console.error('JSON Server error:', error);
+            console.error('Upload to Gist error:', error);
             throw error;
         }
     }
@@ -1595,12 +1648,16 @@ async function syncWithGist() {
         
         // Tambahkan semua data remote
         remoteData.forEach(report => {
-            mergedMap.set(report.id, report);
+            if (report && report.id) {
+                mergedMap.set(report.id, report);
+            }
         });
         
         // Tambahkan/update dengan data lokal (local wins jika ada konflik)
         localData.forEach(report => {
-            mergedMap.set(report.id, report);
+            if (report && report.id) {
+                mergedMap.set(report.id, report);
+            }
         });
         
         return Array.from(mergedMap.values());
@@ -1637,10 +1694,17 @@ async function syncWithGist() {
                     const mergedData = mergeDatabaseData(currentData, importedData);
                     
                     localStorage.setItem('allSoundingReports', JSON.stringify(mergedData));
-                    showNotification(`Database berhasil diimport! Total: ${mergedData.length} laporan`);
+                    
+                    // Upload data yang sudah di-merge ke Gist
+                    uploadToGist(mergedData).then(() => {
+                        showNotification(`Database berhasil diimport dan disinkronisasi! Total: ${mergedData.length} laporan`);
+                    }).catch(error => {
+                        showNotification(`Database berhasil diimport lokal! Total: ${mergedData.length} laporan. Tapi gagal upload ke Gist: ${error.message}`);
+                    });
+                    
                     loadDatabaseData();
                 } catch (error) {
-                    showNotification("File database tidak valid", true);
+                    showNotification("File database tidak valid: " + error.message, true);
                 }
             };
             
@@ -1651,8 +1715,13 @@ async function syncWithGist() {
     }
 
     function clearLocalDatabase() {
-        if (confirm('Apakah Anda yakin ingin menghapus semua data lokal? Data di server akan tetap aman.')) {
+        if (confirm('Apakah Anda yakin ingin menghapus semua data lokal? Data di Gist akan tetap aman.')) {
             localStorage.removeItem('allSoundingReports');
+            
+            // Juga hapus gistId untuk memulai fresh (opsional)
+            // localStorage.removeItem('databaseGistId');
+            // DATABASE_CONFIG.gistId = null;
+            
             showNotification("Database lokal berhasil dihapus!");
             loadDatabaseData();
         }
@@ -1665,7 +1734,7 @@ async function syncWithGist() {
         });
     }
 
-    // ==================== END DATABASE SYNC FUNCTIONS ====================
+    // ==================== END PERBAIKAN DATABASE SYNC FUNCTIONS ====================
 
     // TAMBAHAN: Fungsi untuk menghapus semua data lubang
     function clearAllHoles() {
@@ -2773,9 +2842,13 @@ async function syncWithGist() {
         
         console.log("Report saved to database:", report.id);
         
-        // Coba sync dengan server
+        // PERBAIKAN: Upload ke Gist setelah menyimpan
         setTimeout(() => {
-            syncDatabase();
+            uploadToGist(allReports).then(() => {
+                console.log("Data berhasil diupload ke Gist setelah menyimpan report baru");
+            }).catch(error => {
+                console.error("Gagal upload ke Gist:", error);
+            });
         }, 1000);
         
         return report.id;

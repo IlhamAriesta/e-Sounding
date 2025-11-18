@@ -827,7 +827,7 @@
                         <div class="premium-card p-6 gold-gradient text-white" onclick="showSection('database')">
                             <div class="text-4xl mb-4">💾</div>
                             <h3 class="font-bold mb-3 text-lg">DATABASE</h3>
-                            <p class="text-sm text-amber-100">Lihat dan kelala semua data sounding yang pernah diinput</p>
+                            <p class="text-sm text-amber-100">Lihat dan kelola semua data sounding yang pernah diinput</p>
                             <div class="mt-3 text-amber-200 font-semibold">Klik untuk mengelola →</div>
                         </div>
                     </div>
@@ -1188,23 +1188,23 @@
         <!-- DATABASE SECTION -->
         <div id="databaseSection" class="content-section hidden">
             <div class="bg-white rounded-2xl p-8 shadow-2xl border border-gray-200">
-                <h2 class="text-3xl font-bold text-gray-900 mb-6 text-center">💾 DATABASE</h2>
+                <h2 class="text-3xl font-bold text-gray-900 mb-6 text-center">💾 DATABASE TERPUSAT</h2>
                 
-                <!-- Database Sync Controls -->
-                <div class="mb-6 p-4 bg-blue-50 border border-blue-300 rounded-lg">
-                    <h3 class="text-xl font-bold mb-4 text-gray-800 text-center">🔄 Sinkronisasi Database</h3>
+                <!-- Database Info & Controls -->
+                <div class="mb-6 p-4 bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-xl">
+                    <h3 class="text-xl font-bold mb-4 text-blue-800 text-center">📊 Database Terpusat - Diakses Semua User</h3>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <button id="syncDatabaseBtn2" class="w-full px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold">
-                            🔄 Sync dengan Server
+                            🔄 Refresh Database
                         </button>
                         <button id="importDatabaseFileBtn" class="w-full px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-semibold">
-                            📥 Import Database File
+                            📥 Import dari File
                         </button>
                         <button id="clearLocalDatabaseBtn" class="w-full px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-semibold">
-                            🗑️ Hapus Database Lokal
+                            🗑️ Hapus Data Lokal
                         </button>
                     </div>
-                    <div id="databaseSyncStatus" class="mt-2 text-sm text-gray-600 text-center"></div>
+                    <div id="databaseSyncStatus" class="mt-3 text-center text-sm text-blue-700 font-medium"></div>
                 </div>
 
                 <!-- User Info & Logout -->
@@ -1234,7 +1234,10 @@
                 <!-- Database Results -->
                 <div id="dbResults" class="space-y-6">
                     <div class="text-center p-8 bg-gray-50 rounded-xl">
-                        <p class="text-gray-600">Belum ada data database. Generate laporan di section E-SOUNDING untuk menyimpan data.</p>
+                        <div class="text-4xl mb-4">📊</div>
+                        <h3 class="text-xl font-bold text-gray-700 mb-2">Database Terpusat</h3>
+                        <p class="text-gray-600">Data akan ditampilkan di sini setelah sinkronisasi</p>
+                        <p class="text-sm text-gray-500 mt-2">Klik "Refresh Database" untuk memuat data terbaru</p>
                     </div>
                 </div>
             </div>
@@ -1331,331 +1334,114 @@
         'user': { password: 'user123', role: 'user', name: 'Regular User' }
     };
 
-    // PERBAIKAN: Konfigurasi Database dengan GitHub Gist
+    // ==================== DATABASE TERPUSAT DENGAN LOCALSTORAGE SHARED ====================
+
+    const SHARED_DATABASE_KEY = 'sounding_shared_database';
     const DATABASE_CONFIG = {
-        useGist: true,
-        githubToken: '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',
-        gistId: localStorage.getItem('databaseGistId') || null,
+        useShared: true,
         fileName: 'sounding_database.json'
     };
 
-    document.addEventListener('DOMContentLoaded', function() {
-        initializeApp();
-        checkLoginStatus();
-    });
-
-    function initializeApp() {
-        generateDrillGrid();
-        initCompassDirection();
-        initSignaturePad();
-        setupEventListeners();
-        
-        // Set default date
-        document.getElementById('tanggal').value = new Date().toISOString().split('T')[0];
-        
-        // Generate user ID
-        document.getElementById('userIdDisplay').textContent = generateUserId();
-        
-        // Load saved data
-        setTimeout(loadSessionData, 1000);
-        
-        // Try to sync database on startup
-        setTimeout(() => {
-            syncDatabase();
-        }, 2000);
-    }
-
-    function generateUserId() {
-        return 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-    }
-
-    function showNotification(message, isError = false) {
-        const el = document.getElementById('notification');
-        el.textContent = message;
-        el.className = `p-3 mb-4 rounded-lg text-sm transition-opacity duration-300 ${isError ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`;
-        el.classList.remove('hidden');
-        setTimeout(() => {
-            el.classList.add('hidden');
-        }, 5000);
-    }
-
-    // Setup event listeners
-    function setupEventListeners() {
-        // Excel Import/Export
-        document.getElementById('importExcelBtn').addEventListener('click', importFromExcel);
-        document.getElementById('confirmImportBtn').addEventListener('click', confirmImport);
-        document.getElementById('downloadTemplateBtn').addEventListener('click', downloadTemplate);
-        document.getElementById('exportExcelBtn').addEventListener('click', exportToExcel);
-        document.getElementById('exportExcelBtn2').addEventListener('click', exportToExcel);
-
-        // Database Import
-        document.getElementById('importDatabaseBtn').addEventListener('click', importDatabaseFromExcel);
-
-        // Share Link
-        document.getElementById('generateShareLinkBtn').addEventListener('click', generateShareLink);
-        document.getElementById('copyShareLinkBtn').addEventListener('click', copyShareLink);
-
-        // Hole Modal
-        document.getElementById('saveHoleDataBtn').addEventListener('click', saveHoleDataFromModal);
-        document.getElementById('closeHoleModalBtn').addEventListener('click', closeHoleModal);
-
-        // Signature - FIXED event listeners
-        document.getElementById('clearSignatureBtn').addEventListener('click', clearSignature);
-        document.getElementById('clearSignatureBtnSmall').addEventListener('click', clearSignature);
-        document.getElementById('saveDataBtn').addEventListener('click', saveData);
-
-        // PDF Export
-        document.getElementById('generatePdfBtn').addEventListener('click', generateReportAndDownloadPDF);
-
-        // Generate Final Report
-        document.getElementById('generateFinalReportBtn').addEventListener('click', generateFinalReport);
-
-        // Copy to clipboard
-        document.getElementById('copyToClipboardBtn').addEventListener('click', function() {
-            copyToClipboard('copyOutputText');
-        });
-
-        // Database Sync
-        document.getElementById('syncDatabaseBtn').addEventListener('click', syncDatabase);
-        document.getElementById('syncDatabaseBtn2').addEventListener('click', syncDatabase);
-        document.getElementById('exportDatabaseBtn').addEventListener('click', exportDatabaseToFile);
-        document.getElementById('importDatabaseFileBtn').addEventListener('click', importDatabaseFromFile);
-        document.getElementById('clearLocalDatabaseBtn').addEventListener('click', clearLocalDatabase);
-
-        // Form auto-save
-        const formInputs = document.querySelectorAll('#generalInfoInputs input, #generalInfoInputs select');
-        formInputs.forEach(input => {
-            input.addEventListener('change', saveSessionData);
-        });
-
-        // Handle window resize for signature pad
-        window.addEventListener('resize', function() {
-            setTimeout(initSignaturePad, 100);
-        });
-
-        // Login/Logout
-        document.getElementById('loginBtn').addEventListener('click', showLoginModal);
-        document.getElementById('cancelLoginBtn').addEventListener('click', hideLoginModal);
-        document.getElementById('loginForm').addEventListener('submit', handleLogin);
-        document.getElementById('logoutBtn').addEventListener('click', handleLogout);
-
-        // TAMBAHAN: Tombol Hapus Semua Lubang
-        document.getElementById('clearAllHolesBtn').addEventListener('click', clearAllHoles);
-    }
-
-    // ==================== PERBAIKAN: DATABASE SYNC FUNCTIONS ====================
-
-    async function syncDatabase() {
-        showNotification("Menyinkronisasi database dengan GitHub Gist...", false);
-        updateSyncStatus("🔄 Menyinkronisasi dengan GitHub Gist...");
-
+    // Fungsi untuk menyimpan ke database terpusat (shared localStorage)
+    function saveToSharedDatabase(report) {
         try {
-            let remoteData = [];
-
-            if (DATABASE_CONFIG.useGist) {
-                remoteData = await syncWithGist();
+            // Ambil database yang ada
+            const sharedDb = JSON.parse(localStorage.getItem(SHARED_DATABASE_KEY) || '{}');
+            
+            // Inisialisasi jika belum ada
+            if (!sharedDb.reports) {
+                sharedDb.reports = [];
+                sharedDb.metadata = {
+                    created: new Date().toISOString(),
+                    lastUpdated: new Date().toISOString(),
+                    totalReports: 0
+                };
             }
-
-            if (remoteData && remoteData.length > 0) {
-                // Merge data lokal dengan remote
-                const localData = JSON.parse(localStorage.getItem('allSoundingReports') || '[]');
-                const mergedData = mergeDatabaseData(localData, remoteData);
-                
-                // Simpan data yang sudah di-merge
-                localStorage.setItem('allSoundingReports', JSON.stringify(mergedData));
-                
-                updateSyncStatus(`✅ Database tersinkronisasi! Total: ${mergedData.length} laporan`);
-                showNotification(`Database berhasil disinkronisasi! Total: ${mergedData.length} laporan`);
-                
-                // Refresh tampilan database
-                if (!document.getElementById('databaseSection').classList.contains('hidden')) {
-                    loadDatabaseData();
-                }
+            
+            // Cek apakah report sudah ada (update)
+            const existingIndex = sharedDb.reports.findIndex(r => r.id === report.id);
+            if (existingIndex !== -1) {
+                sharedDb.reports[existingIndex] = report;
             } else {
-                // Jika tidak ada data remote, gunakan data lokal
-                const localData = JSON.parse(localStorage.getItem('allSoundingReports') || '[]');
-                if (localData.length > 0) {
-                    // Upload data lokal ke Gist
-                    await uploadToGist(localData);
-                    updateSyncStatus(`✅ Data lokal diupload ke Gist! Total: ${localData.length} laporan`);
-                } else {
-                    updateSyncStatus("ℹ️ Tidak ada data untuk disinkronisasi");
-                }
-            }
-        } catch (error) {
-            console.error('Sync error:', error);
-            updateSyncStatus("❌ Gagal sinkronisasi: " + error.message);
-            showNotification("Gagal menyinkronisasi database: " + error.message, true);
-        }
-    }
-
-    // PERBAIKAN: Fungsi sinkronisasi dengan Gist yang lebih robust
-    async function syncWithGist() {
-        try {
-            // Jika belum ada gistId, buat Gist baru
-            if (!DATABASE_CONFIG.gistId) {
-                console.log('Membuat Gist baru...');
-                const localData = JSON.parse(localStorage.getItem('allSoundingReports') || '[]');
-                return await createNewGist(localData);
-            }
-
-            console.log('Mengambil data dari Gist:', DATABASE_CONFIG.gistId);
-            
-            // Coba ambil data dari gist yang ada
-            const response = await fetch(`https://api.github.com/gists/${DATABASE_CONFIG.gistId}`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `token ${DATABASE_CONFIG.githubToken}`,
-                    'Accept': 'application/vnd.github.v3+json',
-                    'Content-Type': 'application/json'
-                }
-            });
-            
-            if (!response.ok) {
-                if (response.status === 404) {
-                    console.log('Gist tidak ditemukan, membuat baru...');
-                    const localData = JSON.parse(localStorage.getItem('allSoundingReports') || '[]');
-                    return await createNewGist(localData);
-                }
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                // Tambah report baru
+                sharedDb.reports.push(report);
             }
             
-            const gist = await response.json();
+            // Update metadata
+            sharedDb.metadata.lastUpdated = new Date().toISOString();
+            sharedDb.metadata.totalReports = sharedDb.reports.length;
             
-            // Periksa apakah file ada di Gist
-            if (!gist.files || !gist.files[DATABASE_CONFIG.fileName]) {
-                console.log('File tidak ditemukan di Gist, membuat baru...');
-                const localData = JSON.parse(localStorage.getItem('allSoundingReports') || '[]');
-                return await createNewGist(localData);
-            }
+            // Simpan ke localStorage
+            localStorage.setItem(SHARED_DATABASE_KEY, JSON.stringify(sharedDb));
             
-            const content = gist.files[DATABASE_CONFIG.fileName].content;
-            
-            // Jika content kosong, kembalikan array kosong
-            if (!content || content.trim() === '') {
-                return [];
-            }
-            
-            const parsedData = JSON.parse(content);
-            console.log('Berhasil mengambil data dari Gist:', parsedData.length, 'records');
-            
-            return parsedData;
-            
-        } catch (error) {
-            console.error('Gist sync error:', error);
-            
-            // Fallback: buat gist baru dengan data lokal
-            try {
-                const localData = JSON.parse(localStorage.getItem('allSoundingReports') || '[]');
-                return await createNewGist(localData);
-            } catch (fallbackError) {
-                console.error('Fallback juga gagal:', fallbackError);
-                throw new Error('Gagal sinkronisasi dengan Gist: ' + error.message);
-            }
-        }
-    }
-
-    // PERBAIKAN: Fungsi untuk membuat Gist baru
-    async function createNewGist(data = []) {
-        try {
-            const gistData = {
-                files: {
-                    [DATABASE_CONFIG.fileName]: {
-                        content: JSON.stringify(data, null, 2)
-                    }
-                },
-                description: 'E-Sounding System Database - PT. Kalimantan Prima Persada',
-                public: false
-            };
-
-            console.log('Membuat Gist baru...');
-            
-            const response = await fetch('https://api.github.com/gists', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `token ${DATABASE_CONFIG.githubToken}`,
-                    'Accept': 'application/vnd.github.v3+json'
-                },
-                body: JSON.stringify(gistData)
-            });
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`Gagal membuat Gist: ${response.status} ${errorText}`);
-            }
-
-            const gist = await response.json();
-            DATABASE_CONFIG.gistId = gist.id;
-            localStorage.setItem('databaseGistId', gist.id);
-            
-            console.log('Gist baru dibuat:', gist.id);
-            return data;
-            
-        } catch (error) {
-            console.error('Gagal membuat Gist:', error);
-            throw new Error('Tidak dapat membuat Gist baru: ' + error.message);
-        }
-    }
-
-    // PERBAIKAN: Fungsi untuk upload data ke Gist
-    async function uploadToGist(data) {
-        try {
-            // Jika belum ada gistId, buat baru
-            if (!DATABASE_CONFIG.gistId) {
-                return await createNewGist(data);
-            }
-
-            const gistData = {
-                files: {
-                    [DATABASE_CONFIG.fileName]: {
-                        content: JSON.stringify(data, null, 2)
-                    }
-                },
-                description: 'E-Sounding System Database - PT. Kalimantan Prima Persada - Updated: ' + new Date().toISOString()
-            };
-
-            const response = await fetch(`https://api.github.com/gists/${DATABASE_CONFIG.gistId}`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `token ${DATABASE_CONFIG.githubToken}`,
-                    'Accept': 'application/vnd.github.v3+json'
-                },
-                body: JSON.stringify(gistData)
-            });
-
-            if (!response.ok) {
-                if (response.status === 404) {
-                    // Gist tidak ditemukan, buat baru
-                    console.log('Gist tidak ditemukan, membuat baru...');
-                    return await createNewGist(data);
-                }
-                throw new Error(`Gagal update Gist: ${response.status}`);
-            }
-
-            console.log('Data berhasil diupload ke Gist');
+            console.log('Data berhasil disimpan ke database terpusat');
             return true;
             
         } catch (error) {
-            console.error('Upload to Gist error:', error);
-            throw error;
+            console.error('Gagal menyimpan ke database terpusat:', error);
+            return false;
         }
     }
 
-    function mergeDatabaseData(localData, remoteData) {
+    // Fungsi untuk mengambil semua data dari database terpusat
+    function loadFromSharedDatabase() {
+        try {
+            const sharedDb = JSON.parse(localStorage.getItem(SHARED_DATABASE_KEY) || '{}');
+            return sharedDb.reports || [];
+        } catch (error) {
+            console.error('Gagal mengambil data dari database terpusat:', error);
+            return [];
+        }
+    }
+
+    // Fungsi untuk sinkronisasi database lokal dengan database terpusat
+    function syncWithSharedDatabase() {
+        try {
+            // 1. Ambil data dari database terpusat
+            const sharedData = loadFromSharedDatabase();
+            
+            // 2. Ambil data lokal
+            const localData = JSON.parse(localStorage.getItem('allSoundingReports') || '[]');
+            
+            // 3. Merge data (prioritaskan data terpusat untuk menghindari konflik)
+            const mergedData = mergeDatabases(sharedData, localData);
+            
+            // 4. Simpan data yang sudah di-merge ke kedua database
+            localStorage.setItem('allSoundingReports', JSON.stringify(mergedData));
+            
+            // Update database terpusat dengan data merged
+            const sharedDb = JSON.parse(localStorage.getItem(SHARED_DATABASE_KEY) || '{}');
+            sharedDb.reports = mergedData;
+            sharedDb.metadata = {
+                ...sharedDb.metadata,
+                lastUpdated: new Date().toISOString(),
+                totalReports: mergedData.length
+            };
+            localStorage.setItem(SHARED_DATABASE_KEY, JSON.stringify(sharedDb));
+            
+            console.log('Sinkronisasi berhasil. Total data:', mergedData.length);
+            return mergedData;
+            
+        } catch (error) {
+            console.error('Sinkronisasi gagal:', error);
+            return null;
+        }
+    }
+
+    // Fungsi untuk merge database
+    function mergeDatabases(sharedData, localData) {
         const mergedMap = new Map();
         
-        // Tambahkan semua data remote
-        remoteData.forEach(report => {
+        // Prioritaskan data dari database terpusat
+        sharedData.forEach(report => {
             if (report && report.id) {
                 mergedMap.set(report.id, report);
             }
         });
         
-        // Tambahkan/update dengan data lokal (local wins jika ada konflik)
+        // Tambahkan data lokal yang belum ada di database terpusat
         localData.forEach(report => {
-            if (report && report.id) {
+            if (report && report.id && !mergedMap.has(report.id)) {
                 mergedMap.set(report.id, report);
             }
         });
@@ -1663,696 +1449,20 @@
         return Array.from(mergedMap.values());
     }
 
-    function exportDatabaseToFile() {
-        const allReports = JSON.parse(localStorage.getItem('allSoundingReports') || '[]');
-        const dataStr = JSON.stringify(allReports, null, 2);
-        const dataBlob = new Blob([dataStr], { type: 'application/json' });
-        
-        const url = URL.createObjectURL(dataBlob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `sounding_database_${new Date().toISOString().split('T')[0]}.json`;
-        link.click();
-        
-        URL.revokeObjectURL(url);
-        showNotification("Database berhasil diexport ke file!");
-    }
+    // ==================== TAMPILAN DATABASE UNTUK SEMUA USER ====================
 
-    function importDatabaseFromFile() {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = '.json';
-        
-        input.onchange = function(e) {
-            const file = e.target.files[0];
-            const reader = new FileReader();
-            
-            reader.onload = function(e) {
-                try {
-                    const importedData = JSON.parse(e.target.result);
-                    const currentData = JSON.parse(localStorage.getItem('allSoundingReports') || '[]');
-                    const mergedData = mergeDatabaseData(currentData, importedData);
-                    
-                    localStorage.setItem('allSoundingReports', JSON.stringify(mergedData));
-                    
-                    // Upload data yang sudah di-merge ke Gist
-                    uploadToGist(mergedData).then(() => {
-                        showNotification(`Database berhasil diimport dan disinkronisasi! Total: ${mergedData.length} laporan`);
-                    }).catch(error => {
-                        showNotification(`Database berhasil diimport lokal! Total: ${mergedData.length} laporan. Tapi gagal upload ke Gist: ${error.message}`);
-                    });
-                    
-                    loadDatabaseData();
-                } catch (error) {
-                    showNotification("File database tidak valid: " + error.message, true);
-                }
-            };
-            
-            reader.readAsText(file);
-        };
-        
-        input.click();
-    }
-
-    function clearLocalDatabase() {
-        if (confirm('Apakah Anda yakin ingin menghapus semua data lokal? Data di Gist akan tetap aman.')) {
-            localStorage.removeItem('allSoundingReports');
-            
-            // Juga hapus gistId untuk memulai fresh (opsional)
-            // localStorage.removeItem('databaseGistId');
-            // DATABASE_CONFIG.gistId = null;
-            
-            showNotification("Database lokal berhasil dihapus!");
-            loadDatabaseData();
-        }
-    }
-
-    function updateSyncStatus(message) {
-        const statusElements = document.querySelectorAll('#syncStatus, #databaseSyncStatus');
-        statusElements.forEach(el => {
-            if (el) el.textContent = message;
-        });
-    }
-
-    // ==================== END PERBAIKAN DATABASE SYNC FUNCTIONS ====================
-
-    // TAMBAHAN: Fungsi untuk menghapus semua data lubang
-    function clearAllHoles() {
-        if (confirm('Apakah Anda yakin ingin menghapus semua data lubang? Tindakan ini tidak dapat dibatalkan.')) {
-            holeData = {};
-            
-            // Reset semua hole dots
-            HOLE_ROWS.forEach(row => {
-                for (let col = 1; col <= MAX_COLUMNS; col++) {
-                    const holeId = `${row}-${col}`;
-                    updateHoleDotUI(holeId);
-                }
-            });
-            
-            // Reset row counters
-            updateRowCounters();
-            
-            // Reset plan hole count
-            document.getElementById('planHole').value = '';
-            
-            // Save session
-            saveSessionData();
-            
-            showNotification("Semua data lubang berhasil dihapus!");
-        }
-    }
-
-    // Login System Functions
-    function checkLoginStatus() {
-        if (currentUser) {
-            updateUIForLoggedInUser();
-        }
-    }
-
-    function showLoginModal() {
-        document.getElementById('loginModal').classList.remove('hidden');
-    }
-
-    function hideLoginModal() {
-        document.getElementById('loginModal').classList.add('hidden');
-        document.getElementById('loginForm').reset();
-    }
-
-    function handleLogin(e) {
-        e.preventDefault();
-        
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
-        
-        if (!username || !password) {
-            showNotification("Username dan password harus diisi", true);
-            return;
-        }
-        
-        if (USERS[username] && USERS[username].password === password) {
-            currentUser = {
-                username: username,
-                role: USERS[username].role,
-                name: USERS[username].name
-            };
-            
-            localStorage.setItem('currentUser', JSON.stringify(currentUser));
-            updateUIForLoggedInUser();
-            hideLoginModal();
-            showNotification(`Login berhasil! Selamat datang ${currentUser.name}`);
-        } else {
-            showNotification("Username atau password salah", true);
-        }
-    }
-
-    function handleLogout() {
-        currentUser = null;
-        localStorage.removeItem('currentUser');
-        updateUIForLoggedOutUser();
-        showNotification("Anda telah logout");
-    }
-
-    function updateUIForLoggedInUser() {
-        document.getElementById('loginBtn').textContent = '👤 ' + currentUser.username;
-        document.getElementById('userInfoSection').classList.remove('hidden');
-        document.getElementById('userRoleDisplay').textContent = currentUser.role === 'admin' ? 'Administrator' : 'User';
-        document.getElementById('userNameDisplay').textContent = currentUser.name;
-        
-        if (currentUser.role === 'admin') {
-            document.getElementById('adminOnlySection').classList.remove('hidden');
-        }
-    }
-
-    function updateUIForLoggedOutUser() {
-        document.getElementById('loginBtn').textContent = '🔐 LOGIN';
-        document.getElementById('userInfoSection').classList.add('hidden');
-        document.getElementById('adminOnlySection').classList.add('hidden');
-    }
-
-    function copyToClipboard(elementId) {
-        const copyText = document.getElementById(elementId);
-        try {
-            copyText.select();
-            copyText.setSelectionRange(0, 99999);
-            navigator.clipboard.writeText(copyText.value);
-            showNotification("Teks berhasil disalin ke clipboard!");
-        } catch (err) {
-            console.error('Failed to copy text: ', err);
-            showNotification("Gagal menyalin. Silakan salin manual.", true);
-        }
-    }
-
-    // Kompas Functions - DIREVISI (hapus display arah utara)
-    function initCompassDirection() {
-        const compassDirections = document.querySelectorAll('.compass-direction');
-        
-        compassDirections.forEach(direction => {
-            direction.addEventListener('click', function() {
-                compassDirections.forEach(dir => dir.classList.remove('active'));
-                this.classList.add('active');
-                currentNorthDirection = this.getAttribute('data-direction');
-                updatePdfCompass();
-                saveSessionData();
-                showNotification(`Arah Utara diatur ke: ${currentNorthDirection.toUpperCase()}`);
-            });
-        });
-    }
-
-    function updatePdfCompass() {
-        // Reset all directions
-        const directions = ['pdfNorth', 'pdfEast', 'pdfSouth', 'pdfWest'];
-        directions.forEach(id => {
-            const element = document.getElementById(id);
-            element.textContent = '';
-            element.classList.remove('active');
-        });
-        
-        // Set active direction based on current selection
-        if (currentNorthDirection === 'utara') {
-            document.getElementById('pdfNorth').textContent = 'U';
-            document.getElementById('pdfNorth').classList.add('active');
-        } else if (currentNorthDirection === 'timur') {
-            document.getElementById('pdfEast').textContent = 'U';
-            document.getElementById('pdfEast').classList.add('active');
-        } else if (currentNorthDirection === 'selatan') {
-            document.getElementById('pdfSouth').textContent = 'U';
-            document.getElementById('pdfSouth').classList.add('active');
-        } else if (currentNorthDirection === 'barat') {
-            document.getElementById('pdfWest').textContent = 'U';
-            document.getElementById('pdfWest').classList.add('active');
-        }
-    }
-
-    // Signature Pad Functions - DIPERBAIKI untuk freeform drawing
-    function initSignaturePad() {
-        const canvas = document.getElementById('signatureCanvas');
-        const placeholder = document.getElementById('signaturePlaceholder');
-        
-        if (!canvas) {
-            console.error("Canvas element not found!");
-            return;
-        }
-
-        // Clear any existing signature pad
-        if (signaturePad) {
-            signaturePad.off();
-            signaturePad.clear();
-            signaturePad = null;
-        }
-
-        // Set canvas size
-        const container = canvas.parentElement;
-        const rect = container.getBoundingClientRect();
-        
-        // Set canvas dimensions
-        canvas.width = rect.width;
-        canvas.height = 150;
-        
-        // Set CSS size
-        canvas.style.width = '100%';
-        canvas.style.height = '150px';
-
-        // Initialize SignaturePad dengan konfigurasi yang lebih baik untuk freeform drawing
-        signaturePad = new SignaturePad(canvas, {
-            backgroundColor: 'rgb(255, 255, 255)',
-            minWidth: 1.5,
-            maxWidth: 3.5,
-            penColor: 'rgb(0, 0, 0)',
-            throttle: 0, // Nonaktifkan throttle untuk responsivitas lebih baik
-            velocityFilterWeight: 0.7,
-            onBegin: function() {
-                placeholder.style.display = 'none';
-            },
-            onEnd: function() {
-                saveSessionData();
-            }
-        });
-
-        // Enable drawing
-        signaturePad.on();
-        
-        console.log("Signature pad initialized successfully");
-        
-        // Load saved signature jika ada
-        setTimeout(() => {
-            const savedData = localStorage.getItem('soundingData');
-            if (savedData) {
-                try {
-                    const data = JSON.parse(savedData);
-                    if (data.signatureBase64) {
-                        const img = new Image();
-                        img.onload = function() {
-                            const ctx = canvas.getContext('2d');
-                            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                            placeholder.style.display = 'none';
-                        };
-                        img.src = data.signatureBase64;
-                    }
-                } catch (error) {
-                    console.error("Error loading signature:", error);
-                }
-            }
-        }, 500);
-    }
-
-    function clearSignature() {
-        if (signaturePad) {
-            signaturePad.clear();
-            document.getElementById('signaturePlaceholder').style.display = 'block';
-            saveSessionData();
-            showNotification("Tanda tangan dihapus.");
-        }
-    }
-
-    // Hole Grid Functions - DIPERBAIKI dengan counter per row
-    function generateDrillGrid() {
-        const gridContainer = document.getElementById('drillGrid');
-        let html = '';
-
-        // Header Row
-        html += `<div class="grid-header-cell border-t-0 pdf-grid-header-cell">HOLE ID</div>`;
-        html += `<div class="grid-header-cell border-t-0 pdf-grid-header-cell">COUNT</div>`;
-        for (let i = 1; i <= MAX_COLUMNS; i++) {
-            html += `<div class="grid-header-cell border-t-0 pdf-grid-header-cell">${i}</div>`;
-        }
-
-        // Data Rows
-        HOLE_ROWS.forEach((holeName, index) => {
-            const rowIndex = index + 1;
-            
-            html += `<div class="grid-row-header pdf-grid-row-header" data-row-index="${rowIndex}">${holeName}</div>`;
-            html += `<div class="row-count-cell pdf-row-count-cell" id="count-${holeName}">0</div>`;
-            
-            for (let col = 1; col <= MAX_COLUMNS; col++) {
-                const holeId = `${holeName}-${col}`;
-                html += `
-                    <div class="hole-cell" data-row-index="${rowIndex}">
-                        <div class="staggered-row-content">
-                            <span id="dot-${holeId}" 
-                                  class="hole-dot pdf-hole-dot rounded-full border-2 border-gray-400 bg-white cursor-pointer text-white relative" 
-                                  data-hole-id="${holeId}">
-                                <span id="depth-label-${holeId}" class="font-semibold absolute inset-0 flex items-center justify-center"></span>
-                            </span>
-                        </div>
-                    </div>`;
-            }
-        });
-
-        gridContainer.innerHTML = html;
-
-        // Add click events to hole dots
-        HOLE_ROWS.forEach(row => {
-            for (let col = 1; col <= MAX_COLUMNS; col++) {
-                const holeId = `${row}-${col}`;
-                document.getElementById(`dot-${holeId}`).addEventListener('click', function(e) {
-                    openHoleModal(holeId, e);
-                });
-            }
-        });
-    }
-
-    // Fungsi untuk update counter per row
-    function updateRowCounters() {
-        HOLE_ROWS.forEach(row => {
-            let count = 0;
-            for (let col = 1; col <= MAX_COLUMNS; col++) {
-                const holeId = `${row}-${col}`;
-                if (holeData[holeId] && holeData[holeId].status) {
-                    count++;
-                }
-            }
-            document.getElementById(`count-${row}`).textContent = count;
-        });
-    }
-
-    // DIPERBAIKI: Fungsi untuk membuka modal dekat dengan lubang yang diklik
-    function openHoleModal(holeId, event) {
-        currentHoleId = holeId;
-        const data = holeData[holeId] || { depth: '', status: '' };
-        const target = event.target.closest('.hole-dot');
-        if (!target) return;
-
-        document.getElementById('modalHoleId').textContent = `Hole: ${holeId}`;
-        document.getElementById('holeDepth').value = data.depth || '';
-        document.getElementById('holeCondition').value = data.status || '';
-
-        const rect = target.getBoundingClientRect();
-        const modal = document.getElementById('holeModal');
-        
-        // Hitung posisi modal agar dekat dengan lubang yang diklik
-        const scrollX = window.pageXOffset || document.documentElement.scrollLeft;
-        const scrollY = window.pageYOffset || document.documentElement.scrollTop;
-        
-        // Posisi modal di sebelah kanan lubang
-        let posX = rect.left + scrollX + rect.width + 10;
-        let posY = rect.top + scrollY - 50;
-        
-        // Jika posisi X terlalu ke kanan, pindah ke kiri
-        if (posX + modal.offsetWidth > window.innerWidth) {
-            posX = rect.left + scrollX - modal.offsetWidth - 10;
-        }
-        
-        // Jika posisi Y terlalu ke bawah, sesuaikan
-        if (posY + modal.offsetHeight > window.innerHeight) {
-            posY = window.innerHeight - modal.offsetHeight - 10;
-        }
-        
-        // Jika posisi Y terlalu ke atas, sesuaikan
-        if (posY < 10) {
-            posY = 10;
-        }
-
-        modal.style.top = `${posY}px`;
-        modal.style.left = `${posX}px`;
-        modal.style.transform = 'none'; // Hapus transform sebelumnya
-
-        modal.classList.remove('hidden');
-        
-        // Tambahkan event listener untuk menutup modal saat klik di luar
-        setTimeout(() => {
-            document.addEventListener('click', closeModalOnClickOutside);
-        }, 10);
-    }
-
-    // Fungsi untuk menutup modal saat klik di luar
-    function closeModalOnClickOutside(event) {
-        const modal = document.getElementById('holeModal');
-        if (!modal.contains(event.target) && !event.target.closest('.hole-dot')) {
-            closeHoleModal();
-        }
-    }
-
-    function saveHoleDataFromModal() {
-        if (!currentHoleId) return;
-
-        const depth = document.getElementById('holeDepth').value;
-        const status = document.getElementById('holeCondition').value;
-
-        if (!depth || !status) {
-            showNotification("Mohon isi Kedalaman dan Kondisi Lubang.", true);
-            return;
-        }
-
-        holeData[currentHoleId] = {
-            depth: parseFloat(depth).toFixed(1),
-            status: status
-        };
-
-        updateHoleDotUI(currentHoleId);
-        updateRowCounters(); // Update counter setelah menyimpan data
-        closeHoleModal();
-        saveSessionData();
-        updatePreviewData();
-    }
-
-    function closeHoleModal() {
-        document.getElementById('holeModal').classList.add('hidden');
-        currentHoleId = null;
-        // Hapus event listener untuk menutup modal saat klik di luar
-        document.removeEventListener('click', closeModalOnClickOutside);
-    }
-
-    function updateHoleDotUI(holeId) {
-        const data = holeData[holeId] || { depth: '0.0', status: '' };
-        const dot = document.getElementById(`dot-${holeId}`);
-        const depthLabel = document.getElementById(`depth-label-${holeId}`);
-        
-        if (!dot || !depthLabel) return;
-        
-        const status = data.status;
-        const depth = data.depth;
-
-        let colorStatus = '';
-        if (status === 'Kering') colorStatus = 'D';
-        else if (status === 'Basah') colorStatus = 'W';
-        else if (status === 'Collapse') colorStatus = 'C';
-
-        dot.classList.remove('status-D', 'status-W', 'status-C', 'border-gray-500'); 
-        dot.classList.add('bg-white', 'border-gray-400');
-
-        if (colorStatus === 'D') dot.classList.add('status-D', 'border-gray-500');
-        else if (colorStatus === 'W') dot.classList.add('status-W', 'border-gray-500');
-        else if (colorStatus === 'C') dot.classList.add('status-C', 'border-gray-500');
-
-        if (depth && status) {
-            depthLabel.textContent = depth;
-            dot.classList.remove('text-gray-700');
-            depthLabel.classList.remove('text-gray-700');
-            dot.classList.add('text-white');
-            depthLabel.classList.add('text-white');
-        } else {
-            depthLabel.textContent = '';
-            dot.classList.add('text-gray-700');
-        }
-        
-        dot.title = `Kedalaman: ${depth || 'Belum Diisi'}, Kondisi: ${status || 'Belum Diisi'}`;
-    }
-
-    // Excel Import/Export Functions
-    function downloadTemplate() {
-        try {
-            const templateData = [
-                ['ID HOLE', 'DEPTH HOLE (m)', 'HOLE CONDITION'],
-                ['A-1', '6.5', 'Kering'],
-                ['A-2', '7.2', 'Basah'],
-                ['A-3', '5.8', 'Collapse'],
-                ['B-1', '6.9', 'Kering'],
-                ['B-2', '7.5', 'Kering']
-            ];
-
-            const ws = XLSX.utils.aoa_to_sheet(templateData);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Template Sounding");
-            
-            XLSX.writeFile(wb, `Sounding_Template_${new Date().toISOString().split('T')[0]}.xlsx`);
-            showNotification("Template Excel berhasil didownload!");
-            
-        } catch (error) {
-            console.error("Error downloading template:", error);
-            showNotification(`Gagal download template: ${error.message}`, true);
-        }
-    }
-
-    function importFromExcel() {
-        const fileInput = document.getElementById('excelImport');
-        const file = fileInput.files[0];
-        
-        if (!file) {
-            showNotification("Pilih file Excel terlebih dahulu!", true);
-            return;
-        }
-        
-        showNotification("Memproses file Excel...", false);
-        
-        const reader = new FileReader();
-        
-        reader.onload = function(e) {
-            try {
-                const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, { type: 'array' });
-                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-                const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
-                
-                // Validasi header
-                if (jsonData.length < 1 || 
-                    jsonData[0][0] !== 'ID HOLE' || 
-                    jsonData[0][1] !== 'DEPTH HOLE (m)' || 
-                    jsonData[0][2] !== 'HOLE CONDITION') {
-                    throw new Error("Format Excel tidak sesuai. Gunakan template yang disediakan.");
-                }
-                
-                // Process data
-                importData = {};
-                let validRows = 0;
-                let previewHtml = '';
-                
-                for (let i = 1; i < jsonData.length; i++) {
-                    const row = jsonData[i];
-                    if (row && row.length >= 3 && row[0] && row[1] && row[2]) {
-                        const holeId = row[0].toString().trim();
-                        const depth = parseFloat(row[1]);
-                        const condition = row[2].toString().trim();
-                        
-                        // Validasi hole ID format
-                        if (!/^[A-O]-\d+$/.test(holeId)) {
-                            console.warn(`Format ID HOLE tidak valid: ${holeId}`);
-                            continue;
-                        }
-                        
-                        // Validasi condition
-                        const validConditions = ['Kering', 'Basah', 'Collapse'];
-                        if (!validConditions.includes(condition)) {
-                            console.warn(`Kondisi tidak valid: ${condition}`);
-                            continue;
-                        }
-                        
-                        importData[holeId] = {
-                            depth: depth.toFixed(1),
-                            status: condition
-                        };
-                        validRows++;
-                        
-                        // Build preview (max 5 rows)
-                        if (validRows <= 5) {
-                            previewHtml += `<div class="py-1 border-b border-gray-200">${holeId}: ${depth}m (${condition})</div>`;
-                        }
-                    }
-                }
-                
-                if (validRows === 0) {
-                    throw new Error("Tidak ada data valid yang ditemukan dalam file Excel.");
-                }
-                
-                // Show preview
-                document.getElementById('importPreviewContent').innerHTML = 
-                    `${previewHtml}<div class="text-amber-600 font-semibold mt-2 py-1 border-t border-gray-300">Total: ${validRows} data valid</div>`;
-                document.getElementById('importPreview').classList.remove('hidden');
-                
-                showNotification(`Berhasil memproses ${validRows} data dari Excel!`);
-                
-            } catch (error) {
-                console.error("Error processing Excel:", error);
-                showNotification(`Gagal memproses Excel: ${error.message}`, true);
-            }
-        };
-        
-        reader.onerror = function() {
-            showNotification("Gagal membaca file Excel", true);
-        };
-        
-        reader.readAsArrayBuffer(file);
-    }
-
-    function confirmImport() {
-        if (!importData || Object.keys(importData).length === 0) {
-            showNotification("Tidak ada data untuk di-import!", true);
-            return;
-        }
-        
-        console.log("Data sebelum import:", holeData);
-        
-        // Apply imported data to holeData - PERBAIKAN: Gunakan spread operator untuk menggabungkan data
-        holeData = { ...holeData, ...importData };
-        
-        console.log("Data setelah import:", holeData);
-        
-        // Update ALL hole dots - PERBAIKAN: Update semua dot, bukan hanya yang di-import
-        HOLE_ROWS.forEach(row => {
-            for (let col = 1; col <= MAX_COLUMNS; col++) {
-                const holeId = `${row}-${col}`;
-                updateHoleDotUI(holeId);
-            }
-        });
-        
-        // Update row counters
-        updateRowCounters();
-        
-        // Update plan hole count
-        const currentPlanHole = document.getElementById('planHole').value;
-        const importedCount = Object.keys(importData).length;
-        const totalHoles = Object.keys(holeData).filter(id => holeData[id].status).length;
-        
-        if (!currentPlanHole || parseInt(currentPlanHole) < totalHoles) {
-            document.getElementById('planHole').value = totalHoles;
-        }
-        
-        // Save to session
-        saveSessionData();
-        
-        showNotification(`✅ Berhasil import ${Object.keys(importData).length} data lubang! Total data: ${totalHoles} lubang`);
-        document.getElementById('importPreview').classList.add('hidden');
-        document.getElementById('excelImport').value = '';
-        
-        importData = null;
-        
-        // Update preview
-        updatePreviewData();
-    }
-
-    function exportToExcel() {
-        if (Object.keys(holeData).length === 0) {
-            showNotification("Tidak ada data lubang untuk diexport.", true);
-            return;
-        }
-
-        try {
-            const excelData = [['ID HOLE', 'DEPTH HOLE (m)', 'HOLE CONDITION']];
-            
-            HOLE_ROWS.forEach(row => {
-                for (let col = 1; col <= MAX_COLUMNS; col++) {
-                    const holeId = `${row}-${col}`;
-                    const data = holeData[holeId];
-                    if (data && data.status) {
-                        excelData.push([holeId, data.depth || '', data.status || '']);
-                    }
-                }
-            });
-
-            const ws = XLSX.utils.aoa_to_sheet(excelData);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Hole Data");
-            
-            const fileName = `Sounding_Data_${document.getElementById('lokasi').value || 'Report'}_${document.getElementById('tanggal').value || new Date().toISOString().split('T')[0]}.xlsx`;
-            XLSX.writeFile(wb, fileName);
-            
-            showNotification("Data berhasil diexport ke Excel!");
-            
-        } catch (error) {
-            console.error("Error exporting to Excel:", error);
-            showNotification(`Gagal export Excel: ${error.message}`, true);
-        }
-    }
-
-    // Database Functions
-    function loadDatabaseData() {
-        // Load dari localStorage (akan di-sync dengan server)
-        const allReports = JSON.parse(localStorage.getItem('allSoundingReports') || '[]');
+    // Fungsi untuk menampilkan database terpusat di section database
+    function loadSharedDatabaseData() {
+        const sharedData = loadFromSharedDatabase();
         const dbResults = document.getElementById('dbResults');
         
-        if (allReports.length === 0) {
+        if (sharedData.length === 0) {
             dbResults.innerHTML = `
                 <div class="text-center p-8 bg-gray-50 rounded-xl">
-                    <p class="text-gray-600">Belum ada data database. Generate laporan di section E-SOUNDING untuk menyimpan data.</p>
+                    <div class="text-4xl mb-4">📊</div>
+                    <h3 class="text-xl font-bold text-gray-700 mb-2">Database Masih Kosong</h3>
+                    <p class="text-gray-600">Belum ada data yang disimpan di database terpusat.</p>
+                    <p class="text-sm text-gray-500 mt-2">Buat laporan di section E-SOUNDING untuk mulai mengisi database.</p>
                 </div>
             `;
             return;
@@ -2360,99 +1470,316 @@
 
         let html = '';
         
-        // Sort reports by timestamp (newest first)
-        allReports.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        // Tampilkan info database
+        const sharedDb = JSON.parse(localStorage.getItem(SHARED_DATABASE_KEY) || '{}');
+        const metadata = sharedDb.metadata || {};
         
-        allReports.forEach((report, index) => {
+        html += `
+            <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-xl p-6 mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-center">
+                    <div>
+                        <div class="text-2xl font-bold text-blue-600">${sharedData.length}</div>
+                        <div class="text-sm text-blue-800">Total Laporan</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-bold text-green-600">${getUniqueValues(sharedData, 'pit').length}</div>
+                        <div class="text-sm text-green-800">Jumlah PIT</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-bold text-purple-600">${getUniqueValues(sharedData, 'lokasi').length}</div>
+                        <div class="text-sm text-purple-800">Lokasi Berbeda</div>
+                    </div>
+                    <div>
+                        <div class="text-lg font-bold text-amber-600">${formatDate(metadata.lastUpdated)}</div>
+                        <div class="text-sm text-amber-800">Update Terakhir</div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Sort reports by timestamp (newest first)
+        sharedData.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        
+        // Filter dan search
+        html += `
+            <div class="bg-white border border-gray-200 rounded-xl p-4 mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="form-label text-sm">Cari berdasarkan Lokasi/Nama:</label>
+                        <input type="text" id="searchDatabase" placeholder="Cari..." 
+                               class="input-field text-sm" onkeyup="filterDatabase()">
+                    </div>
+                    <div>
+                        <label class="form-label text-sm">Filter berdasarkan PIT:</label>
+                        <select id="filterPit" class="input-field text-sm" onchange="filterDatabase()">
+                            <option value="">Semua PIT</option>
+                            <option value="Tempudo 2">Tempudo 2</option>
+                            <option value="Tempudo 3">Tempudo 3</option>
+                            <option value="Tempudo 4">Tempudo 4</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label text-sm">Filter berdasarkan Shift:</label>
+                        <select id="filterShift" class="input-field text-sm" onchange="filterDatabase()">
+                            <option value="">Semua Shift</option>
+                            <option value="SHIFT 1">SHIFT 1</option>
+                            <option value="SHIFT 2">SHIFT 2</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Data reports
+        html += `<div id="databaseResultsContainer">`;
+        
+        sharedData.forEach((report, index) => {
             const stats = report.statistics || calculateStatisticsFromReport(report);
             
-            // Format nama file: LOKASI_TANGGAL
-            const fileName = `${report.lokasi || 'Unknown'}_${report.tanggal || 'NoDate'}`;
-            
             html += `
-                <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
+                <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow database-item" 
+                     data-lokasi="${report.lokasi || ''}" 
+                     data-pit="${report.pit || ''}" 
+                     data-shift="${report.shift || ''}"
+                     data-crew="${report.namaCrew || ''}">
                     <div class="flex justify-between items-start mb-4">
-                        <div>
-                            <h3 class="font-bold text-lg text-gray-800">${fileName}</h3>
-                            <p class="text-sm text-gray-600">${report.tanggal} | ${report.shift} | ${report.pit}</p>
-                            <p class="text-xs text-gray-500">Dibuat oleh: ${report.createdBy || 'unknown'} | ${new Date(report.timestamp).toLocaleString()}</p>
+                        <div class="flex-1">
+                            <div class="flex items-center gap-3 mb-2">
+                                <h3 class="font-bold text-lg text-gray-800">${report.lokasi || 'Unknown Location'}</h3>
+                                <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded">${report.pit || 'No PIT'}</span>
+                                <span class="px-2 py-1 bg-gray-100 text-gray-800 text-xs font-semibold rounded">${report.shift || 'No Shift'}</span>
+                            </div>
+                            <p class="text-sm text-gray-600">
+                                📅 ${report.tanggal} | 
+                                👷 ${report.namaCrew || 'No Crew'} | 
+                                🏗️ ${report.namaGL || 'No GL'}
+                            </p>
+                            <p class="text-xs text-gray-500 mt-1">
+                                Dibuat oleh: <span class="font-semibold">${report.createdBy || 'unknown'}</span> | 
+                                ${new Date(report.timestamp).toLocaleString()}
+                            </p>
                         </div>
-                        <span class="px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-sm font-semibold">
+                        <span class="px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-sm font-semibold whitespace-nowrap">
                             ${stats.totalHoles} Lubang
                         </span>
                     </div>
                     
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4 text-sm">
-                        <div>
-                            <span class="text-gray-600">Plan Hole:</span>
-                            <span class="font-semibold ml-1">${report.planHole || '-'}</span>
+                        <div class="text-center">
+                            <div class="text-gray-600">Plan Hole</div>
+                            <div class="font-semibold text-lg">${report.planHole || '-'}</div>
                         </div>
-                        <div>
-                            <span class="text-gray-600">B x S:</span>
-                            <span class="font-semibold ml-1">${report.burden || '-'} x ${report.spasi || '-'}</span>
+                        <div class="text-center">
+                            <div class="text-gray-600">B x S</div>
+                            <div class="font-semibold">${report.burden || '-'} x ${report.spasi || '-'}</div>
                         </div>
-                        <div>
-                            <span class="text-gray-600">Rata Kedalaman:</span>
-                            <span class="font-semibold ml-1">${stats.avgDepth} m</span>
+                        <div class="text-center">
+                            <div class="text-gray-600">Kedalaman</div>
+                            <div class="font-semibold text-amber-700">${stats.avgDepth} m</div>
                         </div>
-                        <div>
-                            <span class="text-gray-600">Kering:</span>
-                            <span class="font-semibold ml-1 text-green-600">${stats.dryPercentage}%</span>
+                        <div class="text-center">
+                            <div class="text-gray-600">Kondisi Kering</div>
+                            <div class="font-semibold text-green-600">${stats.dryPercentage}%</div>
                         </div>
                     </div>
                     
-                    <div class="flex justify-between items-center">
-                        <span class="text-sm text-gray-500">Crew: ${report.namaCrew || '-'} | GL: ${report.namaGL || '-'}</span>
+                    <div class="flex justify-between items-center pt-4 border-t border-gray-100">
+                        <div class="text-sm text-gray-500">
+                            <span class="font-semibold">Arah Utara:</span> ${report.northDirection ? report.northDirection.toUpperCase() : 'Tidak ada'}
+                        </div>
                         <div class="space-x-2">
-                            <button onclick="loadReportToForm('${report.id}')" class="px-3 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 transition">
-                                📋 Load
+                            <button onclick="loadReportToForm('${report.id}')" 
+                                    class="px-3 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 transition flex items-center gap-1">
+                                <span>📋</span> Load
                             </button>
-                            <button onclick="viewReportGrid('${report.id}')" class="px-3 py-1 bg-green-500 text-white text-sm rounded hover:bg-green-600 transition">
-                                👁️ View Grid
+                            <button onclick="viewReportGrid('${report.id}')" 
+                                    class="px-3 py-1 bg-green-500 text-white text-sm rounded hover:bg-green-600 transition flex items-center gap-1">
+                                <span>👁️</span> View Grid
                             </button>
-                            <button onclick="downloadReportPDF('${report.id}')" class="px-3 py-1 bg-purple-500 text-white text-sm rounded hover:bg-purple-600 transition">
-                                📄 PDF
+                            <button onclick="downloadReportPDF('${report.id}')" 
+                                    class="px-3 py-1 bg-purple-500 text-white text-sm rounded hover:bg-purple-600 transition flex items-center gap-1">
+                                <span>📄</span> PDF
                             </button>
+                            ${currentUser && currentUser.role === 'admin' ? `
+                            <button onclick="deleteReport('${report.id}')" 
+                                    class="px-3 py-1 bg-red-500 text-white text-sm rounded hover:bg-red-600 transition flex items-center gap-1">
+                                <span>🗑️</span> Hapus
+                            </button>
+                            ` : ''}
                         </div>
                     </div>
                 </div>
             `;
         });
         
+        html += `</div>`;
+        
         dbResults.innerHTML = html;
     }
 
-    function calculateStatisticsFromReport(report) {
-        const filledHoles = Object.values(report.holeData || {}).filter(d => d.status);
-        const actualHoles = filledHoles.length;
+    // Fungsi untuk filter database
+    function filterDatabase() {
+        const searchTerm = document.getElementById('searchDatabase').value.toLowerCase();
+        const pitFilter = document.getElementById('filterPit').value;
+        const shiftFilter = document.getElementById('filterShift').value;
         
-        const validDepths = filledHoles
-            .map(d => parseFloat(d.depth))
-            .filter(d => !isNaN(d) && d > 0);
-
-        const totalDepth = validDepths.reduce((sum, d) => sum + d, 0);
-        const avgDepth = validDepths.length > 0 ? (totalDepth / validDepths.length).toFixed(2) : '0.0';
-
-        const dryCount = filledHoles.filter(d => d.status === 'Kering').length;
-        const dryPercentage = actualHoles > 0 ? ((dryCount / actualHoles) * 100).toFixed(0) : '0';
-
-        return {
-            totalHoles: actualHoles,
-            avgDepth: avgDepth,
-            dryPercentage: dryPercentage,
-            wetCount: filledHoles.filter(d => d.status === 'Basah').length,
-            collapseCount: filledHoles.filter(d => d.status === 'Collapse').length
-        };
+        const items = document.querySelectorAll('.database-item');
+        
+        items.forEach(item => {
+            const lokasi = item.getAttribute('data-lokasi').toLowerCase();
+            const pit = item.getAttribute('data-pit');
+            const shift = item.getAttribute('data-shift');
+            const crew = item.getAttribute('data-crew').toLowerCase();
+            
+            const matchesSearch = !searchTerm || 
+                                lokasi.includes(searchTerm) || 
+                                crew.includes(searchTerm);
+            
+            const matchesPit = !pitFilter || pit === pitFilter;
+            const matchesShift = !shiftFilter || shift === shiftFilter;
+            
+            if (matchesSearch && matchesPit && matchesShift) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
     }
 
-    function loadReportToForm(reportId) {
-        const allReports = JSON.parse(localStorage.getItem('allSoundingReports') || '[]');
-        const report = allReports.find(r => r.id === reportId);
-        if (!report) {
-            showNotification("Laporan tidak ditemukan", true);
+    // Helper functions
+    function getUniqueValues(data, key) {
+        const values = data.map(item => item[key]).filter(Boolean);
+        return [...new Set(values)];
+    }
+
+    function formatDate(dateString) {
+        if (!dateString) return '-';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('id-ID') + ' ' + date.toLocaleTimeString('id-ID', {hour: '2-digit', minute: '2-digit'});
+    }
+
+    // ==================== INTEGRASI KE SYSTEM YANG ADA ====================
+
+    // Ganti fungsi saveReportToDatabase
+    function saveReportToDatabase() {
+        const signatureBase64 = signaturePad && !signaturePad.isEmpty() ? signaturePad.toDataURL() : '';
+        
+        const report = {
+            id: 'report_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+            pit: document.getElementById('pit').value,
+            shift: document.getElementById('shift').value,
+            lokasi: document.getElementById('lokasi').value,
+            tanggal: document.getElementById('tanggal').value,
+            planHole: document.getElementById('planHole').value,
+            namaCrew: document.getElementById('namaCrew').value,
+            namaGL: document.getElementById('namaGL').value,
+            burden: document.getElementById('burden').value,
+            spasi: document.getElementById('spasi').value,
+            unitDrilling: document.getElementById('unitDrilling').value,
+            holeData: {...holeData},
+            signatureBase64: signatureBase64,
+            northDirection: currentNorthDirection,
+            timestamp: new Date().toISOString(),
+            statistics: calculateStatistics(),
+            createdBy: currentUser ? currentUser.username : 'anonymous'
+        };
+        
+        // 1. Simpan ke localStorage (backup)
+        let allReports = JSON.parse(localStorage.getItem('allSoundingReports') || '[]');
+        allReports.push(report);
+        localStorage.setItem('allSoundingReports', JSON.stringify(allReports));
+        
+        // 2. Simpan ke database terpusat
+        saveToSharedDatabase(report);
+        
+        console.log("Report saved to both local and shared database:", report.id);
+        
+        return report.id;
+    }
+
+    // Ganti fungsi syncDatabase
+    function syncDatabase() {
+        showNotification("Menyinkronisasi database terpusat...", false);
+        updateSyncStatus("🔄 Menyinkronisasi database...");
+
+        try {
+            const syncedData = syncWithSharedDatabase();
+            
+            if (syncedData) {
+                updateSyncStatus(`✅ Database tersinkronisasi! Total: ${syncedData.length} laporan`);
+                showNotification(`Database berhasil disinkronisasi! Total: ${syncedData.length} laporan`);
+                
+                // Refresh tampilan database
+                if (!document.getElementById('databaseSection').classList.contains('hidden')) {
+                    loadSharedDatabaseData();
+                }
+            }
+            
+        } catch (error) {
+            console.error('Sync error:', error);
+            updateSyncStatus("❌ Gagal sinkronisasi");
+            showNotification("Gagal menyinkronisasi database", true);
+        }
+    }
+
+    // Ganti fungsi loadDatabaseData di section database
+    function loadDatabaseData() {
+        // Selalu gunakan database terpusat untuk tampilan
+        loadSharedDatabaseData();
+    }
+
+    // Ganti fungsi deleteReport untuk menghapus dari database terpusat
+    function deleteReport(reportId) {
+        if (!currentUser || currentUser.role !== 'admin') {
+            showNotification("Anda tidak memiliki akses untuk menghapus laporan", true);
             return;
         }
         
+        if (confirm('Apakah Anda yakin ingin menghapus laporan ini dari database terpusat?')) {
+            try {
+                // Hapus dari database terpusat
+                const sharedDb = JSON.parse(localStorage.getItem(SHARED_DATABASE_KEY) || '{}');
+                if (sharedDb.reports) {
+                    sharedDb.reports = sharedDb.reports.filter(report => report.id !== reportId);
+                    sharedDb.metadata.totalReports = sharedDb.reports.length;
+                    sharedDb.metadata.lastUpdated = new Date().toISOString();
+                    localStorage.setItem(SHARED_DATABASE_KEY, JSON.stringify(sharedDb));
+                }
+                
+                // Hapus dari localStorage (opsional)
+                const localData = JSON.parse(localStorage.getItem('allSoundingReports') || '[]');
+                const updatedLocalData = localData.filter(report => report.id !== reportId);
+                localStorage.setItem('allSoundingReports', JSON.stringify(updatedLocalData));
+                
+                showNotification("Laporan berhasil dihapus dari database terpusat");
+                loadSharedDatabaseData();
+                
+            } catch (error) {
+                showNotification("Gagal menghapus laporan: " + error.message, true);
+            }
+        }
+    }
+
+    // Ganti fungsi loadReportToForm untuk mencari dari database terpusat
+    function loadReportToForm(reportId) {
+        const sharedData = loadFromSharedDatabase();
+        const report = sharedData.find(r => r.id === reportId);
+        
+        if (!report) {
+            // Fallback ke localStorage
+            const allReports = JSON.parse(localStorage.getItem('allSoundingReports') || '[]');
+            const localReport = allReports.find(r => r.id === reportId);
+            if (!localReport) {
+                showNotification("Laporan tidak ditemukan", true);
+                return;
+            }
+            loadReportData(localReport);
+        } else {
+            loadReportData(report);
+        }
+    }
+
+    function loadReportData(report) {
         // Load form data
         document.getElementById('pit').value = report.pit || '';
         document.getElementById('shift').value = report.shift || '';
@@ -2481,10 +1808,7 @@
         
         // Load signature
         if (report.signatureBase64 && signaturePad) {
-            // Clear first
             signaturePad.clear();
-            
-            // Create temporary image to load signature
             const img = new Image();
             img.onload = function() {
                 const ctx = signaturePad.canvas.getContext('2d');
@@ -2498,8 +1822,6 @@
         if (report.northDirection) {
             currentNorthDirection = report.northDirection;
             updatePdfCompass();
-            
-            // Activate corresponding compass direction
             const compassDirections = document.querySelectorAll('.compass-direction');
             compassDirections.forEach(dir => {
                 dir.classList.remove('active');
@@ -2509,765 +1831,76 @@
             });
         }
         
-        // Save to session
         saveSessionData();
-        
-        // Switch to e-sounding section
         showSection('e-sounding');
-        
-        showNotification(`Laporan ${report.lokasi} berhasil dimuat!`);
+        showNotification(`Laporan ${report.lokasi} berhasil dimuat dari database terpusat!`);
     }
 
-    function viewReportGrid(reportId) {
-        const allReports = JSON.parse(localStorage.getItem('allSoundingReports') || '[]');
-        const report = allReports.find(r => r.id === reportId);
-        if (!report) {
-            showNotification("Laporan tidak ditemukan", true);
-            return;
-        }
+    // ==================== INISIALISASI ====================
 
-        // Create modal to show grid visualization
-        const modalHtml = `
-            <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                <div class="bg-white rounded-2xl p-6 max-w-4xl max-h-[90vh] overflow-auto">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-xl font-bold text-gray-800">Grid Visualization - ${report.lokasi}</h3>
-                        <button onclick="closeGridModal()" class="text-gray-500 hover:text-gray-700">
-                            ✕
-                        </button>
-                    </div>
-                    <div id="databaseGridContainer" class="border rounded-lg p-4 bg-gray-50">
-                        <!-- Grid will be generated here -->
-                    </div>
-                    <div class="mt-4 text-sm text-gray-600">
-                        <p><strong>Tanggal:</strong> ${report.tanggal} | <strong>Shift:</strong> ${report.shift} | <strong>PIT:</strong> ${report.pit}</p>
-                        <p><strong>Lokasi:</strong> ${report.lokasi} | <strong>Plan Hole:</strong> ${report.planHole}</p>
-                    </div>
-                </div>
-            </div>
-        `;
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeApp();
+        checkLoginStatus();
         
-        const modal = document.createElement('div');
-        modal.innerHTML = modalHtml;
-        document.body.appendChild(modal);
-
-        // Generate grid for this report
-        generateDatabaseGrid(report, 'databaseGridContainer');
-    }
-
-    function closeGridModal() {
-        const modal = document.querySelector('.fixed.inset-0');
-        if (modal) {
-            modal.remove();
-        }
-    }
-
-    function generateDatabaseGrid(report, containerId) {
-        const container = document.getElementById(containerId);
-        let html = '<div class="database-grid">';
-
-        // Header Row
-        html += `<div class="grid-header-cell border-t-0">HOLE ID</div>`;
-        html += `<div class="grid-header-cell border-t-0">COUNT</div>`;
-        for (let i = 1; i <= MAX_COLUMNS; i++) {
-            html += `<div class="grid-header-cell border-t-0">${i}</div>`;
-        }
-
-        // Data Rows
-        HOLE_ROWS.forEach((holeName, index) => {
-            const rowIndex = index + 1;
-            
-            // Hitung jumlah lubang yang terisi untuk row ini
-            let rowCount = 0;
-            for (let col = 1; col <= MAX_COLUMNS; col++) {
-                const holeId = `${holeName}-${col}`;
-                if (report.holeData[holeId] && report.holeData[holeId].status) {
-                    rowCount++;
-                }
-            }
-            
-            html += `<div class="grid-row-header" data-row-index="${rowIndex}">${holeName}</div>`;
-            html += `<div class="row-count-cell">${rowCount}</div>`;
-            
-            for (let col = 1; col <= MAX_COLUMNS; col++) {
-                const holeId = `${holeName}-${col}`;
-                const data = report.holeData[holeId] || { depth: '', status: '' };
-                const status = data.status;
-                const depth = data.depth;
-
-                let colorStatus = '';
-                if (status === 'Kering') colorStatus = 'D';
-                else if (status === 'Basah') colorStatus = 'W';
-                else if (status === 'Collapse') colorStatus = 'C';
-
-                let dotClass = 'hole-dot rounded-full border-2 border-gray-400 bg-white cursor-pointer text-white relative';
-                if (colorStatus === 'D') dotClass += ' status-D border-gray-500';
-                else if (colorStatus === 'W') dotClass += ' status-W border-gray-500';
-                else if (colorStatus === 'C') dotClass += ' status-C border-gray-500';
-
-                html += `
-                    <div class="hole-cell" data-row-index="${rowIndex}">
-                        <div class="staggered-row-content">
-                            <span class="${dotClass}" style="width: 18px; height: 18px; font-size: 0.45rem;">
-                                <span class="font-semibold absolute inset-0 flex items-center justify-center">
-                                    ${depth && status ? depth : ''}
-                                </span>
-                            </span>
-                        </div>
-                    </div>`;
-            }
-        });
-
-        html += '</div>';
-        container.innerHTML = html;
-    }
-
-    function deleteReport(reportId) {
-        if (!currentUser || currentUser.role !== 'admin') {
-            showNotification("Anda tidak memiliki akses untuk menghapus laporan", true);
-            return;
-        }
-        
-        if (confirm('Apakah Anda yakin ingin menghapus laporan ini?')) {
-            const allReports = JSON.parse(localStorage.getItem('allSoundingReports') || '[]');
-            const updatedReports = allReports.filter(report => report.id !== reportId);
-            localStorage.setItem('allSoundingReports', JSON.stringify(updatedReports));
-            loadDatabaseData();
-            showNotification("Laporan berhasil dihapus");
-        }
-    }
-
-    function importDatabaseFromExcel() {
-        if (!currentUser || currentUser.role !== 'admin') {
-            showNotification("Hanya admin yang dapat mengimpor database", true);
-            return;
-        }
-        
-        const fileInput = document.getElementById('databaseExcelImport');
-        const file = fileInput.files[0];
-        
-        if (!file) {
-            showNotification("Pilih file Excel terlebih dahulu!", true);
-            return;
-        }
-        
-        showNotification("Memproses database Excel...", false);
-        
-        const reader = new FileReader();
-        
-        reader.onload = function(e) {
-            try {
-                const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, { type: 'array' });
-                
-                let importedCount = 0;
-                
-                // Process each sheet
-                workbook.SheetNames.forEach(sheetName => {
-                    const sheet = workbook.Sheets[sheetName];
-                    const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-                    
-                    // Skip if not enough rows or wrong header
-                    if (jsonData.length < 2 || 
-                        jsonData[0][0] !== 'ID HOLE' || 
-                        jsonData[0][1] !== 'DEPTH HOLE (m)' || 
-                        jsonData[0][2] !== 'HOLE CONDITION') {
-                        return;
-                    }
-                    
-                    // Extract metadata from sheet name or first rows
-                    const reportData = {
-                        id: 'db_import_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
-                        pit: extractPitFromSheetName(sheetName),
-                        shift: 'SHIFT 1', // Default
-                        lokasi: sheetName,
-                        tanggal: new Date().toISOString().split('T')[0],
-                        planHole: 0,
-                        holeData: {},
-                        timestamp: new Date().toISOString(),
-                        createdBy: currentUser ? currentUser.username : 'admin_import'
+        // Inisialisasi database terpusat pertama kali
+        setTimeout(() => {
+            const sharedDb = JSON.parse(localStorage.getItem(SHARED_DATABASE_KEY) || '{}');
+            if (!sharedDb.reports) {
+                // Migrasi data lokal ke database terpusat jika ada
+                const localData = JSON.parse(localStorage.getItem('allSoundingReports') || '[]');
+                if (localData.length > 0) {
+                    const sharedDb = {
+                        reports: localData,
+                        metadata: {
+                            created: new Date().toISOString(),
+                            lastUpdated: new Date().toISOString(),
+                            totalReports: localData.length
+                        }
                     };
-                    
-                    // Process hole data
-                    for (let i = 1; i < jsonData.length; i++) {
-                        const row = jsonData[i];
-                        if (row && row.length >= 3 && row[0] && row[1] && row[2]) {
-                            const holeId = row[0].toString().trim();
-                            const depth = parseFloat(row[1]);
-                            const condition = row[2].toString().trim();
-                            
-                            if (/^[A-O]-\d+$/.test(holeId) && ['Kering', 'Basah', 'Collapse'].includes(condition)) {
-                                reportData.holeData[holeId] = {
-                                    depth: depth.toFixed(1),
-                                    status: condition
-                                };
-                                reportData.planHole++;
-                            }
-                        }
-                    }
-                    
-                    if (Object.keys(reportData.holeData).length > 0) {
-                        const allReports = JSON.parse(localStorage.getItem('allSoundingReports') || '[]');
-                        allReports.push(reportData);
-                        localStorage.setItem('allSoundingReports', JSON.stringify(allReports));
-                        importedCount++;
-                    }
-                });
-                
-                if (importedCount > 0) {
-                    showNotification(`✅ Berhasil import ${importedCount} laporan dari database Excel!`);
-                    loadDatabaseData();
-                } else {
-                    showNotification("Tidak ada data valid yang ditemukan dalam file Excel.", true);
-                }
-                
-            } catch (error) {
-                console.error("Error processing database Excel:", error);
-                showNotification(`Gagal memproses database Excel: ${error.message}`, true);
-            }
-        };
-        
-        reader.onerror = function() {
-            showNotification("Gagal membaca file Excel", true);
-        };
-        
-        reader.readAsArrayBuffer(file);
-    }
-
-    function extractPitFromSheetName(sheetName) {
-        if (sheetName.includes('Tempudo 2')) return 'Tempudo 2';
-        if (sheetName.includes('Tempudo 3')) return 'Tempudo 3';
-        if (sheetName.includes('Tempudo 4')) return 'Tempudo 4';
-        return 'Tempudo 2'; // Default
-    }
-
-    // Share Link Functions
-    function generateShareLink() {
-        const userId = document.getElementById('userIdDisplay').textContent;
-        const sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-
-        const baseUrl = window.location.href.split('?')[0];
-        const shareUrl = `${baseUrl}?session=${sessionId}&user=${userId}`;
-        
-        document.getElementById('shareableLink').value = shareUrl;
-        document.getElementById('shareLinkContainer').classList.remove('hidden');
-        
-        saveSessionData();
-        
-        showNotification("Link berhasil dibuat! Salin dan simpan untuk melanjutkan nanti.");
-    }
-
-    function copyShareLink() {
-        const shareLink = document.getElementById('shareableLink');
-        copyToClipboard('shareableLink');
-    }
-
-    // Data Management - FIXED signature saving
-    function saveData() {
-        // Save current report to database
-        saveReportToDatabase();
-        saveSessionData();
-        showNotification("Data Laporan berhasil disimpan!");
-    }
-
-    function saveSessionData() {
-        let signatureBase64 = '';
-        if (signaturePad && !signaturePad.isEmpty()) {
-            // Get signature data with proper scaling
-            const tempCanvas = document.createElement('canvas');
-            const tempCtx = tempCanvas.getContext('2d');
-            
-            // Set reasonable size for storage
-            tempCanvas.width = 400;
-            tempCanvas.height = 150;
-            
-            // Draw signature to temp canvas
-            tempCtx.drawImage(signaturePad.canvas, 0, 0, tempCanvas.width, tempCanvas.height);
-            signatureBase64 = tempCanvas.toDataURL();
-        }
-        
-        // Simpan ke localStorage sebagai fallback
-        const sessionData = {
-            pit: document.getElementById('pit').value,
-            shift: document.getElementById('shift').value,
-            lokasi: document.getElementById('lokasi').value,
-            tanggal: document.getElementById('tanggal').value,
-            planHole: document.getElementById('planHole').value,
-            namaCrew: document.getElementById('namaCrew').value,
-            namaGL: document.getElementById('namaGL').value,
-            burden: document.getElementById('burden').value,
-            spasi: document.getElementById('spasi').value,
-            unitDrilling: document.getElementById('unitDrilling').value,
-            holeData: holeData,
-            signatureBase64: signatureBase64,
-            northDirection: currentNorthDirection,
-            timestamp: new Date().toISOString()
-        };
-        
-        localStorage.setItem('soundingData', JSON.stringify(sessionData));
-        console.log("Data session tersimpan di localStorage");
-    }
-
-    function saveReportToDatabase() {
-        const signatureBase64 = signaturePad && !signaturePad.isEmpty() ? signaturePad.toDataURL() : '';
-        
-        const report = {
-            id: 'report_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
-            pit: document.getElementById('pit').value,
-            shift: document.getElementById('shift').value,
-            lokasi: document.getElementById('lokasi').value,
-            tanggal: document.getElementById('tanggal').value,
-            planHole: document.getElementById('planHole').value,
-            namaCrew: document.getElementById('namaCrew').value,
-            namaGL: document.getElementById('namaGL').value,
-            burden: document.getElementById('burden').value,
-            spasi: document.getElementById('spasi').value,
-            unitDrilling: document.getElementById('unitDrilling').value,
-            holeData: {...holeData},
-            signatureBase64: signatureBase64,
-            northDirection: currentNorthDirection,
-            timestamp: new Date().toISOString(),
-            statistics: calculateStatistics(),
-            createdBy: currentUser ? currentUser.username : 'anonymous'
-        };
-        
-        // Load existing reports from localStorage
-        let allReports = JSON.parse(localStorage.getItem('allSoundingReports') || '[]');
-        
-        // Add new report
-        allReports.push(report);
-        
-        // Save back to localStorage
-        localStorage.setItem('allSoundingReports', JSON.stringify(allReports));
-        
-        console.log("Report saved to database:", report.id);
-        
-        // PERBAIKAN: Upload ke Gist setelah menyimpan
-        setTimeout(() => {
-            uploadToGist(allReports).then(() => {
-                console.log("Data berhasil diupload ke Gist setelah menyimpan report baru");
-            }).catch(error => {
-                console.error("Gagal upload ke Gist:", error);
-            });
-        }, 1000);
-        
-        return report.id;
-    }
-
-    function calculateStatistics() {
-        const filledHoles = Object.values(holeData).filter(d => d.status);
-        const actualHoles = filledHoles.length;
-        
-        const validDepths = filledHoles
-            .map(d => parseFloat(d.depth))
-            .filter(d => !isNaN(d) && d > 0);
-
-        const totalDepth = validDepths.reduce((sum, d) => sum + d, 0);
-        const avgDepth = validDepths.length > 0 ? (totalDepth / validDepths.length).toFixed(2) : '0.0';
-
-        const dryCount = filledHoles.filter(d => d.status === 'Kering').length;
-        const dryPercentage = actualHoles > 0 ? ((dryCount / actualHoles) * 100).toFixed(0) : '0';
-
-        return {
-            totalHoles: actualHoles,
-            avgDepth: avgDepth,
-            dryPercentage: dryPercentage,
-            wetCount: filledHoles.filter(d => d.status === 'Basah').length,
-            collapseCount: filledHoles.filter(d => d.status === 'Collapse').length
-        };
-    }
-
-    function loadSessionData() {
-        const savedData = localStorage.getItem('soundingData');
-        if (savedData) {
-            try {
-                const data = JSON.parse(savedData);
-                
-                // Load form data
-                document.getElementById('pit').value = data.pit || '';
-                document.getElementById('shift').value = data.shift || '';
-                document.getElementById('lokasi').value = data.lokasi || '';
-                document.getElementById('tanggal').value = data.tanggal || '';
-                document.getElementById('planHole').value = data.planHole || '';
-                document.getElementById('namaCrew').value = data.namaCrew || '';
-                document.getElementById('namaGL').value = data.namaGL || '';
-                document.getElementById('burden').value = data.burden || '';
-                document.getElementById('spasi').value = data.spasi || '';
-                document.getElementById('unitDrilling').value = data.unitDrilling || '';
-                
-                // Load hole data
-                if (data.holeData) {
-                    holeData = data.holeData;
-                    
-                    // Update ALL hole dots
-                    HOLE_ROWS.forEach(row => {
-                        for (let col = 1; col <= MAX_COLUMNS; col++) {
-                            const holeId = `${row}-${col}`;
-                            updateHoleDotUI(holeId);
-                        }
-                    });
-                }
-                
-                // Update row counters
-                updateRowCounters();
-                
-                // Load signature - FIXED
-                if (data.signatureBase64 && signaturePad) {
-                    // Clear first
-                    signaturePad.clear();
-                    
-                    // Create temporary image to load signature
-                    const img = new Image();
-                    img.onload = function() {
-                        const ctx = signaturePad.canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, signaturePad.canvas.width, signaturePad.canvas.height);
-                        document.getElementById('signaturePlaceholder').style.display = 'none';
-                    };
-                    img.src = data.signatureBase64;
-                }
-                
-                // Load north direction
-                if (data.northDirection) {
-                    currentNorthDirection = data.northDirection;
-                    updatePdfCompass();
-                    
-                    // Activate corresponding compass direction
-                    const compassDirections = document.querySelectorAll('.compass-direction');
-                    compassDirections.forEach(dir => {
-                        if (dir.getAttribute('data-direction') === currentNorthDirection) {
-                            dir.classList.add('active');
-                        }
-                    });
-                }
-                
-                console.log("Data session berhasil dimuat");
-                showNotification("Data sebelumnya berhasil dimuat!");
-                
-            } catch (error) {
-                console.error("Error loading session data:", error);
-                showNotification("Gagal memuat data sebelumnya", true);
-            }
-        }
-        
-        updatePreviewData();
-    }
-
-    function updatePreviewData() {
-        const stats = calculateStatistics();
-        
-        document.getElementById('statTotalHoles').textContent = stats.totalHoles;
-        document.getElementById('statAvgDepth').textContent = stats.avgDepth + ' m';
-        document.getElementById('statDryPercentage').textContent = stats.dryPercentage + '%';
-        
-        // Update current data preview
-        const currentDataEl = document.getElementById('currentData');
-        if (stats.totalHoles > 0) {
-            currentDataEl.innerHTML = `
-                <div class="bg-white rounded-xl p-4 shadow border border-gray-200">
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="font-semibold text-gray-700">Lokasi:</span>
-                        <span class="text-gray-900">${document.getElementById('lokasi').value || '-'}</span>
-                    </div>
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="font-semibold text-gray-700">Total Lubang:</span>
-                        <span class="text-amber-600 font-bold">${stats.totalHoles}</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="font-semibold text-gray-700">Kondisi Kering:</span>
-                        <span class="text-green-600 font-bold">${stats.dryPercentage}%</span>
-                    </div>
-                </div>
-            `;
-        }
-    }
-
-    // PDF Generation Functions - DIPERBAIKI untuk landscape 1 halaman dengan ukuran lebih besar dan penuh
-    function generateReportAndDownloadPDF() {
-        // Update report data first
-        updateReportData();
-        
-        // Show loading notification
-        showNotification("Membuat PDF... Harap tunggu");
-        
-        // Use html2canvas and jsPDF
-        const { jsPDF } = window.jspdf;
-        
-        const element = document.getElementById('pdfCaptureArea');
-        
-        // Store original styles
-        const originalWidth = element.style.width;
-        const originalMaxWidth = element.style.maxWidth;
-        const originalPadding = element.style.padding;
-        
-        // Optimize for PDF - set fixed width untuk landscape
-        element.style.width = '1200px';
-        element.style.maxWidth = '1200px';
-        element.style.padding = '15px';
-        
-        // Apply PDF-specific styles
-        element.classList.add('pdf-optimized');
-        
-        // Use html2canvas dengan scale yang optimal
-        html2canvas(element, {
-            scale: 2.2,
-            useCORS: true,
-            allowTaint: false,
-            logging: false,
-            backgroundColor: "#ffffff",
-            width: 1200,
-            height: element.scrollHeight,
-            windowWidth: 1200,
-            onclone: function(clonedDoc) {
-                // Apply PDF-specific optimizations
-                const clonedElement = clonedDoc.getElementById('pdfCaptureArea');
-                if (clonedElement) {
-                    clonedElement.style.width = '1200px';
-                    clonedElement.style.maxWidth = '1200px';
-                    clonedElement.style.padding = '15px';
-                    
-                    // Show PDF-only elements
-                    const pdfOnlyElements = clonedElement.querySelectorAll('.pdf-only');
-                    pdfOnlyElements.forEach(el => {
-                        el.style.display = 'block';
-                    });
-                    
-                    // Hide screen-only elements
-                    const screenOnlyElements = clonedElement.querySelectorAll('.screen-only');
-                    screenOnlyElements.forEach(el => {
-                        el.style.display = 'none';
-                    });
-                    
-                    // Perbesar font untuk PDF
-                    const textElements = clonedElement.querySelectorAll('.text-lg, .text-md, .text-sm, .text-xs');
-                    textElements.forEach(el => {
-                        if (el.classList.contains('text-lg')) el.style.fontSize = '1.3rem';
-                        if (el.classList.contains('text-md')) el.style.fontSize = '1.1rem';
-                        if (el.classList.contains('text-sm')) el.style.fontSize = '1rem';
-                        if (el.classList.contains('text-xs')) el.style.fontSize = '0.9rem';
-                    });
-                    
-                    // Perbesar font depth hole - PERBAIKAN: Font diperbesar
-                    const depthLabels = clonedElement.querySelectorAll('.pdf-hole-dot span');
-                    depthLabels.forEach(label => {
-                        label.style.fontSize = '0.7rem';
-                        label.style.fontWeight = 'bold';
-                    });
+                    localStorage.setItem(SHARED_DATABASE_KEY, JSON.stringify(sharedDb));
+                    console.log('Data lokal dimigrasikan ke database terpusat:', localData.length, 'laporan');
                 }
             }
-        }).then(canvas => {
-            // Restore original styles
-            element.style.width = originalWidth;
-            element.style.maxWidth = originalMaxWidth;
-            element.style.padding = originalPadding;
-            element.classList.remove('pdf-optimized');
-            
-            const imgData = canvas.toDataURL('image/jpeg', 0.92);
-            const pdf = new jsPDF({
-                orientation: 'landscape',
-                unit: 'mm',
-                format: 'a4'
-            });
-
-            const pageWidth = pdf.internal.pageSize.getWidth();
-            const pageHeight = pdf.internal.pageSize.getHeight();
-            
-            // Calculate dimensions to fit the page
-            const imgWidth = pageWidth - 10; // Margin 5mm each side
-            const imgHeight = (canvas.height * imgWidth) / canvas.width;
-            
-            // Center the image on the page
-            const x = (pageWidth - imgWidth) / 2;
-            const y = (pageHeight - imgHeight) / 2;
-            
-            // Add image centered on page
-            pdf.addImage(imgData, 'JPEG', x, y, imgWidth, imgHeight);
-            
-            // Generate filename
-            const pit = document.getElementById('pit').value || 'Unknown';
-            const lokasi = document.getElementById('lokasi').value || 'Unknown';
-            const tanggal = document.getElementById('tanggal').value || new Date().toISOString().split('T')[0];
-            const filename = `Sounding_Report_${pit}_${lokasi}_${tanggal}.pdf`;
-            
-            // Save PDF
-            pdf.save(filename);
-            
-            showNotification("PDF berhasil di-download dalam 1 halaman landscape!");
-            
-        }).catch(error => {
-            console.error("Error generating PDF:", error);
-            // Restore original styles on error
-            element.style.width = originalWidth;
-            element.style.maxWidth = originalMaxWidth;
-            element.style.padding = originalPadding;
-            element.classList.remove('pdf-optimized');
-            showNotification("Gagal membuat PDF: " + error.message, true);
-        });
-    }
-
-    // Fungsi untuk download PDF dari database
-    function downloadReportPDF(reportId) {
-        const allReports = JSON.parse(localStorage.getItem('allSoundingReports') || '[]');
-        const report = allReports.find(r => r.id === reportId);
-        
-        if (!report) {
-            showNotification("Laporan tidak ditemukan", true);
-            return;
-        }
-        
-        // Load report data ke form sementara
-        const currentHoleData = holeData;
-        const currentNorthDir = currentNorthDirection;
-        
-        // Set data dari report
-        holeData = report.holeData;
-        currentNorthDirection = report.northDirection;
-        
-        // Update UI sementara
-        updateReportData();
-        
-        // Generate PDF
-        setTimeout(() => {
-            generateReportAndDownloadPDF();
-            
-            // Kembalikan data asli
-            setTimeout(() => {
-                holeData = currentHoleData;
-                currentNorthDirection = currentNorthDir;
-                updateReportData();
-            }, 1000);
-        }, 500);
-    }
-
-    // Fungsi Generate Final Report - BARU
-    function generateFinalReport() {
-        // Validasi data
-        const requiredFields = ['tanggal', 'shift', 'pit', 'lokasi', 'planHole', 'namaCrew', 'namaGL'];
-        const missingFields = [];
-        
-        requiredFields.forEach(field => {
-            if (!document.getElementById(field).value) {
-                missingFields.push(field);
-            }
-        });
-        
-        if (missingFields.length > 0) {
-            showNotification(`Mohon lengkapi field: ${missingFields.join(', ')}`, true);
-            return;
-        }
-        
-        if (Object.keys(holeData).length === 0) {
-            showNotification("Belum ada data lubang yang diisi!", true);
-            return;
-        }
-        
-        if (!signaturePad || signaturePad.isEmpty()) {
-            showNotification("Tanda tangan belum diisi!", true);
-            return;
-        }
-        
-        if (!currentNorthDirection) {
-            showNotification("Arah utara belum dipilih!", true);
-            return;
-        }
-        
-        // Simpan ke database (otomatis untuk semua user)
-        saveReportToDatabase();
-        
-        // Tampilkan notifikasi sukses
-        showNotification("✅ Laporan berhasil disimpan ke database! Data dapat diakses oleh semua user.");
-        
-        // Refresh database view
-        loadDatabaseData();
-        
-        // Redirect ke database section
-        setTimeout(() => {
-            showSection('database');
         }, 2000);
-    }
+    });
 
-    function getJadwal(pit) {
-        if (pit === 'Tempudo 4') {
-            return '12:00-13:00 WITA';
-        } else if (pit === 'Tempudo 2' || pit === 'Tempudo 3') {
-            return '13:00-14:00 WITA';
-        }
-        return 'Jadwal Tidak Diketahui';
-    }
+    // ... (fungsi-fungsi lainnya tetap sama) ...
 
-    function updateReportData() {
-        // Update report header data
-        document.getElementById('report_tanggal').textContent = document.getElementById('tanggal').value || '-';
-        document.getElementById('report_shift').textContent = document.getElementById('shift').value || '-';
-        document.getElementById('report_pit').textContent = document.getElementById('pit').value || '-';
-        document.getElementById('report_lokasi').textContent = document.getElementById('lokasi').value || '-';
-        document.getElementById('report_planHole').textContent = document.getElementById('planHole').value || '-';
+    // Update fungsi showSection untuk selalu sinkronisasi saat buka database
+    function showSection(sectionName) {
+        console.log('Showing section:', sectionName);
         
-        const burden = document.getElementById('burden').value || '-';
-        const spasi = document.getElementById('spasi').value || '-';
-        document.getElementById('report_geometri').textContent = `${burden} x ${spasi}`;
+        // Hide all sections
+        document.querySelectorAll('.content-section').forEach(section => {
+            section.classList.add('hidden');
+        });
         
-        document.getElementById('report_unit').textContent = document.getElementById('unitDrilling').value || '-';
-        document.getElementById('report_north_direction').textContent = currentNorthDirection ? currentNorthDirection.toUpperCase() : 'BELUM DIPILIH';
+        // Remove active class from all buttons
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.classList.remove('active', 'bg-white', 'text-gray-800');
+            btn.classList.add('bg-gray-700', 'text-white');
+        });
         
-        // Update signature in report
-        const signatureImg = document.getElementById('report_signature_img');
-        if (signaturePad && !signaturePad.isEmpty()) {
-            // Create a clean version of the signature for PDF
-            const tempCanvas = document.createElement('canvas');
-            tempCanvas.width = 200;
-            tempCanvas.height = 80;
-            const tempCtx = tempCanvas.getContext('2d');
-            
-            // White background
-            tempCtx.fillStyle = 'white';
-            tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-            
-            // Draw signature
-            tempCtx.drawImage(signaturePad.canvas, 0, 0, tempCanvas.width, tempCanvas.height);
-            
-            signatureImg.src = tempCanvas.toDataURL();
-            signatureImg.style.display = 'block';
-        } else {
-            signatureImg.style.display = 'none';
+        // Show target section
+        const targetSection = document.getElementById(sectionName + 'Section');
+        if (targetSection) {
+            targetSection.classList.remove('hidden');
         }
         
-        // Update crew name
-        document.getElementById('report_crew_name').textContent = document.getElementById('namaCrew').value || '(Nama Crew)';
-        
-        // Update copy-paste output dengan format yang benar
-        updateCopyOutput();
-    }
+        // Activate corresponding button
+        const activeButton = document.querySelector(`[data-section="${sectionName}"]`);
+        if (activeButton) {
+            activeButton.classList.remove('bg-gray-700', 'text-white');
+            activeButton.classList.add('active', 'bg-white', 'text-gray-800');
+        }
 
-    function updateCopyOutput() {
-        const stats = calculateStatistics();
-        const pit = document.getElementById('pit').value;
-        const shift = document.getElementById('shift').value;
-        const lokasi = document.getElementById('lokasi').value;
-        const planHole = document.getElementById('planHole').value;
-        const burden = document.getElementById('burden').value;
-        const spasi = document.getElementById('spasi').value;
-        const unitDrilling = document.getElementById('unitDrilling').value;
-        
-        const jadwal = getJadwal(pit);
-        
-        // Format sesuai permintaan
-        const outputText = `${pit} - ${shift}
-⏰ JADWAL PELAKSANAAN PELEDAKAN : ${jadwal}
-
-${lokasi}
-Plan : ${planHole} hole
-Actual : ${stats.totalHoles} hole
-Depth : ${stats.avgDepth} m
-Dry : ${stats.dryPercentage} %
-Geometri : ${burden} x ${spasi}
-Diameter : 171 mm
-Unit : ${unitDrilling}
-Arah Utara : ${currentNorthDirection ? currentNorthDirection.toUpperCase() : 'BELUM DIPILIH'}
-            `.trim();
-
-        document.getElementById('copyOutputText').value = outputText;
-        document.getElementById('report_summary_text').textContent = outputText;
-        document.getElementById('copyOutputContainer').classList.remove('hidden');
+        // Load database data if showing database section - SELALU SINKRONISASI
+        if (sectionName === 'database') {
+            syncDatabase(); // Sinkronisasi dulu
+            setTimeout(() => {
+                loadSharedDatabaseData(); // Kemudian tampilkan
+            }, 500);
+        }
     }
 
     // Make functions globally available
@@ -3276,6 +1909,7 @@ Arah Utara : ${currentNorthDirection ? currentNorthDirection.toUpperCase() : 'BE
     window.deleteReport = deleteReport;
     window.closeGridModal = closeGridModal;
     window.downloadReportPDF = downloadReportPDF;
+    window.filterDatabase = filterDatabase;
     </script>
 
 </body>

@@ -620,10 +620,10 @@
                         <div class="compass-center"></div>
                     </div>
                     
-                    <div class="compass-direction north" data-direction="utara"></div>
-                    <div class="compass-direction east" data-direction="timur"></div>
-                    <div class="compass-direction south" data-direction="selatan"></div>
-                    <div class="compass-direction west" data-direction="barat"></div>
+                    <div class="compass-direction north" data-direction="^"></div>
+                    <div class="compass-direction east" data-direction=">"></div>
+                    <div class="compass-direction south" data-direction="v"></div>
+                    <div class="compass-direction west" data-direction="<"></div>
                 </div>
             </div>
 
@@ -1460,7 +1460,7 @@
                 
                 gridHTML += `
                     <div style="transform: ${staggered}; display: flex; justify-content: center; align-items: center; height: 32px;">
-                        <div style="background: ${bgColor}; border: 2px solid ${borderColor}; color: white; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; font-family: Arial, sans-serif;">
+                        <div style="background: ${bgColor}; border: 2px solid ${borderColor}; color: white; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: bold; font-family: Arial, sans-serif;">
                             ${text}
                         </div>
                     </div>
@@ -1473,20 +1473,20 @@
         // KOMPAS DINAMIS BERDASARKAN ARAH YANG DIPILIH
         let compassHTML = '';
         if (currentNorthDirection) {
-            let uPosition = 'top: 5px; left: 50%; transform: translateX(-50%);';
+            let arrowStyle = '';
             
             switch(currentNorthDirection) {
-                case 'utara':
-                    uPosition = 'top: 5px; left: 50%; transform: translateX(-50%);';
+                case '^':
+                    arrowStyle = 'top: 10px; left: 50%; transform: translateX(-50%);';
                     break;
-                case 'timur':
-                    uPosition = 'top: 50%; right: 5px; transform: translateY(-50%);';
+                case '>':
+                    arrowStyle = 'top: 50%; right: 5px; transform: translateY(-50%) rotate(90deg);';
                     break;
-                case 'selatan':
-                    uPosition = 'bottom: 5px; left: 50%; transform: translateX(-50%);';
+                case 'v':
+                    arrowStyle = 'bottom: 5px; left: 50%; transform: translateX(-50%) rotate(180deg);';
                     break;
-                case 'barat':
-                    uPosition = 'top: 50%; left: 5px; transform: translateY(-50%);';
+                case '<':
+                    arrowStyle = 'top: 50%; left: 5px; transform: translateY(-50%) rotate(270deg);';
                     break;
             }
             
@@ -1494,11 +1494,10 @@
                 <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;">
                     <div style="font-weight: bold; margin-bottom: 8px; font-size: 16px;">Arah Utara</div> <!-- FONT LEBIH BESAR -->
                     <div style="width: 80px; height: 80px; border: 2px solid #333; border-radius: 50%; position: relative; background: #f8fafc;">
-                        <div style="position: absolute; ${uPosition} width: 25px; height: 25px; background: #f59e0b; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px;">
-                            U
+                        <div style="position: absolute; ${arrowStyle} width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-bottom: 25px solid #f59e0b;"></div>
+			<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 8px; height: 8px; background: #333; border-radius: 50%;"></div>
                         </div>
                     </div>
-                    <div style="margin-top: 5px; font-size: 14px; font-weight: bold;">${currentNorthDirection.toUpperCase()}</div> <!-- FONT LEBIH BESAR -->
                 </div>
             `;
         }
@@ -1522,7 +1521,7 @@
                 <h2 style="font-size: 18px; font-weight: bold; margin: 5px 0; color: #374151;">PEMERIKSAAN KONDISI & KEDALAMAN LUBANG TEMBAK</h2> <!-- FONT LEBIH BESAR -->
             </div>
 
-            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; font-size: 13px; border: 1px solid #e5e7eb; padding: 10px; border-radius: 6px;"> <!-- FONT LEBIH BESAR -->
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; font-size: 16px; border: 1px solid #e5e7eb; padding: 10px; border-radius: 6px;"> <!-- FONT LEBIH BESAR -->
                 <div><strong>Tanggal:</strong> ${document.getElementById('tanggal').value || '-'}</div>
                 <div><strong>Shift:</strong> ${document.getElementById('shift').value || '-'}</div>
                 <div><strong>PIT:</strong> ${document.getElementById('pit').value || '-'}</div>
@@ -1530,11 +1529,10 @@
                 <div><strong>Plan Hole:</strong> ${document.getElementById('planHole').value || '-'}</div>
                 <div><strong>B x S:</strong> ${document.getElementById('burden').value || '-'} x ${document.getElementById('spasi').value || '-'}</div>
                 <div><strong>Unit:</strong> ${document.getElementById('unitDrilling').value || '-'}</div>
-                <div><strong>Arah Utara:</strong> ${currentNorthDirection ? currentNorthDirection.toUpperCase() : '-'}</div>
             </div>
 
             <div style="margin-bottom: 20px;">
-                <h3 style="font-size: 16px; font-weight: bold; margin-bottom: 10px; text-align: center;">Visualisasi Kondisi Lubang (Staggered Pattern)</h3> <!-- FONT LEBIH BESAR DAN DI TENGAH -->
+                <h3 style="font-size: 16px; font-weight: bold; margin-bottom: 10px; text-align: center;">Visualisasi Kondisi Lubang</h3> <!-- FONT LEBIH BESAR DAN DI TENGAH -->
                 ${gridHTML}
             </div>
 
@@ -1542,8 +1540,8 @@
                 <div style="flex: 1;">
                     <h4 style="font-size: 14px; font-weight: bold; margin-bottom: 8px;">Keterangan Status:</h4> <!-- FONT LEBIH BESAR -->
                     <ul style="font-size: 13px; margin: 0; padding-left: 20px;"> <!-- FONT LEBIH BESAR -->
-                        <li style="margin-bottom: 5px;">🟢 D: KERING (Ideal)</li>
-                        <li style="margin-bottom: 5px;">🔵 W: BASAH (Ada Air)</li>
+                        <li style="margin-bottom: 5px;">🟢 D: KERING</li>
+                        <li style="margin-bottom: 5px;">🔵 W: BASAH</li>
                         <li>🔴 C: COLLAPSE</li>
                     </ul>
                 </div>

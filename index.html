@@ -283,10 +283,16 @@
             font-size: 0.4rem !important;
         }
         
+        /* PERBAIKAN: Font depth hole diperbesar */
         .pdf-hole-dot {
-            width: 18px !important;
-            height: 18px !important;
-            font-size: 0.5rem !important;
+            width: 22px !important;
+            height: 22px !important;
+            font-size: 0.7rem !important;
+            font-weight: 700 !important;
+        }
+
+        .pdf-hole-dot span {
+            font-size: 0.7rem !important;
             font-weight: 700 !important;
         }
 
@@ -326,12 +332,6 @@
 
         .pdf-optimized .text-xs {
             font-size: 0.9rem !important;
-        }
-
-        /* Perbaikan font depth hole di PDF */
-        .pdf-hole-dot span {
-            font-size: 0.5rem !important;
-            font-weight: 700 !important;
         }
 
         .share-link-container {
@@ -1122,6 +1122,20 @@
                     </button>
                 </div>
 
+                <!-- Database Sync Section -->
+                <div class="mt-6 p-4 bg-blue-50 border border-blue-300 rounded-lg">
+                    <h4 class="font-bold text-lg mb-2 text-gray-800">🔄 Sinkronisasi Database</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <button id="syncDatabaseBtn" class="w-full px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold">
+                            🔄 Sync dengan Database Server
+                        </button>
+                        <button id="exportDatabaseBtn" class="w-full px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-semibold">
+                            💾 Export Database ke File
+                        </button>
+                    </div>
+                    <div id="syncStatus" class="mt-2 text-sm text-gray-600"></div>
+                </div>
+
                 <!-- Copy Paste Output -->
                 <div id="copyOutputContainer" class="hidden mt-6 p-4 bg-amber-50 border border-amber-300 rounded-lg">
                     <h4 class="font-bold text-lg mb-2 text-gray-800">Format Data untuk Salin (Copas)</h4>
@@ -1176,6 +1190,23 @@
             <div class="bg-white rounded-2xl p-8 shadow-2xl border border-gray-200">
                 <h2 class="text-3xl font-bold text-gray-900 mb-6 text-center">💾 DATABASE</h2>
                 
+                <!-- Database Sync Controls -->
+                <div class="mb-6 p-4 bg-blue-50 border border-blue-300 rounded-lg">
+                    <h3 class="text-xl font-bold mb-4 text-gray-800 text-center">🔄 Sinkronisasi Database</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <button id="syncDatabaseBtn2" class="w-full px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold">
+                            🔄 Sync dengan Server
+                        </button>
+                        <button id="importDatabaseFileBtn" class="w-full px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-semibold">
+                            📥 Import Database File
+                        </button>
+                        <button id="clearLocalDatabaseBtn" class="w-full px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-semibold">
+                            🗑️ Hapus Database Lokal
+                        </button>
+                    </div>
+                    <div id="databaseSyncStatus" class="mt-2 text-sm text-gray-600 text-center"></div>
+                </div>
+
                 <!-- User Info & Logout -->
                 <div id="userInfoSection" class="user-info hidden">
                     <div>
@@ -1203,7 +1234,7 @@
                 <!-- Database Results -->
                 <div id="dbResults" class="space-y-6">
                     <div class="text-center p-8 bg-gray-50 rounded-xl">
-                        <p class="text-gray-600">Belum ada data database. Import data Excel atau buat data baru di section E-SOUNDING.</p>
+                        <p class="text-gray-600">Belum ada data database. Generate laporan di section E-SOUNDING untuk menyimpan data.</p>
                     </div>
                 </div>
             </div>
@@ -1300,6 +1331,17 @@
         'user': { password: 'user123', role: 'user', name: 'Regular User' }
     };
 
+    // Database Configuration
+    const DATABASE_CONFIG = {
+        // Opsi 1: Menggunakan JSON Server (ganti dengan URL server Anda)
+        serverUrl: 'http://localhost:3001',
+        
+        // Opsi 2: Menggunakan GitHub Gist (untuk demo)
+        useGist: true,
+        gistId: localStorage.getItem('databaseGistId'),
+        githubToken: '' // Isi dengan token GitHub jika ingin menggunakan Gist
+    };
+
     document.addEventListener('DOMContentLoaded', function() {
         initializeApp();
         checkLoginStatus();
@@ -1319,6 +1361,11 @@
         
         // Load saved data
         setTimeout(loadSessionData, 1000);
+        
+        // Try to sync database on startup
+        setTimeout(() => {
+            syncDatabase();
+        }, 2000);
     }
 
     function generateUserId() {
@@ -1371,6 +1418,13 @@
             copyToClipboard('copyOutputText');
         });
 
+        // Database Sync
+        document.getElementById('syncDatabaseBtn').addEventListener('click', syncDatabase);
+        document.getElementById('syncDatabaseBtn2').addEventListener('click', syncDatabase);
+        document.getElementById('exportDatabaseBtn').addEventListener('click', exportDatabaseToFile);
+        document.getElementById('importDatabaseFileBtn').addEventListener('click', importDatabaseFromFile);
+        document.getElementById('clearLocalDatabaseBtn').addEventListener('click', clearLocalDatabase);
+
         // Form auto-save
         const formInputs = document.querySelectorAll('#generalInfoInputs input, #generalInfoInputs select');
         formInputs.forEach(input => {
@@ -1391,6 +1445,192 @@
         // TAMBAHAN: Tombol Hapus Semua Lubang
         document.getElementById('clearAllHolesBtn').addEventListener('click', clearAllHoles);
     }
+
+    // ==================== DATABASE SYNC FUNCTIONS ====================
+
+    async function syncDatabase() {
+        showNotification("Menyinkronisasi database...", false);
+        updateSyncStatus("🔄 Menyinkronisasi dengan server...");
+
+        try {
+            let remoteData = null;
+
+            if (DATABASE_CONFIG.useGist && DATABASE_CONFIG.gistId) {
+                // Sync dengan GitHub Gist
+                remoteData = await syncWithGist();
+            } else {
+                // Sync dengan JSON Server
+                remoteData = await syncWithJsonServer();
+            }
+
+            if (remoteData) {
+                // Merge data lokal dengan remote
+                const localData = JSON.parse(localStorage.getItem('allSoundingReports') || '[]');
+                const mergedData = mergeDatabaseData(localData, remoteData);
+                
+                // Simpan data yang sudah di-merge
+                localStorage.setItem('allSoundingReports', JSON.stringify(mergedData));
+                
+                updateSyncStatus(`✅ Database tersinkronisasi! Total: ${mergedData.length} laporan`);
+                showNotification(`Database berhasil disinkronisasi! Total: ${mergedData.length} laporan`);
+                
+                // Refresh tampilan database
+                if (document.getElementById('databaseSection').classList.contains('hidden') === false) {
+                    loadDatabaseData();
+                }
+            } else {
+                updateSyncStatus("ℹ️ Tidak ada data remote yang ditemukan");
+            }
+        } catch (error) {
+            console.error('Sync error:', error);
+            updateSyncStatus("❌ Gagal sinkronisasi: " + error.message);
+            showNotification("Gagal menyinkronisasi database", true);
+        }
+    }
+
+    async function syncWithGist() {
+        if (!DATABASE_CONFIG.gistId) {
+            // Buat Gist baru jika belum ada
+            return await createNewGist();
+        }
+
+        try {
+            const response = await fetch(`https://api.github.com/gists/${DATABASE_CONFIG.gistId}`);
+            if (!response.ok) throw new Error('Gist tidak ditemukan');
+            
+            const gist = await response.json();
+            const content = gist.files['sounding_database.json'].content;
+            return JSON.parse(content);
+        } catch (error) {
+            console.warn('Gist tidak ditemukan, membuat yang baru...');
+            return await createNewGist();
+        }
+    }
+
+    async function createNewGist() {
+        const localData = JSON.parse(localStorage.getItem('allSoundingReports') || '[]');
+        const gistData = {
+            files: {
+                'sounding_database.json': {
+                    content: JSON.stringify(localData, null, 2)
+                }
+            },
+            description: 'E-Sounding System Database',
+            public: false
+        };
+
+        try {
+            const response = await fetch('https://api.github.com/gists', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': DATABASE_CONFIG.githubToken ? `token ${DATABASE_CONFIG.githubToken}` : ''
+                },
+                body: JSON.stringify(gistData)
+            });
+
+            if (!response.ok) throw new Error('Gagal membuat Gist');
+
+            const gist = await response.json();
+            DATABASE_CONFIG.gistId = gist.id;
+            localStorage.setItem('databaseGistId', gist.id);
+            
+            return localData;
+        } catch (error) {
+            console.error('Gagal membuat Gist:', error);
+            throw error;
+        }
+    }
+
+    async function syncWithJsonServer() {
+        try {
+            // Coba ambil data dari server
+            const response = await fetch(`${DATABASE_CONFIG.serverUrl}/reports`);
+            if (!response.ok) throw new Error('Server tidak merespon');
+            
+            return await response.json();
+        } catch (error) {
+            console.error('JSON Server error:', error);
+            throw error;
+        }
+    }
+
+    function mergeDatabaseData(localData, remoteData) {
+        const mergedMap = new Map();
+        
+        // Tambahkan semua data remote
+        remoteData.forEach(report => {
+            mergedMap.set(report.id, report);
+        });
+        
+        // Tambahkan/update dengan data lokal (local wins jika ada konflik)
+        localData.forEach(report => {
+            mergedMap.set(report.id, report);
+        });
+        
+        return Array.from(mergedMap.values());
+    }
+
+    function exportDatabaseToFile() {
+        const allReports = JSON.parse(localStorage.getItem('allSoundingReports') || '[]');
+        const dataStr = JSON.stringify(allReports, null, 2);
+        const dataBlob = new Blob([dataStr], { type: 'application/json' });
+        
+        const url = URL.createObjectURL(dataBlob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `sounding_database_${new Date().toISOString().split('T')[0]}.json`;
+        link.click();
+        
+        URL.revokeObjectURL(url);
+        showNotification("Database berhasil diexport ke file!");
+    }
+
+    function importDatabaseFromFile() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+        
+        input.onchange = function(e) {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    const currentData = JSON.parse(localStorage.getItem('allSoundingReports') || '[]');
+                    const mergedData = mergeDatabaseData(currentData, importedData);
+                    
+                    localStorage.setItem('allSoundingReports', JSON.stringify(mergedData));
+                    showNotification(`Database berhasil diimport! Total: ${mergedData.length} laporan`);
+                    loadDatabaseData();
+                } catch (error) {
+                    showNotification("File database tidak valid", true);
+                }
+            };
+            
+            reader.readAsText(file);
+        };
+        
+        input.click();
+    }
+
+    function clearLocalDatabase() {
+        if (confirm('Apakah Anda yakin ingin menghapus semua data lokal? Data di server akan tetap aman.')) {
+            localStorage.removeItem('allSoundingReports');
+            showNotification("Database lokal berhasil dihapus!");
+            loadDatabaseData();
+        }
+    }
+
+    function updateSyncStatus(message) {
+        const statusElements = document.querySelectorAll('#syncStatus, #databaseSyncStatus');
+        statusElements.forEach(el => {
+            if (el) el.textContent = message;
+        });
+    }
+
+    // ==================== END DATABASE SYNC FUNCTIONS ====================
 
     // TAMBAHAN: Fungsi untuk menghapus semua data lubang
     function clearAllHoles() {
@@ -2001,7 +2241,7 @@
 
     // Database Functions
     function loadDatabaseData() {
-        // Load dari localStorage (shared database untuk semua user)
+        // Load dari localStorage (akan di-sync dengan server)
         const allReports = JSON.parse(localStorage.getItem('allSoundingReports') || '[]');
         const dbResults = document.getElementById('dbResults');
         
@@ -2497,6 +2737,12 @@
         localStorage.setItem('allSoundingReports', JSON.stringify(allReports));
         
         console.log("Report saved to database:", report.id);
+        
+        // Coba sync dengan server
+        setTimeout(() => {
+            syncDatabase();
+        }, 1000);
+        
         return report.id;
     }
 
@@ -2692,10 +2938,10 @@
                         if (el.classList.contains('text-xs')) el.style.fontSize = '0.9rem';
                     });
                     
-                    // Perbesar font depth hole
+                    // Perbesar font depth hole - PERBAIKAN: Font diperbesar
                     const depthLabels = clonedElement.querySelectorAll('.pdf-hole-dot span');
                     depthLabels.forEach(label => {
-                        label.style.fontSize = '0.5rem';
+                        label.style.fontSize = '0.7rem';
                         label.style.fontWeight = 'bold';
                     });
                 }

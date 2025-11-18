@@ -195,8 +195,8 @@
         }
         
         .hole-modal {
-            position: absolute;
-            z-index: 50;
+            position: fixed;
+            z-index: 100;
             background: white;
             border: 1px solid #ccc;
             border-radius: 12px;
@@ -279,14 +279,14 @@
         }
         
         .pdf-drill-grid {
-            grid-template-columns: 45px 35px repeat(30, minmax(12px, 1fr)) !important;
-            font-size: 0.35rem !important;
+            grid-template-columns: 50px 40px repeat(30, minmax(15px, 1fr)) !important;
+            font-size: 0.4rem !important;
         }
         
         .pdf-hole-dot {
-            width: 14px !important;
-            height: 14px !important;
-            font-size: 0.3rem !important;
+            width: 18px !important;
+            height: 18px !important;
+            font-size: 0.5rem !important;
             font-weight: 700 !important;
         }
 
@@ -307,23 +307,31 @@
 
         /* Optimasi tambahan untuk PDF */
         .pdf-optimized #pdfCaptureArea {
-            padding: 8px !important;
+            padding: 15px !important;
+            width: 1200px !important;
+            max-width: 1200px !important;
         }
 
         .pdf-optimized .text-lg {
-            font-size: 0.9rem !important;
+            font-size: 1.3rem !important;
         }
 
         .pdf-optimized .text-md {
-            font-size: 0.8rem !important;
+            font-size: 1.1rem !important;
         }
 
         .pdf-optimized .text-sm {
-            font-size: 0.7rem !important;
+            font-size: 1rem !important;
         }
 
         .pdf-optimized .text-xs {
-            font-size: 0.6rem !important;
+            font-size: 0.9rem !important;
+        }
+
+        /* Perbaikan font depth hole di PDF */
+        .pdf-hole-dot span {
+            font-size: 0.5rem !important;
+            font-weight: 700 !important;
         }
 
         .share-link-container {
@@ -514,7 +522,7 @@
         /* Database Styles */
         .database-grid {
             display: grid;
-            grid-template-columns: 50px 40px repeat(30, minmax(20px, 1fr)); 
+            grid-template-columns: 60px 50px repeat(30, minmax(25px, 1fr));
             border-top: 1px solid #e5e7eb;
             overflow-x: auto;
             min-width: 100%;
@@ -522,6 +530,12 @@
             font-size: 0.5rem;
             border-radius: 8px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .database-grid .hole-dot {
+            width: 20px;
+            height: 20px;
+            font-size: 0.45rem;
         }
 
         /* Hide elements for PDF */
@@ -610,6 +624,114 @@
 
         .logout-btn:hover {
             background: #dc2626;
+        }
+
+        /* Kompas untuk PDF */
+        .pdf-compass-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+        }
+        
+        .pdf-compass-wrapper {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto;
+        }
+        
+        .pdf-compass-base {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            border: 2px solid #9ca3af;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .pdf-compass-center {
+            width: 15px;
+            height: 15px;
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            border-radius: 50%;
+            z-index: 10;
+        }
+        
+        .pdf-compass-axis {
+            position: absolute;
+            background-color: #6b7280;
+            border-radius: 2px;
+        }
+        
+        .pdf-compass-axis-horizontal {
+            width: 100px;
+            height: 3px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .pdf-compass-axis-vertical {
+            width: 3px;
+            height: 100px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .pdf-compass-direction {
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
+            color: #6b7280;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.7rem;
+            z-index: 5;
+        }
+        
+        .pdf-compass-direction.active {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+        }
+        
+        .pdf-compass-direction.north {
+            top: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .pdf-compass-direction.east {
+            top: 50%;
+            right: 5px;
+            transform: translateY(-50%);
+        }
+        
+        .pdf-compass-direction.south {
+            bottom: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .pdf-compass-direction.west {
+            top: 50%;
+            left: 5px;
+            transform: translateY(-50%);
         }
     </style>
 </head>
@@ -866,7 +988,7 @@
                     <div><span class="font-semibold">Arah Utara:</span> <span id="report_north_direction" class="font-medium"></span></div>
                 </div>
 
-                <!-- Kompas untuk PDF - FIXED -->
+                <!-- Kompas untuk PDF - DIPERBAIKI -->
                 <div id="pdfCompassContainer" class="pdf-compass-container">
                     <div class="text-xs font-semibold mb-1">Diagram Arah Utara:</div>
                     <div class="pdf-compass-wrapper">
@@ -933,7 +1055,7 @@
             <!-- END pdfCaptureArea -->
 
 
-            <!-- Modal Pop-up untuk Input Lubang -->
+            <!-- Modal Pop-up untuk Input Lubang - DIPERBAIKI POSISI -->
             <div id="holeModal" class="hole-modal hidden">
                 <h4 class="font-bold mb-3 text-lg text-gray-800" id="modalHoleId">Hole: A-1</h4>
                 
@@ -1166,7 +1288,6 @@
     let currentNorthDirection = null;
     let holeData = {};
     let importData = null;
-    let allReports = JSON.parse(localStorage.getItem('allSoundingReports') || '[]');
     let currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
 
     // Hole Grid Configuration
@@ -1189,7 +1310,6 @@
         initCompassDirection();
         initSignaturePad();
         setupEventListeners();
-        initDatabase();
         
         // Set default date
         document.getElementById('tanggal').value = new Date().toISOString().split('T')[0];
@@ -1561,6 +1681,7 @@
         });
     }
 
+    // DIPERBAIKI: Fungsi untuk membuka modal dekat dengan lubang yang diklik
     function openHoleModal(holeId, event) {
         currentHoleId = holeId;
         const data = holeData[holeId] || { depth: '', status: '' };
@@ -1573,16 +1694,48 @@
 
         const rect = target.getBoundingClientRect();
         const modal = document.getElementById('holeModal');
-        const containerCardRect = document.querySelector('.container-card').getBoundingClientRect();
         
-        const posX = rect.left - containerCardRect.left + (rect.width / 2);
-        const posY = rect.top - containerCardRect.top - 10; 
+        // Hitung posisi modal agar dekat dengan lubang yang diklik
+        const scrollX = window.pageXOffset || document.documentElement.scrollLeft;
+        const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+        
+        // Posisi modal di sebelah kanan lubang
+        let posX = rect.left + scrollX + rect.width + 10;
+        let posY = rect.top + scrollY - 50;
+        
+        // Jika posisi X terlalu ke kanan, pindah ke kiri
+        if (posX + modal.offsetWidth > window.innerWidth) {
+            posX = rect.left + scrollX - modal.offsetWidth - 10;
+        }
+        
+        // Jika posisi Y terlalu ke bawah, sesuaikan
+        if (posY + modal.offsetHeight > window.innerHeight) {
+            posY = window.innerHeight - modal.offsetHeight - 10;
+        }
+        
+        // Jika posisi Y terlalu ke atas, sesuaikan
+        if (posY < 10) {
+            posY = 10;
+        }
 
         modal.style.top = `${posY}px`;
         modal.style.left = `${posX}px`;
-        modal.style.transform = `translateX(-50%) translateY(-100%)`; 
+        modal.style.transform = 'none'; // Hapus transform sebelumnya
 
         modal.classList.remove('hidden');
+        
+        // Tambahkan event listener untuk menutup modal saat klik di luar
+        setTimeout(() => {
+            document.addEventListener('click', closeModalOnClickOutside);
+        }, 10);
+    }
+
+    // Fungsi untuk menutup modal saat klik di luar
+    function closeModalOnClickOutside(event) {
+        const modal = document.getElementById('holeModal');
+        if (!modal.contains(event.target) && !event.target.closest('.hole-dot')) {
+            closeHoleModal();
+        }
     }
 
     function saveHoleDataFromModal() {
@@ -1611,6 +1764,8 @@
     function closeHoleModal() {
         document.getElementById('holeModal').classList.add('hidden');
         currentHoleId = null;
+        // Hapus event listener untuk menutup modal saat klik di luar
+        document.removeEventListener('click', closeModalOnClickOutside);
     }
 
     function updateHoleDotUI(holeId) {
@@ -1845,19 +2000,15 @@
     }
 
     // Database Functions
-    function initDatabase() {
-        // Load existing reports
-        allReports = JSON.parse(localStorage.getItem('allSoundingReports') || '[]');
-        console.log(`Loaded ${allReports.length} reports from database`);
-    }
-
     function loadDatabaseData() {
+        // Load dari localStorage (shared database untuk semua user)
+        const allReports = JSON.parse(localStorage.getItem('allSoundingReports') || '[]');
         const dbResults = document.getElementById('dbResults');
         
         if (allReports.length === 0) {
             dbResults.innerHTML = `
                 <div class="text-center p-8 bg-gray-50 rounded-xl">
-                    <p class="text-gray-600">Belum ada data database. Import data Excel atau buat data baru di section E-SOUNDING.</p>
+                    <p class="text-gray-600">Belum ada data database. Generate laporan di section E-SOUNDING untuk menyimpan data.</p>
                 </div>
             `;
             return;
@@ -1869,7 +2020,7 @@
         allReports.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
         
         allReports.forEach((report, index) => {
-            const stats = calculateStatisticsFromReport(report);
+            const stats = report.statistics || calculateStatisticsFromReport(report);
             
             // Format nama file: LOKASI_TANGGAL
             const fileName = `${report.lokasi || 'Unknown'}_${report.tanggal || 'NoDate'}`;
@@ -1880,6 +2031,7 @@
                         <div>
                             <h3 class="font-bold text-lg text-gray-800">${fileName}</h3>
                             <p class="text-sm text-gray-600">${report.tanggal} | ${report.shift} | ${report.pit}</p>
+                            <p class="text-xs text-gray-500">Dibuat oleh: ${report.createdBy || 'unknown'} | ${new Date(report.timestamp).toLocaleString()}</p>
                         </div>
                         <span class="px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-sm font-semibold">
                             ${stats.totalHoles} Lubang
@@ -1914,11 +2066,9 @@
                             <button onclick="viewReportGrid('${report.id}')" class="px-3 py-1 bg-green-500 text-white text-sm rounded hover:bg-green-600 transition">
                                 👁️ View Grid
                             </button>
-                            ${currentUser && currentUser.role === 'admin' ? 
-                                `<button onclick="deleteReport('${report.id}')" class="px-3 py-1 bg-red-500 text-white text-sm rounded hover:bg-red-600 transition">
-                                    🗑️ Hapus
-                                </button>` : ''
-                            }
+                            <button onclick="downloadReportPDF('${report.id}')" class="px-3 py-1 bg-purple-500 text-white text-sm rounded hover:bg-purple-600 transition">
+                                📄 PDF
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -1952,6 +2102,7 @@
     }
 
     function loadReportToForm(reportId) {
+        const allReports = JSON.parse(localStorage.getItem('allSoundingReports') || '[]');
         const report = allReports.find(r => r.id === reportId);
         if (!report) {
             showNotification("Laporan tidak ditemukan", true);
@@ -2024,6 +2175,7 @@
     }
 
     function viewReportGrid(reportId) {
+        const allReports = JSON.parse(localStorage.getItem('allSoundingReports') || '[]');
         const report = allReports.find(r => r.id === reportId);
         if (!report) {
             showNotification("Laporan tidak ditemukan", true);
@@ -2133,8 +2285,9 @@
         }
         
         if (confirm('Apakah Anda yakin ingin menghapus laporan ini?')) {
-            allReports = allReports.filter(report => report.id !== reportId);
-            localStorage.setItem('allSoundingReports', JSON.stringify(allReports));
+            const allReports = JSON.parse(localStorage.getItem('allSoundingReports') || '[]');
+            const updatedReports = allReports.filter(report => report.id !== reportId);
+            localStorage.setItem('allSoundingReports', JSON.stringify(updatedReports));
             loadDatabaseData();
             showNotification("Laporan berhasil dihapus");
         }
@@ -2187,7 +2340,8 @@
                         tanggal: new Date().toISOString().split('T')[0],
                         planHole: 0,
                         holeData: {},
-                        timestamp: new Date().toISOString()
+                        timestamp: new Date().toISOString(),
+                        createdBy: currentUser ? currentUser.username : 'admin_import'
                     };
                     
                     // Process hole data
@@ -2209,13 +2363,14 @@
                     }
                     
                     if (Object.keys(reportData.holeData).length > 0) {
+                        const allReports = JSON.parse(localStorage.getItem('allSoundingReports') || '[]');
                         allReports.push(reportData);
+                        localStorage.setItem('allSoundingReports', JSON.stringify(allReports));
                         importedCount++;
                     }
                 });
                 
                 if (importedCount > 0) {
-                    localStorage.setItem('allSoundingReports', JSON.stringify(allReports));
                     showNotification(`✅ Berhasil import ${importedCount} laporan dari database Excel!`);
                     loadDatabaseData();
                 } else {
@@ -2313,7 +2468,7 @@
         const signatureBase64 = signaturePad && !signaturePad.isEmpty() ? signaturePad.toDataURL() : '';
         
         const report = {
-            id: 'report_' + Date.now(),
+            id: 'report_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
             pit: document.getElementById('pit').value,
             shift: document.getElementById('shift').value,
             lokasi: document.getElementById('lokasi').value,
@@ -2328,16 +2483,21 @@
             signatureBase64: signatureBase64,
             northDirection: currentNorthDirection,
             timestamp: new Date().toISOString(),
-            statistics: calculateStatistics()
+            statistics: calculateStatistics(),
+            createdBy: currentUser ? currentUser.username : 'anonymous'
         };
         
-        // Add to reports array
+        // Load existing reports from localStorage
+        let allReports = JSON.parse(localStorage.getItem('allSoundingReports') || '[]');
+        
+        // Add new report
         allReports.push(report);
         
-        // Save to localStorage
+        // Save back to localStorage
         localStorage.setItem('allSoundingReports', JSON.stringify(allReports));
         
         console.log("Report saved to database:", report.id);
+        return report.id;
     }
 
     function calculateStatistics() {
@@ -2467,7 +2627,7 @@
         }
     }
 
-    // PDF Generation Functions - DIPERBAIKI untuk landscape 1 halaman dengan ukuran lebih besar
+    // PDF Generation Functions - DIPERBAIKI untuk landscape 1 halaman dengan ukuran lebih besar dan penuh
     function generateReportAndDownloadPDF() {
         // Update report data first
         updateReportData();
@@ -2483,17 +2643,19 @@
         // Store original styles
         const originalWidth = element.style.width;
         const originalMaxWidth = element.style.maxWidth;
+        const originalPadding = element.style.padding;
         
         // Optimize for PDF - set fixed width untuk landscape
-        element.style.width = '1200px'; // Lebar lebih besar untuk landscape
+        element.style.width = '1200px';
         element.style.maxWidth = '1200px';
+        element.style.padding = '15px';
         
         // Apply PDF-specific styles
         element.classList.add('pdf-optimized');
         
         // Use html2canvas dengan scale yang optimal
         html2canvas(element, {
-            scale: 2, // Scale lebih tinggi untuk kualitas lebih baik
+            scale: 2.2,
             useCORS: true,
             allowTaint: false,
             logging: false,
@@ -2507,6 +2669,7 @@
                 if (clonedElement) {
                     clonedElement.style.width = '1200px';
                     clonedElement.style.maxWidth = '1200px';
+                    clonedElement.style.padding = '15px';
                     
                     // Show PDF-only elements
                     const pdfOnlyElements = clonedElement.querySelectorAll('.pdf-only');
@@ -2519,15 +2682,32 @@
                     screenOnlyElements.forEach(el => {
                         el.style.display = 'none';
                     });
+                    
+                    // Perbesar font untuk PDF
+                    const textElements = clonedElement.querySelectorAll('.text-lg, .text-md, .text-sm, .text-xs');
+                    textElements.forEach(el => {
+                        if (el.classList.contains('text-lg')) el.style.fontSize = '1.3rem';
+                        if (el.classList.contains('text-md')) el.style.fontSize = '1.1rem';
+                        if (el.classList.contains('text-sm')) el.style.fontSize = '1rem';
+                        if (el.classList.contains('text-xs')) el.style.fontSize = '0.9rem';
+                    });
+                    
+                    // Perbesar font depth hole
+                    const depthLabels = clonedElement.querySelectorAll('.pdf-hole-dot span');
+                    depthLabels.forEach(label => {
+                        label.style.fontSize = '0.5rem';
+                        label.style.fontWeight = 'bold';
+                    });
                 }
             }
         }).then(canvas => {
             // Restore original styles
             element.style.width = originalWidth;
             element.style.maxWidth = originalMaxWidth;
+            element.style.padding = originalPadding;
             element.classList.remove('pdf-optimized');
             
-            const imgData = canvas.toDataURL('image/jpeg', 0.9);
+            const imgData = canvas.toDataURL('image/jpeg', 0.92);
             const pdf = new jsPDF({
                 orientation: 'landscape',
                 unit: 'mm',
@@ -2537,23 +2717,16 @@
             const pageWidth = pdf.internal.pageSize.getWidth();
             const pageHeight = pdf.internal.pageSize.getHeight();
             
-            // Calculate dimensions to fit the page dengan margin yang lebih kecil
-            const margin = 3; // 3mm margin untuk lebih banyak ruang
-            const imgWidth = pageWidth - (2 * margin);
+            // Calculate dimensions to fit the page
+            const imgWidth = pageWidth - 10; // Margin 5mm each side
             const imgHeight = (canvas.height * imgWidth) / canvas.width;
             
-            // Check if content fits in one page
-            if (imgHeight <= pageHeight - (2 * margin)) {
-                // Fit dalam 1 halaman
-                pdf.addImage(imgData, 'JPEG', margin, margin, imgWidth, imgHeight);
-            } else {
-                // Jika terlalu tinggi, scale down
-                const scaleFactor = (pageHeight - (2 * margin)) / imgHeight;
-                const scaledWidth = imgWidth * scaleFactor;
-                const scaledHeight = imgHeight * scaleFactor;
-                
-                pdf.addImage(imgData, 'JPEG', margin, margin, scaledWidth, scaledHeight);
-            }
+            // Center the image on the page
+            const x = (pageWidth - imgWidth) / 2;
+            const y = (pageHeight - imgHeight) / 2;
+            
+            // Add image centered on page
+            pdf.addImage(imgData, 'JPEG', x, y, imgWidth, imgHeight);
             
             // Generate filename
             const pit = document.getElementById('pit').value || 'Unknown';
@@ -2571,9 +2744,44 @@
             // Restore original styles on error
             element.style.width = originalWidth;
             element.style.maxWidth = originalMaxWidth;
+            element.style.padding = originalPadding;
             element.classList.remove('pdf-optimized');
             showNotification("Gagal membuat PDF: " + error.message, true);
         });
+    }
+
+    // Fungsi untuk download PDF dari database
+    function downloadReportPDF(reportId) {
+        const allReports = JSON.parse(localStorage.getItem('allSoundingReports') || '[]');
+        const report = allReports.find(r => r.id === reportId);
+        
+        if (!report) {
+            showNotification("Laporan tidak ditemukan", true);
+            return;
+        }
+        
+        // Load report data ke form sementara
+        const currentHoleData = holeData;
+        const currentNorthDir = currentNorthDirection;
+        
+        // Set data dari report
+        holeData = report.holeData;
+        currentNorthDirection = report.northDirection;
+        
+        // Update UI sementara
+        updateReportData();
+        
+        // Generate PDF
+        setTimeout(() => {
+            generateReportAndDownloadPDF();
+            
+            // Kembalikan data asli
+            setTimeout(() => {
+                holeData = currentHoleData;
+                currentNorthDirection = currentNorthDir;
+                updateReportData();
+            }, 1000);
+        }, 500);
     }
 
     // Fungsi Generate Final Report - BARU
@@ -2608,11 +2816,14 @@
             return;
         }
         
-        // Simpan ke database
+        // Simpan ke database (otomatis untuk semua user)
         saveReportToDatabase();
         
         // Tampilkan notifikasi sukses
-        showNotification("✅ Laporan berhasil disimpan ke database!");
+        showNotification("✅ Laporan berhasil disimpan ke database! Data dapat diakses oleh semua user.");
+        
+        // Refresh database view
+        loadDatabaseData();
         
         // Redirect ke database section
         setTimeout(() => {
@@ -2710,6 +2921,7 @@ Arah Utara : ${currentNorthDirection ? currentNorthDirection.toUpperCase() : 'BE
     window.viewReportGrid = viewReportGrid;
     window.deleteReport = deleteReport;
     window.closeGridModal = closeGridModal;
+    window.downloadReportPDF = downloadReportPDF;
     </script>
 
 </body>

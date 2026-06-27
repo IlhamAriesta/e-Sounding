@@ -600,7 +600,7 @@
                     </select>
                 </div>
                 <div><label for="lokasi" class="form-label">Lokasi</label><input type="text" id="lokasi" class="input-field" placeholder="Lokasi Blok"></div>
-                <div><label for="planHole" class="form-label">Plan Hole</label><input type="number" id="planHole" class="input-field" placeholder="Jumlah Plan"></div>
+                <div><label for="planHole" class="form-label">Total Hole</label><input type="number" id="planHole" class="input-field" placeholder="Jumlah Plan"></div>
                 <div><label for="namaCrew" class="form-label">Nama Crew</label><input type="text" id="namaCrew" class="input-field" placeholder="Nama Crew"></div>
                 <div><label for="namaGL" class="form-label">Nama GL</label><input type="text" id="namaGL" class="input-field" placeholder="Nama Group Leader"></div>
                 <div><label for="burden" class="form-label">Burden (m)</label><input type="number" step="0.1" id="burden" class="input-field" placeholder="B"></div>
@@ -1386,7 +1386,7 @@
         }
     }
 
-    // FUNGSI PDF YANG SUDAH DIPERBAIKI - DENGAN FONT LEBIH BESAR DAN KOMPAS DINAMIS
+    // FUNGSI PDF YANG SUDAH DIPERBAIKI - DENGAN FONT LEBIH BESAR, POSISI CENTER, DAN VOLUME
     function generatePdf() {
         if (Object.keys(holeData).length === 0) {
             showNotification('Tidak ada data lubang untuk dibuat PDF!', true);
@@ -1395,18 +1395,34 @@
 
         showNotification('🔄 Membuat PDF...');
 
+        // --- Hitung Volume ---
+        let totalDepth = 0;
+        let totalLubangTerisi = 0;
+        Object.values(holeData).forEach(hole => {
+            if (hole.depth) {
+                totalDepth += hole.depth;
+                totalLubangTerisi++;
+            }
+        });
+        const rataRataKedalaman = totalLubangTerisi > 0 ? totalDepth / totalLubangTerisi : 0;
+        
+        const burden = parseFloat(document.getElementById('burden').value) || 0;
+        const spasi = parseFloat(document.getElementById('spasi').value) || 0;
+        const volumeTotal = burden * spasi * rataRataKedalaman * totalLubangTerisi;
+        // --- Selesai Hitung Volume ---
+
         // Buat elemen sementara untuk PDF - DENGAN FONT LEBIH BESAR
         const pdfElement = document.createElement('div');
         pdfElement.style.padding = '20px';
         pdfElement.style.backgroundColor = 'white';
         pdfElement.style.width = '1100px';
         pdfElement.style.fontFamily = 'Arial, sans-serif';
-        pdfElement.style.fontSize = '14px'; // FONT LEBIH BESAR
+        pdfElement.style.fontSize = '14px';
         pdfElement.style.color = '#000000';
         pdfElement.style.lineHeight = '1.4';
 
         // Generate grid untuk PDF DENGAN FONT LEBIH BESAR
-        let gridHTML = '<div style="display: grid; grid-template-columns: 40px 40px ' + Array(MAX_COLUMNS).fill('32px').join(' ') + '; gap: 1px; font-size: 12px; margin: 8px 0;">'; // FONT LEBIH BESAR
+        let gridHTML = '<div style="display: grid; grid-template-columns: 40px 40px ' + Array(MAX_COLUMNS).fill('32px').join(' ') + '; gap: 1px; font-size: 12px; margin: 8px 0;">';
         
         // Header
         gridHTML += '<div style="font-weight: bold; text-align: center; padding: 4px; background: #f3f4f6; font-size: 11px;"></div>';
@@ -1430,7 +1446,7 @@
             }
             gridHTML += `<div style="font-weight: bold; text-align: center; padding: 4px; background: #fef3c7; font-size: 12px;">${rowCount}</div>`;
             
-            // Hole cells dengan staggered pattern DAN FONT LEBIH BESAR
+            // Hole cells dengan staggered pattern DAN FONT LEBIH BESAR, POSISI CENTER
             for (let col = 1; col <= MAX_COLUMNS; col++) {
                 const holeId = `${row}-${col}`;
                 const holeInfo = holeData[holeId] || {};
@@ -1458,9 +1474,10 @@
                 
                 const staggered = [1,3,5,7,9,11,13,15].includes(rowIndex) ? 'translateX(6px)' : 'translateX(0)';
                 
+                // [PERUBAHAN] - Font size diperbesar menjadi 18px, posisi center (tanpa transform Y)
                 gridHTML += `
-                    <div style="transform: ${staggered}; display: flex; justify-content: center; align-items: center; height: 32px;">
-                        <div style="background: ${bgColor}; border: 2px solid ${borderColor}; color: white; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: bold; font-family: Arial, sans-serif;">
+                    <div style="display: flex; justify-content: center; align-items: flex-start; height: 34px; transform: ${staggered}; padding-top: 10px;">
+                        <div style="background: ${bgColor}; border: 2px solid ${borderColor}; color: white; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; font-family: Arial, sans-serif; text-align: center; line-height: 1; padding: 0; margin: 0; box-sizing: border-box; flex-shrink: 0;">
                             ${text}
                         </div>
                     </div>
@@ -1492,22 +1509,21 @@
             
             compassHTML = `
                 <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                    <div style="font-weight: bold; margin-bottom: 8px; font-size: 16px;">Arah Utara</div> <!-- FONT LEBIH BESAR -->
+                    <div style="font-weight: bold; margin-bottom: 8px; font-size: 16px;">Utara</div>
                     <div style="width: 80px; height: 80px; border: 2px solid #333; border-radius: 50%; position: relative; background: #f8fafc;">
                         <div style="position: absolute; ${arrowStyle} width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-bottom: 25px solid #f59e0b;"></div>
-			<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 8px; height: 8px; background: #333; border-radius: 50%;"></div>
-                        </div>
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 8px; height: 8px; background: #333; border-radius: 50%;"></div>
                     </div>
                 </div>
             `;
         }
 
         // Handle signature - AMAN DARI CROSS-ORIGIN
-        let signatureHTML = '<span style="color: #999; font-size: 12px;">Tanda Tangan</span>'; // FONT LEBIH BESAR
+        let signatureHTML = '<span style="color: #999; font-size: 12px;">Tanda Tangan</span>';
         if (signaturePad && !signaturePad.isEmpty()) {
             try {
                 const signatureDataUrl = signaturePad.toDataURL();
-                signatureHTML = `<img src="${signatureDataUrl}" style="max-height: 70px; max-width: 180px;" />`; // UKURAN LEBIH BESAR
+                signatureHTML = `<img src="${signatureDataUrl}" style="max-height: 70px; max-width: 180px;" />`;
             } catch (error) {
                 console.warn('Cannot export signature:', error);
                 signatureHTML = '<span style="color: #999; font-size: 12px;">[Tanda Tangan - Tidak dapat diexport]</span>';
@@ -1517,29 +1533,35 @@
         // Isi konten PDF dengan layout baru - FONT LEBIH BESAR
         pdfElement.innerHTML = `
             <div style="text-align: center; margin-bottom: 20px; border-bottom: 2px solid #333; padding-bottom: 15px;">
-                <h1 style="font-size: 24px; font-weight: bold; margin: 0; color: #1f2937;">PT. KALIMANTAN PRIMA PERSADA - DISTRIK INDE</h1> <!-- FONT LEBIH BESAR -->
-                <h2 style="font-size: 18px; font-weight: bold; margin: 5px 0; color: #374151;">PEMERIKSAAN KONDISI & KEDALAMAN LUBANG TEMBAK</h2> <!-- FONT LEBIH BESAR -->
+                <h1 style="font-size: 24px; font-weight: bold; margin: 0; color: #1f2937;">PT. KALIMANTAN PRIMA PERSADA - SITE INDE</h1>
+                <h2 style="font-size: 18px; font-weight: bold; margin: 5px 0; color: #374151;">PEMERIKSAAN KONDISI & KEDALAMAN LUBANG LEDAK</h2>
             </div>
 
-            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; font-size: 16px; border: 1px solid #e5e7eb; padding: 10px; border-radius: 6px;"> <!-- FONT LEBIH BESAR -->
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; font-size: 16px; border: 1px solid #e5e7eb; padding: 10px; border-radius: 6px;">
                 <div><strong>Tanggal:</strong> ${document.getElementById('tanggal').value || '-'}</div>
                 <div><strong>Shift:</strong> ${document.getElementById('shift').value || '-'}</div>
                 <div><strong>PIT:</strong> ${document.getElementById('pit').value || '-'}</div>
                 <div><strong>Lokasi:</strong> ${document.getElementById('lokasi').value || '-'}</div>
-                <div><strong>Plan Hole:</strong> ${document.getElementById('planHole').value || '-'}</div>
+                <div><strong>Total Hole:</strong> ${document.getElementById('planHole').value || '-'}</div>
                 <div><strong>B x S:</strong> ${document.getElementById('burden').value || '-'} x ${document.getElementById('spasi').value || '-'}</div>
                 <div><strong>Unit:</strong> ${document.getElementById('unitDrilling').value || '-'}</div>
             </div>
 
             <div style="margin-bottom: 20px;">
-                <h3 style="font-size: 16px; font-weight: bold; margin-bottom: 10px; text-align: center;">Visualisasi Kondisi Lubang</h3> <!-- FONT LEBIH BESAR DAN DI TENGAH -->
+                <h3 style="font-size: 16px; font-weight: bold; margin-bottom: 10px; text-align: center;">Visualisasi Kondisi Lubang</h3>
                 ${gridHTML}
+            </div>
+
+            <!-- [PERUBAHAN] - Tambahan Informasi Volume -->
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 15px 0 25px 0; font-size: 16px; border: 1px solid #e5e7eb; padding: 10px; border-radius: 6px; background-color: #f8fafc;">
+                <div><strong>Rata-rata Kedalaman:</strong> ${rataRataKedalaman.toFixed(2)} m</div>
+                <div><strong>Volume Total:</strong> ${volumeTotal.toFixed(2)} BCM</div>
             </div>
 
             <div style="display: flex; justify-content: space-between; margin-top: 25px; border-top: 1px solid #ccc; padding-top: 15px;">
                 <div style="flex: 1;">
-                    <h4 style="font-size: 14px; font-weight: bold; margin-bottom: 8px;">Keterangan Status:</h4> <!-- FONT LEBIH BESAR -->
-                    <ul style="font-size: 13px; margin: 0; padding-left: 20px;"> <!-- FONT LEBIH BESAR -->
+                    <h4 style="font-size: 14px; font-weight: bold; margin-bottom: 8px;">Keterangan Status:</h4>
+                    <ul style="font-size: 13px; margin: 0; padding-left: 20px;">
                         <li style="margin-bottom: 5px;">🟢 D: KERING</li>
                         <li style="margin-bottom: 5px;">🔵 W: BASAH</li>
                         <li>🔴 C: COLLAPSE</li>
@@ -1549,15 +1571,15 @@
                 ${compassHTML}
                 
                 <div style="flex: 1; text-align: center;">
-                    <h4 style="font-size: 14px; font-weight: bold; margin-bottom: 8px;">Tanda Tangan Pemeriksa:</h4> <!-- FONT LEBIH BESAR -->
+                    <h4 style="font-size: 14px; font-weight: bold; margin-bottom: 8px;">Tanda Tangan Pemeriksa:</h4>
                     <div style="border: 1px solid #ccc; height: 80px; width: 200px; margin: 0 auto; display: flex; align-items: center; justify-content: center; background: white;">
                         ${signatureHTML}
                     </div>
-                    <p style="font-size: 13px; margin-top: 5px; font-weight: bold;">${document.getElementById('namaGL').value || 'Pemeriksa'}</p> <!-- FONT LEBIH BESAR -->
+                    <p style="font-size: 13px; margin-top: 5px; font-weight: bold;">${document.getElementById('namaGL').value || 'Pemeriksa'}</p>
                 </div>
             </div>
 
-            <div style="margin-top: 20px; font-size: 11px; color: #666; text-align: center; border-top: 1px solid #eee; padding-top: 10px;"> <!-- FONT LEBIH BESAR -->
+            <div style="margin-top: 20px; font-size: 11px; color: #666; text-align: center; border-top: 1px solid #eee; padding-top: 10px;">
                 <p>Dokumen ini dibuat secara digital - PT. Kalimantan Prima Persada - Distrik Inde</p>
                 <p>Generated on: ${new Date().toLocaleString('id-ID')}</p>
             </div>
@@ -1618,8 +1640,6 @@
             showNotification('❌ Gagal membuat PDF: ' + error.message, true);
         });
     }
-
-    // ... (FUNGSI LAINNYA TETAP SAMA) ...
 
     // FUNGSI LOGIN/LOGOUT
     function showLoginModal() {
@@ -1851,7 +1871,7 @@
                         <div><strong>Shift:</strong> ${data.formData?.shift || '-'}</div>
                         <div><strong>Crew:</strong> ${data.formData?.namaCrew || '-'}</div>
                         <div><strong>GL:</strong> ${data.formData?.namaGL || '-'}</div>
-                        <div><strong>Plan Hole:</strong> ${data.formData?.planHole || '-'}</div>
+                        <div><strong>Total Hole:</strong> ${data.formData?.planHole || '-'}</div>
                         <div><strong>B x S:</strong> ${data.formData?.burden || '-'} x ${data.formData?.spasi || '-'}</div>
                     </div>
                     
@@ -2161,4 +2181,3 @@
 </script>
 </body>
 </html>
-
